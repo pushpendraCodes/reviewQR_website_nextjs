@@ -5,12 +5,10 @@ import { Star, MapPin, Users } from 'lucide-react';
 import QRCodeStyling from 'qr-code-styling';
 import type { Business } from '../store/api/placesApi';
 
-// ── Exported types shared across components ──────────────────────────
 export type QRDotShape = 'square' | 'rounded' | 'dots' | 'classy' | 'extra-rounded';
 export type StandeeTemplate = 'minimal' | 'luxury' | 'bold' | 'festive';
 export type StandeeLanguage = 'en' | 'hi' | 'mr' | 'ta' | 'te';
 
-// ── Template visual configs ──────────────────────────────────────────
 interface TemplateConfig {
   cardBg: string;
   textPrimary: string;
@@ -19,7 +17,7 @@ interface TemplateConfig {
   defaultAccent: string;
   borderStyle: string;
   borderRadius: string;
-  decorBar?: string; // gradient string for top/bottom bar
+  decorBar?: string;
 }
 
 const TEMPLATES: Record<StandeeTemplate, TemplateConfig> = {
@@ -63,7 +61,6 @@ const TEMPLATES: Record<StandeeTemplate, TemplateConfig> = {
   },
 };
 
-// ── Translations ─────────────────────────────────────────────────────
 const LANG: Record<StandeeLanguage, { cta: string; sub: string; reviews: string; poweredBy: string }> = {
   en: { cta: 'Scan to Review Us', sub: 'on Google Maps', reviews: 'Reviews', poweredBy: 'Powered by' },
   hi: { cta: 'समीक्षा करने के लिए स्कैन करें', sub: 'Google Maps पर', reviews: 'समीक्षाएं', poweredBy: 'द्वारा संचालित' },
@@ -72,7 +69,6 @@ const LANG: Record<StandeeLanguage, { cta: string; sub: string; reviews: string;
   te: { cta: 'సమీక్షకు స్కాన్ చేయండి', sub: 'Google Maps లో', reviews: 'సమీక్షలు', poweredBy: 'ద్వారా నడిచే' },
 };
 
-// ── Props ────────────────────────────────────────────────────────────
 interface StandeePreviewProps {
   business: Business;
   reviewURL: string;
@@ -88,7 +84,26 @@ interface StandeePreviewProps {
   language?: StandeeLanguage;
 }
 
-// ── Component ────────────────────────────────────────────────────────
+function getContrastTextColors(hex: string) {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16) / 255;
+  const g = parseInt(clean.substring(2, 4), 16) / 255;
+  const b = parseInt(clean.substring(4, 6), 16) / 255;
+
+  const toLinear = (c: number) =>
+    c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+
+  const lum = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  const isDark = lum <= 0.179;
+
+  return {
+    textPrimary: isDark ? '#ffffff' : '#111827',
+    textSecondary: isDark ? '#e5e7eb' : '#303947ff',
+    textMuted: isDark ? '#9ca3af' : '#5a6678ff',
+    accent: isDark ? '#ffffff' : '#111827',
+  };
+}
+
 const StandeePreview = ({
   business, reviewURL, shortURL, plan, logo, qrColor, whiteLabel,
   qrShape = 'square',
@@ -103,14 +118,26 @@ const StandeePreview = ({
 
   const tmpl = TEMPLATES[isProPlus ? template : 'minimal'];
   const resolvedColor = isPaid && qrColor ? qrColor : '#1D9E75';
-  const accent = isProPlus ? resolvedColor : '#1D9E75';
+
   const cardBg = isProPlus && standeeBgColor ? standeeBgColor : tmpl.cardBg;
+
+  const contrastOverride = isProPlus && standeeBgColor
+    ? getContrastTextColors(standeeBgColor)
+    : null;
+
+  // ✅ These now shadow tmpl.* and are used consistently throughout JSX
+  const textPrimary = contrastOverride?.textPrimary ?? tmpl.textPrimary;
+  const textSecondary = contrastOverride?.textSecondary ?? tmpl.textSecondary;
+  const textMuted = contrastOverride?.textMuted ?? tmpl.textMuted;
+  const accent = isProPlus
+    ? (standeeBgColor ? contrastOverride!.accent : resolvedColor)
+    : '#1D9E75';
+
   const brandName = isPaid && whiteLabel?.enabled && whiteLabel.clientName
     ? whiteLabel.clientName
     : 'getreviewqr.com';
   const t = LANG[isProPlus ? language : 'en'];
 
-  // ── qr-code-styling renderer ──
   const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -123,10 +150,7 @@ const StandeePreview = ({
       width: 160,
       height: 160,
       data: shortURL || reviewURL || 'https://getreviewqr.com',
-      dotsOptions: {
-        type: isProPlus ? qrShape : 'square',
-        color: resolvedColor,
-      },
+      dotsOptions: { type: isProPlus ? qrShape : 'square', color: resolvedColor },
       cornersSquareOptions: { type: cornerType, color: resolvedColor },
       cornersDotOptions: { type: isProPlus && qrShape === 'dots' ? 'dot' : 'square', color: resolvedColor },
       backgroundOptions: { color: '#ffffff' },
@@ -140,7 +164,10 @@ const StandeePreview = ({
   }, [reviewURL, shortURL, resolvedColor, qrShape, logo, isProPlus]);
 
   const renderStars = (rating: number) => {
-    const starColor = template === 'luxury' && isProPlus ? '#fbbf24' : '#f59e0b';
+    // ✅ Star color also respects the bg — amber on light, white on dark
+    const starColor = contrastOverride
+      ? (contrastOverride.textPrimary === '#ffffff' ? '#facc15' : '#f59e0b')
+      : (template === 'luxury' && isProPlus ? '#fbbf24' : '#f59e0b');
     return Array.from({ length: 5 }, (_, i) => {
       const full = i < Math.floor(rating);
       const half = !full && i === Math.floor(rating) && rating % 1 >= 0.5;
@@ -161,12 +188,10 @@ const StandeePreview = ({
         className="relative w-full max-w-[320px] overflow-hidden shadow-xl"
         style={{ backgroundColor: cardBg, borderRadius: tmpl.borderRadius, border: tmpl.borderStyle, minHeight: '420px' }}
       >
-        {/* Decorative top bar (luxury / festive) */}
         {isProPlus && tmpl.decorBar && (
           <div style={{ height: '4px', background: tmpl.decorBar }} />
         )}
 
-        {/* Free plan watermark */}
         {!isPaid && (
           <div
             aria-hidden="true"
@@ -189,17 +214,15 @@ const StandeePreview = ({
           </div>
         )}
 
-        {/* Main content */}
         <div className="relative flex flex-col items-center text-center px-6 py-6" style={{ zIndex: 1 }}>
 
-          {/* Logo */}
           {isPaid && logo && (
             <div className="mb-3">
-              <img src={logo} alt="Logo" className="h-15  max-w-[100px] object-cover rounded-lg" />
+              <img src={logo} alt="Logo" className="h-15 max-w-[100px] object-cover rounded-lg" />
             </div>
           )}
 
-          {/* Google wordmark */}
+          {/* Google wordmark — letters always keep brand colors, only "Reviews" label adapts */}
           <div className="mb-3">
             <div className="flex items-center justify-center gap-0.5 mb-1">
               {['G', 'o', 'o', 'g', 'l', 'e'].map((l, i) => (
@@ -209,35 +232,34 @@ const StandeePreview = ({
                 </span>
               ))}
             </div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: tmpl.textMuted }}>
+            {/* ✅ textMuted (was tmpl.textMuted) */}
+            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: textMuted }}>
               {t.reviews}
             </p>
           </div>
 
-          {/* Business name */}
+          {/* ✅ textPrimary (was tmpl.textPrimary) */}
           {isPaid && (
             <h2 className="text-base font-bold leading-tight mb-1.5 px-1 w-full break-words"
-              style={{ color: tmpl.textPrimary }}>
+              style={{ color: textPrimary }}>
               {business.name}
             </h2>
           )}
 
-          {/* Stars */}
+          {/* ✅ textSecondary (was tmpl.textSecondary) */}
           {isPaid && (
             <div className="flex items-center gap-0.5 mb-4">
               {renderStars(business.rating ?? 0)}
-              <span className="text-xs font-semibold ml-1" style={{ color: tmpl.textSecondary }}>
+              <span className="text-xs font-semibold ml-1" style={{ color: textSecondary }}>
                 {business.rating ?? 0}
               </span>
             </div>
           )}
 
-          {/* QR code (qr-code-styling renders here) */}
           <div className="mb-3 p-2 rounded-xl" style={{ background: '#fff', border: `2px solid ${accent}22` }}>
             <div ref={qrRef} />
           </div>
 
-          {/* Social proof badge (pro+) */}
           {isProPlus && socialProof && (
             <div
               className="flex items-center gap-1.5 px-3 py-1 rounded-full mb-3 text-xs font-semibold"
@@ -248,15 +270,15 @@ const StandeePreview = ({
             </div>
           )}
 
-          {/* CTA */}
           <div className="mb-3">
             <p className="text-sm font-bold mb-0.5" style={{ color: accent }}>{t.cta}</p>
-            <p className="text-xs" style={{ color: tmpl.textMuted }}>{t.sub}</p>
+            {/* ✅ textMuted (was tmpl.textMuted) */}
+            <p className="text-xs" style={{ color: textMuted }}>{t.sub}</p>
           </div>
 
-          {/* Address */}
+          {/* ✅ textMuted (was tmpl.textMuted) — address and MapPin icon */}
           {isPaid && (
-            <div className="flex items-start gap-1 text-[11px] w-full px-1 mb-2" style={{ color: tmpl.textMuted }}>
+            <div className="flex items-start gap-1 text-[11px] w-full px-1 mb-2" style={{ color: textMuted }}>
               <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
               <span className="text-left leading-relaxed break-words min-w-0 flex-1"
                 style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -265,13 +287,12 @@ const StandeePreview = ({
             </div>
           )}
 
-          {/* Powered by */}
-          <p className="text-[9px] mt-1" style={{ color: tmpl.textMuted }}>
+          {/* ✅ textMuted (was tmpl.textMuted) */}
+          <p className="text-[9px] mt-1" style={{ color: textMuted }}>
             {t.poweredBy} {brandName}
           </p>
         </div>
 
-        {/* Decorative bottom bar (festive) */}
         {isProPlus && template === 'festive' && tmpl.decorBar && (
           <div style={{ height: '4px', background: tmpl.decorBar }} />
         )}

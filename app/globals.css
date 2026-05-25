@@ -135,6 +135,10 @@ body {
   animation-delay: 0.5s;
 }
 
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

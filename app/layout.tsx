@@ -1,12 +1,9 @@
 import { Toaster } from 'react-hot-toast';
 import ReduxProvider from '@/providers/ReduxProvider';
+import { rootMetadata } from '@/lib/seo/metadata';
 import './globals.css';
 
-export const metadata = {
-  title: 'ReviewQR — Free Google Review QR Code Generator',
-  description: 'Generate a free Google Review QR code in seconds. No hidden fees, no expiration date — just a scannable code your customers can use instantly.',
-  keywords: 'google review qr code generator, free google review qr code, get more google reviews, qr code for google reviews, boost google reviews, increase google reviews, google business review link, qr code for business reviews, local business seo, google maps reviews qr code, review qr code, reviewqr, reviewqr.com',
-};
+export const metadata = rootMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -90,7 +90,7 @@ const Navbar = () => {
                       href={link.path}
                       className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${isActive(link.path)
                         ? 'text-primary bg-primary/10 font-semibold'
-                        : 'text-gray-500 hover:text-primary hover:bg-primary/5'
+                        : 'text-gray-800 hover:text-primary hover:bg-primary/5'
                         }`}
                     >
                       {link.label}
