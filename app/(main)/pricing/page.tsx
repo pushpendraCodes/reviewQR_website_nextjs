@@ -1,30 +1,356 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';;
 import { ArrowRight, Zap, Check, X } from 'lucide-react';
 import PricingCard from '@/components/PricingCard';
-import { Fragment } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadRazorpay } from '@/utils/loadRazorpay';
-import { useCreateOrderMutation, useVerifyPaymentMutation, usePaymentFailedMutation } from '@/store/api/subscriptionApi';
+import {
+  useGetPricingRegionQuery,
+  useCreateOrderMutation,
+  useCreateLemonCheckoutMutation,
+  useVerifyPaymentMutation,
+  usePaymentFailedMutation,
+  type PaymentCurrency,
+} from '@/store/api/subscriptionApi';
+
+const CURRENCY_STORAGE_KEY = 'reviewqr-pricing-currency';
 import { useLazyGetProfileQuery } from '@/store/api/authApi';
 import { updateUser } from '@/store/slices/authSlice';
+
+const INR_PLANS = [
+  {
+    name: 'Free',
+    monthlyPrice: '₹0',
+    description: 'Try ReviewQR with zero commitment',
+    qrLimit: '1',
+    features: [
+      'Basic QR code (square dots, green only)',
+      'Watermarked standee',
+      'PNG download only',
+      'Copy review link',
+      'WhatsApp share',
+      'Community support',
+    ],
+    lockedFeatures: [
+      'Custom logo & colors',
+      'Standee templates',
+      'SVG / PDF download',
+      'Analytics',
+      'White label',
+    ],
+    popular: false,
+    isFree: true,
+    ctaText: 'Get Started Free',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Starter',
+    monthlyPrice: '₹299',
+    annualMonthly: '₹209',
+    annualPrice: '2,513',
+    description: 'Clean standees for small businesses',
+    qrLimit: '3',
+    features: [
+      '3 QR codes',
+      'No watermark',
+      'Branded Landing Page for customers',
+      'AI review suggestions ✨',
+      'Business name, rating & address on standee',
+      'PNG, SVG & PDF Standee downloads',
+      'WhatsApp share',
+      'Email support',
+    ],
+    lockedFeatures: [
+      'Custom logo & QR colors',
+      'Dot shape customisation',
+      'Standee templates (Luxury, Bold, Festive)',
+      'Social proof badge',
+      'Multi-language standee',
+      'White label',
+    ],
+    popular: false,
+    isFree: false,
+    ctaText: 'Get Starter',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Pro',
+    monthlyPrice: '₹699',
+    annualMonthly: '₹489',
+    annualPrice: '5,873',
+    description: 'Full customisation for growing businesses',
+    qrLimit: '10',
+    features: [
+      '10 QR codes',
+      'No watermark',
+      'Branded Landing Page for customers',
+      'AI review suggestions ✨',
+      'Custom logo in QR centre',
+      'Custom QR color & dot shape',
+      'All standee templates (Minimal, Luxury, Bold, Festive)',
+      'Custom standee background color',
+      'Social proof badge ("500+ happy customers")',
+      'Multi-language standee (EN, हिन्दी, मराठी, தமிழ், తెలుగు)',
+      'PNG, SVG & PDF Standee downloads',
+      'Analytics dashboard',
+      'Priority email support',
+    ],
+    lockedFeatures: [
+      'White-label branding',
+      'Client dashboard',
+      'Bulk QR generation',
+      'API & Webhooks',
+    ],
+    popular: true,
+    isFree: false,
+    ctaText: 'Get Pro',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Agency',
+    monthlyPrice: '₹1,499',
+    annualMonthly: '₹1,049',
+    annualPrice: '12,593',
+    description: 'For agencies managing multiple clients',
+    qrLimit: 'Unlimited',
+    features: [
+      'Unlimited QR codes',
+      'Everything in Pro',
+      'White-label ("Powered by Your Brand")',
+      'Client name on standee footer',
+      'Client dashboard (read-only access)',
+      'Analytics dashboard',
+      'Phone + WhatsApp support',
+    ],
+    lockedFeatures: [],
+    popular: false,
+    isFree: false,
+    ctaText: 'Get Agency',
+    ctaLink: '/contact',
+  },
+];
+
+const USD_PLANS = [
+  {
+    name: 'Free',
+    monthlyPrice: '$0',
+    description: 'Try ReviewQR with zero commitment',
+    qrLimit: '1',
+    features: INR_PLANS[0].features,
+    lockedFeatures: INR_PLANS[0].lockedFeatures,
+    popular: false,
+    isFree: true,
+    ctaText: 'Get Started Free',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Starter',
+    monthlyPrice: '$9',
+    annualMonthly: '$6.25',
+    annualPrice: '75',
+    description: INR_PLANS[1].description,
+    qrLimit: '3',
+    features: INR_PLANS[1].features,
+    lockedFeatures: INR_PLANS[1].lockedFeatures,
+    popular: false,
+    isFree: false,
+    ctaText: 'Get Starter',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Pro',
+    monthlyPrice: '$19',
+    annualMonthly: '$13.25',
+    annualPrice: '159',
+    description: INR_PLANS[2].description,
+    qrLimit: '10',
+    features: INR_PLANS[2].features,
+    lockedFeatures: INR_PLANS[2].lockedFeatures,
+    popular: true,
+    isFree: false,
+    ctaText: 'Get Pro',
+    ctaLink: '/generate',
+  },
+  {
+    name: 'Agency',
+    monthlyPrice: '$39',
+    annualMonthly: '$27.25',
+    annualPrice: '327',
+    description: INR_PLANS[3].description,
+    qrLimit: 'Unlimited',
+    features: INR_PLANS[3].features,
+    lockedFeatures: INR_PLANS[3].lockedFeatures,
+    popular: false,
+    isFree: false,
+    ctaText: 'Get Agency',
+    ctaLink: '/contact',
+  },
+];
 
 const PricingPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<PaymentCurrency | null>(null);
 
   const navigate = useRouter();
   const user = useSelector((state: any) => state.auth?.user);
   const dispatch = useDispatch();
 
+  const { data: pricingRegion } = useGetPricingRegionQuery();
+
+  const effectiveCurrency: PaymentCurrency =
+    selectedCurrency ?? pricingRegion?.currency ?? 'INR';
+  const isUsd = effectiveCurrency === 'USD';
+  const currencyOverridden =
+    selectedCurrency !== null && selectedCurrency !== pricingRegion?.currency;
+
+  const plans = useMemo(
+    () => (isUsd ? USD_PLANS : INR_PLANS),
+    [isUsd]
+  );
+
+  useEffect(() => {
+    if (selectedCurrency !== null) return;
+    const stored = localStorage.getItem(CURRENCY_STORAGE_KEY);
+    if (stored === 'INR' || stored === 'USD') {
+      setSelectedCurrency(stored);
+      return;
+    }
+    if (pricingRegion?.currency) {
+      setSelectedCurrency(pricingRegion.currency);
+    }
+  }, [pricingRegion, selectedCurrency]);
+
+  const handleCurrencyChange = (currency: PaymentCurrency) => {
+    setSelectedCurrency(currency);
+    localStorage.setItem(CURRENCY_STORAGE_KEY, currency);
+  };
+
   const [createOrder] = useCreateOrderMutation();
+  const [createLemonCheckout] = useCreateLemonCheckoutMutation();
   const [verifyPayment] = useVerifyPaymentMutation();
   const [paymentFailed] = usePaymentFailedMutation();
   const [getProfile] = useLazyGetProfileQuery();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') !== 'success') return;
+
+    let cancelled = false;
+
+    const run = async () => {
+      toast.success('Payment received! Activating your plan…');
+
+      // Lemon Squeezy webhook can take a few seconds.
+      // Poll until the backend updates the user plan, then route to generate.
+      for (let i = 0; i < 6; i++) {
+        if (cancelled) return;
+        try {
+          const profileRes = await getProfile().unwrap();
+          const nextPlan = profileRes?.user?.plan;
+          if (profileRes?.success && profileRes?.user && nextPlan && nextPlan !== 'free') {
+            dispatch(updateUser(profileRes.user));
+            break;
+          }
+        } catch {
+          // ignore and retry
+        }
+
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+
+      window.history.replaceState({}, '', '/pricing');
+      navigate.push('/generate');
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, getProfile, navigate]);
+
+  const refreshProfileAfterPayment = async () => {
+    try {
+      const profileRes = await getProfile().unwrap();
+      if (profileRes.success && profileRes.user) {
+        dispatch(updateUser({ ...profileRes.user, isVerified: profileRes.user.isVerified }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch updated profile:', err);
+    }
+  };
+
+  const handleRazorpayPurchase = async (planKey: string, billingCycle: 'monthly' | 'annual') => {
+    const isLoaded = await loadRazorpay();
+    if (!isLoaded) {
+      toast.error('Razorpay SDK failed to load. Are you offline?');
+      return;
+    }
+
+    const order = await createOrder({ plan: planKey, billingCycle, currency: 'INR' }).unwrap();
+
+    const options = {
+      key: order.keyId,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'ReviewQR',
+      description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan - ${billingCycle}`,
+      order_id: order.razorpayOrderId,
+      handler: async function (response: any) {
+        try {
+          const verifyRes = await verifyPayment({
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          }).unwrap();
+
+          if (verifyRes.success) {
+            await refreshProfileAfterPayment();
+            toast.success('Payment successful! Plan activated.');
+            navigate.push('/generate');
+          } else {
+            toast.error(verifyRes.message || 'Payment verification failed.');
+          }
+        } catch (err: any) {
+          toast.error(err.data?.message || err.message || 'Payment verification failed.');
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          toast.error('Payment cancelled.');
+          paymentFailed({ razorpayOrderId: order.razorpayOrderId });
+        },
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+      },
+      theme: {
+        color: '#1D9E75',
+      },
+    };
+
+    const paymentObject = new (window as any).Razorpay(options);
+    paymentObject.on('payment.failed', function (response: any) {
+      toast.error(response.error.description || 'Payment failed');
+      paymentObject.close();
+      paymentFailed({ razorpayOrderId: order.razorpayOrderId });
+    });
+    paymentObject.open();
+  };
+
+  const handleLemonPurchase = async (planKey: string, billingCycle: 'monthly' | 'annual') => {
+    const checkout = await createLemonCheckout({ plan: planKey, billingCycle, currency: 'USD' }).unwrap();
+    if (!checkout.checkoutUrl) {
+      toast.error('Could not start checkout. Please try again.');
+      return;
+    }
+    window.location.href = checkout.checkoutUrl;
+  };
 
   const handlePurchase = async (planKey: string) => {
     if (!user) {
@@ -33,195 +359,25 @@ const PricingPage = () => {
       return;
     }
 
+    if (isUsd && pricingRegion && !pricingRegion.lemonSqueezyEnabled) {
+      toast.error('USD payments are not available yet. Please pay in INR or contact support.');
+      return;
+    }
+
     setLoadingPlan(planKey);
     try {
-      const isLoaded = await loadRazorpay();
-      if (!isLoaded) {
-        toast.error("Razorpay SDK failed to load. Are you offline?");
-        return;
-      }
-
-      // Create Order
       const billingCycle = isAnnual ? 'annual' : 'monthly';
-      const order = await createOrder({ plan: planKey, billingCycle }).unwrap();
-
-      const options = {
-        key: order.keyId,
-        amount: order.amount,
-        currency: order.currency,
-        name: "ReviewQR",
-        description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan - ${billingCycle}`,
-        order_id: order.razorpayOrderId,
-        handler: async function (response: any) {
-          try {
-            const verifyRes = await verifyPayment({
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            }).unwrap();
-
-            if (verifyRes.success) {
-              try {
-                const profileRes = await getProfile().unwrap();
-                if (profileRes.success && profileRes.user) {
-                  dispatch(updateUser({ ...profileRes.user, isVerified: profileRes.user.isVerified }));
-                }
-              } catch (err) {
-                console.error("Failed to fetch updated profile:", err);
-              }
-              toast.success("Payment successful! Plan activated.");
-              navigate.push('/generate');
-            } else {
-              toast.error(verifyRes.message || "Payment verification failed.");
-            }
-          } catch (err: any) {
-            toast.error(err.data?.message || err.message || "Payment verification failed.");
-          }
-        },
-        modal: {
-          ondismiss: function () {
-            toast.error("Payment cancelled.");
-            paymentFailed({ razorpayOrderId: order.razorpayOrderId });
-          }
-        },
-        prefill: {
-          name: user.name,
-          email: user.email,
-        },
-        theme: {
-          color: "#1D9E75",
-        },
-      };
-
-      const paymentObject = new (window as any).Razorpay(options);
-      paymentObject.on("payment.failed", function (response: any) {
-        toast.error(response.error.description || "Payment failed");
-        paymentObject.close();
-        paymentFailed({ razorpayOrderId: order.razorpayOrderId });
-      });
-      paymentObject.open();
-
+      if (isUsd) {
+        await handleLemonPurchase(planKey, billingCycle);
+      } else {
+        await handleRazorpayPurchase(planKey, billingCycle);
+      }
     } catch (err: any) {
-      toast.error(err.data?.message || err.message || "An error occurred while creating your order.");
+      toast.error(err.data?.message || err.message || 'An error occurred while creating your order.');
     } finally {
       setLoadingPlan(null);
     }
   };
-
-  const plans = [
-    {
-      name: 'Free',
-      monthlyPrice: '₹0',
-      description: 'Try ReviewQR with zero commitment',
-      qrLimit: '1',
-      features: [
-        'Basic QR code (square dots, green only)',
-        'Watermarked standee',
-        'PNG download only',
-        'Copy review link',
-        'WhatsApp share',
-        'Community support',
-      ],
-      lockedFeatures: [
-        'Custom logo & colors',
-        'Standee templates',
-        'SVG / PDF download',
-        'Analytics',
-        'White label',
-      ],
-      popular: false,
-      isFree: true,
-      ctaText: 'Get Started Free',
-      ctaLink: '/generate',
-    },
-    {
-      name: 'Starter',
-      monthlyPrice: '₹299',
-      annualMonthly: '₹209',
-      annualPrice: '2,513',
-      description: 'Clean standees for small businesses',
-      qrLimit: '3',
-      features: [
-        '3 QR codes',
-        'No watermark',
-        'Branded Landing Page for customers',
-        'AI review suggestions ✨',
-        'Business name, rating & address on standee',
-        'PNG, SVG & PDF Standee downloads',
-        'WhatsApp share',
-        'Email support',
-      ],
-      lockedFeatures: [
-        'Custom logo & QR colors',
-        'Dot shape customisation',
-        'Standee templates (Luxury, Bold, Festive)',
-        'Social proof badge',
-        'Multi-language standee',
-        'White label',
-      ],
-      popular: false,
-      isFree: false,
-      ctaText: 'Get Starter',
-      ctaLink: '/generate',
-    },
-    {
-      name: 'Pro',
-      monthlyPrice: '₹699',
-      annualMonthly: '₹489',
-      annualPrice: '5,873',
-      description: 'Full customisation for growing businesses',
-      qrLimit: '10',
-      features: [
-        '10 QR codes',
-        'No watermark',
-        'Branded Landing Page for customers',
-        'AI review suggestions ✨',
-        'Custom logo in QR centre',
-        'Custom QR color & dot shape',
-        'All standee templates (Minimal, Luxury, Bold, Festive)',
-        'Custom standee background color',
-        'Social proof badge ("500+ happy customers")',
-        'Multi-language standee (EN, हिन्दी, मराठी, தமிழ், తెలుగు)',
-        'PNG, SVG & PDF Standee downloads',
-        'Analytics dashboard',
-        'Priority email support',
-      ],
-      lockedFeatures: [
-        'White-label branding',
-        'Client dashboard',
-        'Bulk QR generation',
-        'API & Webhooks',
-      ],
-      popular: true,
-      isFree: false,
-      ctaText: 'Get Pro',
-      ctaLink: '/generate',
-    },
-    {
-      name: 'Agency',
-      monthlyPrice: '₹1,499',
-      annualMonthly: '₹1,049',
-      annualPrice: '12,593',
-      description: 'For agencies managing multiple clients',
-      qrLimit: 'Unlimited',
-      features: [
-        'Unlimited QR codes',
-        'Everything in Pro',
-        'White-label ("Powered by Your Brand")',
-        'Client name on standee footer',
-        'Client dashboard (read-only access)',
-        // 'Bulk QR generation via CSV',
-        'Analytics dashboard',
-        // 'Webhook & API access',
-        'Phone + WhatsApp support',
-      ],
-      lockedFeatures: [],
-      popular: false,
-      isFree: false,
-      ctaText: 'Get Agency',
-      ctaLink: '/contact',
-    },
-  ];
 
   // ── Feature comparison table rows ──────────────────────────────────
   const comparisonRows: {
@@ -298,9 +454,45 @@ const PricingPage = () => {
           <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mb-4">
             Choose Your Plan
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
             Start free and upgrade as you grow. No hidden fees, no surprises.
           </p>
+
+          {/* Currency switcher */}
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Pay in
+            </span>
+            <div className="inline-flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => handleCurrencyChange('INR')}
+                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                  !isUsd ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                ₹ INR
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCurrencyChange('USD')}
+                disabled={pricingRegion !== undefined && !pricingRegion.lemonSqueezyEnabled}
+                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                  isUsd ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
+              >
+                $ USD
+              </button>
+            </div>
+            {pricingRegion && (
+              <p className="text-xs text-gray-400 max-w-md">
+                {currencyOverridden
+                  ? `Showing ${effectiveCurrency} prices (your choice)`
+                  : `Suggested for your region${pricingRegion.country !== 'unknown' ? ` (${pricingRegion.country})` : ''}`}
+                {isUsd ? ' · Card checkout via Lemon Squeezy' : ' · UPI & cards via Razorpay'}
+              </p>
+            )}
+          </div>
 
           {/* Billing toggle */}
           <div className="inline-flex items-center gap-3 bg-gray-100 p-1 rounded-xl">

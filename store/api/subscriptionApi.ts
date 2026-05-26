@@ -3,18 +3,42 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "../baseQueryWithReauth";
 
+export type PaymentRegion = "india" | "international";
+export type PaymentCurrency = "INR" | "USD";
+
+export interface PricingRegionResponse {
+  region: PaymentRegion;
+  currency: PaymentCurrency;
+  country: string;
+  lemonSqueezyEnabled: boolean;
+}
+
 export interface CreateOrderRequest {
   plan: string;
   billingCycle: "monthly" | "annual";
+  /** User-selected currency; overrides geo-based routing on the backend. */
+  currency?: PaymentCurrency;
 }
 
-export interface CreateOrderResponse {
+export interface RazorpayOrderResponse {
+  provider: "razorpay";
   razorpayOrderId: string;
   amount: number;
   currency: string;
   keyId: string;
   resumed?: boolean;
 }
+
+export interface LemonCheckoutResponse {
+  provider: "lemon_squeezy";
+  checkoutId: string;
+  checkoutUrl: string;
+  amount: number;
+  currency: string;
+  resumed?: boolean;
+}
+
+export type CreateOrderResponse = RazorpayOrderResponse | LemonCheckoutResponse;
 
 export interface VerifyPaymentRequest {
   razorpayOrderId: string;
@@ -29,7 +53,8 @@ export interface VerifyPaymentResponse {
 }
 
 export interface PaymentFailedRequest {
-  razorpayOrderId: string;
+  razorpayOrderId?: string;
+  lemonSqueezyCheckoutId?: string;
 }
 
 export interface PaymentFailedResponse {
@@ -40,9 +65,19 @@ export const subscriptionApi = createApi({
   reducerPath: "subscriptionApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    createOrder: builder.mutation<CreateOrderResponse, CreateOrderRequest>({
+    getPricingRegion: builder.query<PricingRegionResponse, void>({
+      query: () => "/subscription/pricing-region",
+    }),
+    createOrder: builder.mutation<RazorpayOrderResponse, CreateOrderRequest>({
       query: (data) => ({
         url: "/subscription/create-order",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    createLemonCheckout: builder.mutation<LemonCheckoutResponse, CreateOrderRequest>({
+      query: (data) => ({
+        url: "/subscription/create-lemon-checkout",
         method: "POST",
         body: data,
       }),
@@ -65,7 +100,9 @@ export const subscriptionApi = createApi({
 });
 
 export const {
+  useGetPricingRegionQuery,
   useCreateOrderMutation,
+  useCreateLemonCheckoutMutation,
   useVerifyPaymentMutation,
   usePaymentFailedMutation,
 } = subscriptionApi;
