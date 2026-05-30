@@ -92,7 +92,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 Start collecting more reviews today with our professional QR standees.
               </p>
               <Link
-                href="/generate"
+                href="/google-review-qr-code-generator"
                 className="block w-full text-center py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all active:scale-95 shadow-md shadow-primary/10"
               >
                 Get Started Free

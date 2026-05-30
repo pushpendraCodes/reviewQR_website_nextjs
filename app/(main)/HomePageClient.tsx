@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Zap, Globe, Smartphone, Users, TrendingUp, Shield, Star, Check, QrCode, MapPin, Download, BarChart2, Palette, FileText } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import TestimonialCard from '@/components/TestimonialCard';
@@ -152,7 +153,7 @@ const HomePageClient = () => {
                             {/* CTAs */}
                             <div className="flex flex-col sm:flex-row gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                                 <Link
-                                    href="/generate"
+                                    href="/google-review-qr-code-generator"
                                     className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-amber-500 hover:bg-amber-600 text-white text-base font-bold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-amber-200 active:scale-95 group"
                                 >
                                     Generate Free QR Code
@@ -209,7 +210,7 @@ const HomePageClient = () => {
                                     <div className="w-3 h-3 rounded-full bg-green-300" />
                                     <div className="flex-1 mx-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
                                         <Shield className="w-3 h-3 text-green-500 flex-shrink-0" />
-                                        <span className="text-xs text-gray-400">getreviewqr.com/generate</span>
+                                        <span className="text-xs text-gray-400">getreviewqr.com/google-review-qr-code-generator</span>
                                     </div>
                                 </div>
 
@@ -305,10 +306,12 @@ const HomePageClient = () => {
                         ].map((item, i) => (
                             <div key={i} className="group">
                                 <div className="relative rounded-2xl overflow-hidden mb-5 aspect-[4/5] bg-gray-100">
-                                    <img
-                                        src={item.img.src}
+                                    <Image
+                                        src={item.img}
                                         alt={item.alt}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
                                     <div className="absolute top-4 left-4">
                                         <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/60">
@@ -479,7 +482,7 @@ const HomePageClient = () => {
                             Join 500+ businesses already using ReviewQR. Free to start. Takes less than a minute.
                         </p>
                         <Link
-                            href="/generate"
+                            href="/google-review-qr-code-generator"
                             className="inline-flex items-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white text-base font-bold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-amber-200 active:scale-95 group"
                         >
                             Generate My Free QR Code

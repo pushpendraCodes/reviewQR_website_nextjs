@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import Link from 'next/link';;
+import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { Star, ArrowLeft, ExternalLink } from 'lucide-react';
 
@@ -20,7 +20,6 @@ const SharePage = () => {
   if (!business) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-        
         <div className="text-center">
           <div className="text-6xl mb-4">🔍</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Business Not Found</h1>
@@ -28,7 +27,7 @@ const SharePage = () => {
             The business you're looking for doesn't exist or the link may be incorrect.
           </p>
           <Link
-            href="/generate"
+            href="/google-review-qr-code-generator"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -42,7 +41,6 @@ const SharePage = () => {
   const reviewURL = generateReviewURL(business.placeId);
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-light/30 via-white to-secondary-light/20 flex items-center justify-center px-4 py-12">
-      
       <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 sm:p-12 max-w-md w-full text-center">
         {/* Google Logo Hint */}
         <div className="flex items-center justify-center gap-1 mb-6">

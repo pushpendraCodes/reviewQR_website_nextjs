@@ -15,13 +15,13 @@ export const blogPosts: BlogPost[] = [
   {
     id: '1',
     slug: 'how-to-get-more-google-reviews',
-    title: 'How to Get More Google Reviews: The Ultimate Guide for Local Businesses',
-    description: 'Discover proven strategies to boost your Google Review count and improve your local search ranking.',
+    title: 'How to Get Google Reviews: The Ultimate Guide for Local Businesses',
+    description: 'Discover proven strategies on how to get google reviews to boost your business rating and rank higher on Google Maps.',
     date: 'May 5, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=800',
     category: 'Marketing',
-    keywords: 'get more google reviews, increase google ratings, local business marketing',
+    keywords: 'how to get google reviews, get google reviews, how to get reviews on google, how to get a google review, get reviews google, how to get reviews on google',
     content: `
       <p>Google reviews are one of the most powerful tools for local businesses to build trust and attract new customers. But how do you consistently get more reviews without being pushy? This guide explores the best strategies.</p>
       
@@ -42,12 +42,12 @@ export const blogPosts: BlogPost[] = [
     id: '2',
     slug: 'how-to-create-google-review-qr-code',
     title: 'How to Create a Google Review QR Code (Step by Step)',
-    description: 'Learn how to generate a custom QR code that links directly to your Google Business Profile review page.',
+    description: 'Learn how to create a qr code for google reviews step by step to connect customers directly with your Google Business review page.',
     date: 'May 6, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800',
     category: 'Tutorial',
-    keywords: 'create google review qr code, qr code generator for reviews, step by step qr code',
+    keywords: 'create qr code for google review, generate qr code for google review, how to create a qr code for google reviews, qr code generator for reviews',
     content: `
       <p>A Google Review QR code is a bridge between your physical location and your digital reputation. Here is how you can create one in minutes using ReviewQR.</p>
       

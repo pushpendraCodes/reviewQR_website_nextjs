@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import GeneratePage from '@/app/(main)/generate/page';
+import GeneratePage from '@/app/(main)/google-review-qr-code-generator/page';
 
 const DashboardGeneratePage: React.FC = () => {
     return (

@@ -52,7 +52,7 @@ export function buildPageMetadata({
       description,
       url: canonical,
       siteName: SITE_NAME,
-      locale: 'en_IN',
+      locale: 'en_US',
       type: ogType,
       images: [
         {
@@ -108,7 +108,7 @@ export const rootMetadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_IN',
+    locale: 'en_US',
     url: `${SITE_URL}/`,
     siteName: SITE_NAME,
     title: `${SITE_TAGLINE} | ${SITE_NAME}`,

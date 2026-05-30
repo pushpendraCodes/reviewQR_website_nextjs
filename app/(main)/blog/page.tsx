@@ -49,7 +49,7 @@ const BlogListPage = () => {
                 Join 500+ businesses using ReviewQR to grow their digital reputation instantly.
               </p>
               <a
-                href="/generate"
+                href="/google-review-qr-code-generator"
                 className="inline-flex items-center px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all active:scale-95 shadow-lg shadow-primary/20"
               >
                 Create Your Free QR Code

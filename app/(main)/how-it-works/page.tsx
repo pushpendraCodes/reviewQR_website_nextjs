@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';;
-import { ArrowRight, ChevronDown, Play, QrCode, Printer, Star, MessageSquare } from 'lucide-react';
+import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 
 import { FAQ_DATA } from '@/utils/mockData';
@@ -93,29 +93,27 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== VIDEO PLACEHOLDER ==================== */}
+      {/* ==================== VIDEO ==================== */}
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Watch & Learn</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Watch &amp; Learn</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-4">
               See It in Action
             </h2>
-          </div>
-          <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl aspect-video flex items-center justify-center overflow-hidden group cursor-pointer">
-            {/* Play Button */}
-            <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Play className="w-8 h-8 text-white ml-1" />
-            </div>
-            <p className="absolute bottom-6 text-white/50 text-sm">
-              Video tutorial coming soon
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Watch how to generate your Google Review QR code in under 60 seconds.
             </p>
-            {/* Decorative elements */}
-            <div className="absolute top-6 left-6 flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-400/60" />
-              <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
-              <div className="w-3 h-3 rounded-full bg-green-400/60" />
-            </div>
+          </div>
+          <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ padding: '46.98% 0 0 0', position: 'relative' }}>
+            <iframe
+              src="https://player.vimeo.com/video/1196897057?badge=0&autopause=0&player_id=0&app_id=58479"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              title="How ReviewQR Works – Generate a Google Review QR Code"
+            />
           </div>
         </div>
       </section>
@@ -169,7 +167,7 @@ const HowItWorksPage = () => {
             Generate your first Google Review QR code in under 60 seconds. Completely free.
           </p>
           <Link
-            href="/generate"
+            href="/google-review-qr-code-generator"
             className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white text-lg font-bold rounded-xl hover:bg-primary-dark transition-all duration-200 hover:shadow-xl hover:shadow-primary/30 active:scale-95 group"
           >
             Generate My QR Code

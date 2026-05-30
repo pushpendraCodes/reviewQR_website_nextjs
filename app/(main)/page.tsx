@@ -13,19 +13,21 @@ import HomePageClient from './HomePageClient';
 export const metadata: Metadata = buildPageMetadata({
   title: `${SITE_TAGLINE} — Get More Google Reviews Instantly`,
   description:
-    'Generate a free Google review QR code in seconds. Instantly direct customers to your Google review page — no app needed. Perfect for restaurants, salons, shops, clinics & local businesses in India.',
+    'Generate a free Google review QR code in seconds. Instantly direct customers to your Google review page — no app needed. Perfect for restaurants, salons, clinics, shops & local businesses worldwide (including USA, UK, Canada, Australia & India).',
   path: '/',
   keywords: [
     'google review qr code generator',
     'free google review qr code',
     'qr code for google reviews',
     'get more google reviews',
+    'how to get google reviews',
+    'create qr code for google review',
+    'how to create a qr code for google reviews',
     'google review standee',
     'google business review link',
     'google maps review qr code',
     'increase google reviews',
     'local seo reviews',
-    'review qr code india',
   ],
 });
 

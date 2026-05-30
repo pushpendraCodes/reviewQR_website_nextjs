@@ -14,7 +14,7 @@ const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
 
     const handleAction = () => {
         // Both buttons navigate to the edit page
-        navigate.push(`/dashboard/edit-qr/${standee.id}`);
+        navigate.push(`/dashboard/generate/${standee.id}`);
     };
 
     const formattedDate = new Date(standee.createdAt).toLocaleDateString('en-GB', {
@@ -52,7 +52,7 @@ const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
                 </div>
                 <div>
                     <p className="text-lg font-bold text-gray-800">
-                        {standee.totalReviews > 0 && standee.scanCount > 0 
+                        {standee.totalReviews > 0 && standee.scanCount > 0
                             ? `${Math.round((standee.totalReviews / standee.scanCount) * 100)}%`
                             : "—"}
                     </p>
@@ -66,14 +66,14 @@ const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
 
             {/* Actions */}
             <div className="flex gap-2">
-                <button 
+                <button
                     onClick={handleAction}
                     className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 rounded-lg py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                     <Pencil size={12} />
                     Customize
                 </button>
-                <button 
+                <button
                     onClick={handleAction}
                     className="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium text-white bg-[#1A6B45] hover:bg-[#165a3a] transition-colors"
                 >
@@ -85,4 +85,4 @@ const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
     );
 };
 
-export default QRStandeeCard;
+export default QRStandeeCard;

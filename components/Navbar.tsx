@@ -24,7 +24,7 @@ const Navbar = () => {
 
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/generate', label: 'Generate QR' },
+    { path: '/google-review-qr-code-generator', label: 'Generate QR' },
     { path: '/how-it-works', label: 'How It Works' },
     { path: '/pricing', label: 'Pricing' },
     { path: '/blog', label: 'Blog' },
@@ -103,7 +103,7 @@ const Navbar = () => {
             {/* Right side */}
             <div className="hidden md:flex items-center gap-3 flex-shrink-0">
               <Link
-                href="/generate"
+                href="/google-review-qr-code-generator"
                 className="px-5 py-2 bg-primary text-white text-sm font-semibold rounded-full hover:bg-primary-dark transition-all duration-200 hover:shadow-lg hover:shadow-primary/25 active:scale-95"
               >
                 Get Free QR
@@ -223,7 +223,7 @@ const Navbar = () => {
                   </Link>
                 ))}
                 <Link
-                  href="/generate"
+                  href="/google-review-qr-code-generator"
                   onClick={() => setIsOpen(false)}
                   className="mt-2 px-4 py-3 bg-primary text-white text-sm font-semibold rounded-xl text-center hover:bg-primary-dark transition-all"
                 >

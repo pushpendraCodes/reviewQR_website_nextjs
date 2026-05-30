@@ -32,7 +32,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {[
                 { to: '/', label: 'Home' },
-                { to: '/generate', label: 'Generate QR Code' },
+                { to: '/google-review-qr-code-generator', label: 'Generate QR Code' },
                 { to: '/how-it-works', label: 'How It Works' },
                 { to: '/pricing', label: 'Pricing' },
                 { to: '/blog', label: 'Blog' },

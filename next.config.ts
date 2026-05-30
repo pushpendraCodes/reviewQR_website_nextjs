@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: '/generate',
+        destination: '/google-review-qr-code-generator',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

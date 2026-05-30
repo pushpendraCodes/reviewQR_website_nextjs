@@ -45,7 +45,7 @@ const INR_PLANS = [
     popular: false,
     isFree: true,
     ctaText: 'Get Started Free',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Starter',
@@ -75,7 +75,7 @@ const INR_PLANS = [
     popular: false,
     isFree: false,
     ctaText: 'Get Starter',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Pro',
@@ -108,7 +108,7 @@ const INR_PLANS = [
     popular: true,
     isFree: false,
     ctaText: 'Get Pro',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Agency',
@@ -145,7 +145,7 @@ const USD_PLANS = [
     popular: false,
     isFree: true,
     ctaText: 'Get Started Free',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Starter',
@@ -159,7 +159,7 @@ const USD_PLANS = [
     popular: false,
     isFree: false,
     ctaText: 'Get Starter',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Pro',
@@ -173,7 +173,7 @@ const USD_PLANS = [
     popular: true,
     isFree: false,
     ctaText: 'Get Pro',
-    ctaLink: '/generate',
+    ctaLink: '/google-review-qr-code-generator',
   },
   {
     name: 'Agency',
@@ -264,7 +264,7 @@ const PricingPage = () => {
       }
 
       window.history.replaceState({}, '', '/pricing');
-      navigate.push('/generate');
+      navigate.push('/google-review-qr-code-generator');
     };
 
     run();
@@ -311,7 +311,7 @@ const PricingPage = () => {
           if (verifyRes.success) {
             await refreshProfileAfterPayment();
             toast.success('Payment successful! Plan activated.');
-            navigate.push('/generate');
+            navigate.push('/google-review-qr-code-generator');
           } else {
             toast.error(verifyRes.message || 'Payment verification failed.');
           }
@@ -617,7 +617,7 @@ const PricingPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/generate"
+                href="/google-review-qr-code-generator"
                 className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-dark transition-all duration-200 active:scale-95 flex items-center gap-2 group"
               >
                 Try Free Now

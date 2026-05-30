@@ -62,7 +62,7 @@ const StandeesPage: React.FC = () => {
                         <p className="text-gray-400 text-sm mt-0.5">Manage and download your live QR code standees</p>
                     </div>
                     <button
-                        onClick={() => navigate.push("/generate")}
+                        onClick={() => navigate.push("/google-review-qr-code-generator")}
                         className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#1A6B45] text-white text-sm font-medium rounded-lg hover:bg-[#165a3a] transition-colors shadow-sm shrink-0"
                     >
                         <Plus size={15} />

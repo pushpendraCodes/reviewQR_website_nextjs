@@ -44,8 +44,13 @@ export function webApplicationSchema() {
     offers: {
       '@type': 'Offer',
       price: '0',
-      priceCurrency: 'INR',
+      priceCurrency: 'USD',
       description: 'Free Google Review QR code generation',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '512',
     },
     description:
       'Create a Google Review QR code that links directly to your Google Business Profile review page. Download PNG or print-ready standee PDF.',
