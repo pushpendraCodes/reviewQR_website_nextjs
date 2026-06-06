@@ -21,7 +21,7 @@ export type PageMetadataOptions = {
 
 /** Build absolute page URL */
 export function pageUrl(path = ''): string {
-  if (!path || path === '/') return `${SITE_URL}/`;
+  if (!path || path === '/') return SITE_URL;
   const clean = path.startsWith('/') ? path : `/${path}`;
   return `${SITE_URL}${clean}`;
 }
@@ -104,12 +104,12 @@ export const rootMetadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: `${SITE_URL}/`,
+    canonical: SITE_URL,
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: `${SITE_URL}/`,
+    url: SITE_URL,
     siteName: SITE_NAME,
     title: `${SITE_TAGLINE} | ${SITE_NAME}`,
     description: SITE_DESCRIPTION,

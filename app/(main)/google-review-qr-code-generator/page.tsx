@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import {
   Info, Loader2, Download, Share2, Copy,
   FileImage, FileType, Check, Lock, MapPin,
+  X, ArrowRight,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';;
+import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 import BusinessSearchBar from '@/components/BusinessSearchBar';
+import { useAppSelector } from '@/store/hooks';
 import BusinessResultCard from '@/components/BusinessResultCard';
 import QRErrorOverlay from '@/components/QRErrorOverlay';
 import UpsellBanner from '@/components/UpsellBanner';
@@ -23,8 +25,9 @@ import { useStandeeDownload } from '@/hooks/useStandeeDownload';
 import toast from 'react-hot-toast';
 import { useGenerateQRMutation, useGetQRCodeQuery } from '@/store/api/qrApi';
 
-const GeneratePage = () => {
+const GeneratePageContent = () => {
   const { plan, hasAccess, planExpiredNotifSent } = usePlan();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
 
@@ -66,10 +69,11 @@ const GeneratePage = () => {
     };
   }, []);
 
+  const searchParams = useSearchParams();
   const {
     query, setQuery, results, isLoading, isError,
     hasSearched, selectedCategory, setSelectedCategory, searchNow,
-  } = useBusinessSearch();
+  } = useBusinessSearch({ initialQuery: searchParams.get('q') || undefined });
 
 
   const { data: existingData, isLoading: isDetailLoading } = useGetQRCodeQuery(id || '', { skip: !id });
@@ -92,6 +96,39 @@ const GeneratePage = () => {
   const [_language, setLanguage] = useState<StandeeLanguage>('en');
 
   const [initialized, setInitialized] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingDownloadLabel, setPendingDownloadLabel] = useState<string | null>(null);
+
+  // ── Restore pending design after login ──
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const pendingStr = sessionStorage.getItem('pending_qr_design');
+    if (pendingStr) {
+      try {
+        const pending = JSON.parse(pendingStr);
+        if (pending.selectedBusiness) {
+          setSelectedBusiness(pending.selectedBusiness);
+          if (pending.reviewURL) setReviewURL(pending.reviewURL);
+          if (pending.shortURL) setShortURL(pending.shortURL);
+
+          if (pending.customizer) {
+            if (pending.customizer.logo !== undefined) setLogo(pending.customizer.logo);
+            if (pending.customizer.qrColor !== undefined) setQrColor(pending.customizer.qrColor);
+            if (pending.customizer.whiteLabel !== undefined) setWhiteLabel(pending.customizer.whiteLabel);
+            if (pending.customizer.qrShape !== undefined) setQrShape(pending.customizer.qrShape);
+            if (pending.customizer.template !== undefined) setTemplate(pending.customizer.template);
+            if (pending.customizer.standeeBgColor !== undefined) setStandeeBgColor(pending.customizer.standeeBgColor);
+            if (pending.customizer.socialProof !== undefined) setSocialProof(pending.customizer.socialProof);
+            if (pending.customizer.language !== undefined) setLanguage(pending.customizer.language);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse pending QR design', e);
+      } finally {
+        sessionStorage.removeItem('pending_qr_design');
+      }
+    }
+  }, [setSelectedBusiness, setReviewURL, setShortURL]);
 
   // ── Sync existing data if editing ──────────────────────────────────
   useEffect(() => {
@@ -154,6 +191,28 @@ const GeneratePage = () => {
     label: string,
   ) => {
     if (!selectedBusiness) return;
+
+    if (!isAuthenticated) {
+      const design = {
+        selectedBusiness,
+        reviewURL,
+        shortURL,
+        customizer: {
+          logo: _logo,
+          qrColor: _qrColor,
+          whiteLabel: _whiteLabel,
+          qrShape: _qrShape,
+          template: _template,
+          standeeBgColor: _standeeBgColor,
+          socialProof: _socialProof,
+          language: _language,
+        }
+      };
+      sessionStorage.setItem('pending_qr_design', JSON.stringify(design));
+      setPendingDownloadLabel(label);
+      setShowAuthModal(true);
+      return;
+    }
 
     const format = label.toLowerCase().startsWith('pdf')
       ? 'pdf'
@@ -220,7 +279,7 @@ const GeneratePage = () => {
     requiredPlan: 'free' | 'starter' | 'pro' | 'agency';
     onClick?: () => void;
   }) => {
-    const allowed = hasAccess(requiredPlan);
+    const allowed = !isAuthenticated || hasAccess(requiredPlan);
     return (
       <button
         onClick={allowed ? onClick : undefined}
@@ -588,7 +647,7 @@ const GeneratePage = () => {
                         { label: 'SVG', fn: downloadSVG, fmt: 'svg' as const, plan: 'starter' as const },
                         { label: 'PDF', fn: downloadPDF, fmt: 'pdf' as const, plan: 'starter' as const },
                       ].map(({ label, fn, fmt, plan: req }) => {
-                        const allowed = hasAccess(req);
+                        const allowed = !isAuthenticated || hasAccess(req);
                         const busy = downloading === fmt;
                         return (
                           <button
@@ -622,7 +681,70 @@ const GeneratePage = () => {
           </div>
         )}
       </div>
+
+      {/* Auth Modal for Gating Download */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-8 animate-scale-up">
+            {/* Close button */}
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Header icon */}
+            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+              <Lock className="w-7 h-7 text-primary" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              Save &amp; Download Your QR Code
+            </h3>
+            <p className="text-gray-500 text-sm leading-relaxed mb-6">
+              To download your custom <span className="font-semibold text-gray-700">{pendingDownloadLabel || 'QR Code'}</span>, please create a free account. Your customization settings will be saved automatically!
+            </p>
+
+            {/* Action buttons */}
+            <div className="space-y-3">
+              <Link
+                href={`/auth/signup?redirect=/google-review-qr-code-generator`}
+                className="w-full flex items-center justify-center gap-2 py-3.5 bg-primary hover:bg-primary-dark text-white font-semibold rounded-2xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 active:scale-95 text-sm"
+              >
+                Create Free Account
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href={`/auth/login?redirect=/google-review-qr-code-generator`}
+                className="w-full flex items-center justify-center py-3.5 border border-gray-200 hover:border-gray-300 text-gray-700 font-semibold rounded-2xl hover:bg-gray-50 transition-all duration-200 active:scale-95 text-sm"
+              >
+                Sign In
+              </Link>
+            </div>
+
+            <p className="text-center text-xs text-gray-400 mt-5">
+              No credit card required. Free plan includes custom QR downloads.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
+  );
+};
+
+const GeneratePage = () => {
+  return (
+    <Suspense 
+      fallback={
+        <div className="min-h-screen bg-surface flex items-center justify-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        </div>
+      }
+    >
+      <GeneratePageContent />
+    </Suspense>
   );
 };
 

@@ -81,7 +81,8 @@ export function blogPostingSchema(post: (typeof blogPosts)[number]) {
     headline: post.title,
     description: post.description,
     image: post.image.startsWith('http') ? post.image : `${SITE_URL}${post.image}`,
-    datePublished: post.date,
+    datePublished: new Date(post.date).toISOString().split('T')[0],
+    dateModified: new Date(post.date).toISOString().split('T')[0],
     author: {
       '@type': 'Organization',
       name: SITE_NAME,

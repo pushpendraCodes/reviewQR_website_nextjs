@@ -33,9 +33,10 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      router.push("/"); // ✅ router.push instead of navigate.push
+      const redirectUrl = searchParams.get("redirect") || "/";
+      router.push(redirectUrl);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, searchParams]);
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -56,7 +57,8 @@ const LoginPage: React.FC = () => {
           })
         );
         toast.success("Welcome back! 🎉");
-        router.push("/"); // ✅ router.push instead of navigate.push
+        const redirectUrl = searchParams.get("redirect") || "/";
+        router.push(redirectUrl);
       }
     } catch (err: unknown) {
       const error = err as { data?: { message?: string }; status?: number };
@@ -164,7 +166,7 @@ const LoginPage: React.FC = () => {
           <p className="text-gray-500 text-sm">
             Don't have an account?{" "}
             <Link
-              href="/auth/signup"
+              href={`/auth/signup${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ''}`}
               className="text-violet-600 hover:text-violet-700 font-semibold transition-colors"
             >
               Create one free →

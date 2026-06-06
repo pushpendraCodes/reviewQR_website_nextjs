@@ -6,9 +6,11 @@ import { ArrowRight, Zap, Globe, Smartphone, Users, TrendingUp, Shield, Star, Ch
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import TestimonialCard from '@/components/TestimonialCard';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import FaqSection from '@/components/FaqSection';
 import { TESTIMONIALS } from '@/utils/mockData';
 import { useOAuthCallback } from '@/hooks/useOAuthCallback';
+import BusinessSearchBar from '@/components/BusinessSearchBar';
 
 // Real-world visuals
 import standeeCafe from '@/assets/standee-cafe.jpg';
@@ -94,6 +96,15 @@ const AnimatedStats = () => {
    Main Component
 ───────────────────────────────────────────── */
 const HomePageClient = () => {
+    const router = useRouter();
+    const [query, setQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
+    const handleSearch = () => {
+        if (!query.trim()) return;
+        router.push(`/google-review-qr-code-generator?q=${encodeURIComponent(query)}`);
+    };
+
     const OAuthHandler = () => {
         const { isProcessing } = useOAuthCallback();
         if (isProcessing) {
@@ -116,9 +127,30 @@ const HomePageClient = () => {
             </Suspense>
 
             {/* ══════════════════════════════════════════
+                SEARCH SECTION
+            ══════════════════════════════════════════ */}
+            <section id="search-section" className="pt-12 pb-8 lg:pt-16 lg:pb-12 bg-white relative z-20">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-6 tracking-tight">
+                        Find your business to get started
+                    </h2>
+                    <div className="bg-white p-2 sm:p-3 rounded-2xl sm:rounded-3xl shadow-xl shadow-amber-500/10 border border-gray-100">
+                        <BusinessSearchBar 
+                            query={query}
+                            setQuery={setQuery}
+                            isLoading={false}
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
+                            onSearch={handleSearch}
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════════════════════════════════════
                 HERO
             ══════════════════════════════════════════ */}
-            <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-36 bg-white overflow-hidden">
+            <section className="relative pb-24 lg:pb-36 bg-white overflow-hidden">
                 {/* Subtle warm mesh background */}
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-50 rounded-full blur-3xl opacity-60 translate-x-1/3 -translate-y-1/4" />
@@ -150,21 +182,14 @@ const HomePageClient = () => {
                                 Generate a print-ready Google review QR code in 60 seconds. Place a standee at your counter — customers scan and leave 5-star reviews instantly.
                             </p>
 
-                            {/* CTAs */}
-                            <div className="flex flex-col sm:flex-row gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                                <Link
-                                    href="/google-review-qr-code-generator"
-                                    className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-amber-500 hover:bg-amber-600 text-white text-base font-bold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-amber-200 active:scale-95 group"
+                            {/* CTA */}
+                            <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                                <button 
+                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+                                    className="w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all duration-200 shadow-lg shadow-primary/20 text-center flex items-center justify-center gap-2"
                                 >
-                                    Generate Free QR Code
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                                <Link
-                                    href="/how-it-works"
-                                    className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white border-2 border-gray-200 hover:border-amber-300 text-gray-700 hover:text-amber-600 text-base font-semibold rounded-xl transition-all duration-200 active:scale-95"
-                                >
-                                    See How It Works
-                                </Link>
+                                    Search Your Business
+                                </button>
                             </div>
 
                             {/* Social proof row */}

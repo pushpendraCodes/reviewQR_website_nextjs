@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';;
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import {
   Mail,
   Lock,
@@ -33,6 +33,7 @@ const passwordRequirements = [
 ];
 const SignupPage: React.FC = () => {
   const navigate = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [register, { isLoading }] = useRegisterMutation();
   const [showVerify, setShowVerify] = useState(false);
@@ -46,9 +47,10 @@ const SignupPage: React.FC = () => {
   const password = watch("password", "");
   useEffect(() => {
     if (isAuthenticated) {
-      navigate.push("/");
+      const redirectUrl = searchParams.get("redirect") || "/";
+      navigate.push(redirectUrl);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, searchParams]);
   const onSubmit = async (data: SignupFormData) => {
     try {
       const result = await register({
@@ -229,7 +231,7 @@ const SignupPage: React.FC = () => {
           <div className="text-center">
             <p className="text-gray-500 text-sm">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-violet-600 hover:text-violet-700 font-semibold transition-colors">
+              <Link href={`/auth/login${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ''}`} className="text-violet-600 hover:text-violet-700 font-semibold transition-colors">
                 Sign in →
               </Link>
             </p>
@@ -240,7 +242,7 @@ const SignupPage: React.FC = () => {
       {showVerify && (
         <VerifyEmailModal
           email={registeredEmail}
-          onSuccess={() => { setShowVerify(false); navigate.push("/auth/login"); }}
+          onSuccess={() => { setShowVerify(false); navigate.push(`/auth/login${searchParams.get("redirect") ? `?redirect=${encodeURIComponent(searchParams.get("redirect")!)}` : ''}`); }}
           onClose={() => setShowVerify(false)}
         />
       )}

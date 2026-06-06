@@ -52,7 +52,7 @@ export const useOAuthCallback = () => {
             })
           );
           // ✅ Navigate and strip ?token= from URL after success
-          // router.replace("/dashboard");
+          router.replace("/");
         } else {
           throw new Error("Failed to fetch user");
         }
