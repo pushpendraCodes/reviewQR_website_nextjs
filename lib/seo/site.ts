@@ -1,5 +1,5 @@
 /** Canonical site URL — used for metadata, sitemap, and JSON-LD */
-export const SITE_URL = 'https://getreviewqr.com';
+export const SITE_URL = 'https://www.getreviewqr.com';
 
 export const SITE_NAME = 'GetReviewQR';
 export const SITE_TAGLINE = 'Free Google Review QR Code Generator';
@@ -21,4 +21,8 @@ export const PRIMARY_KEYWORDS = [
   'google maps review qr code',
   'increase google reviews',
   'local business reviews',
+  "Get Review QR",
+  "Review Qr",
+  "Review QR Code Generator",
+  "Google Review Link",
 ] as const;
