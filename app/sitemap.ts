@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { blogPosts } from '@/data/blogData';
 import { SITE_URL } from '@/lib/seo/site';
 
-const LAST_MOD = '2026-06-06';
+const LAST_MOD = '2026-06-18';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
