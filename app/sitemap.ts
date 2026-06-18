@@ -13,10 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/blog`, lastModified: LAST_MOD, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITE_URL}/about-us`, lastModified: LAST_MOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${SITE_URL}/contact`, lastModified: LAST_MOD, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${SITE_URL}/privacy-policy`, lastModified: LAST_MOD, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${SITE_URL}/terms-and-conditions`, lastModified: LAST_MOD, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${SITE_URL}/refund-policy`, lastModified: LAST_MOD, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${SITE_URL}/shipping-policy`, lastModified: LAST_MOD, changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
