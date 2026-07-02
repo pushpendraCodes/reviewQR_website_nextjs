@@ -5,7 +5,6 @@ export const metadata: Metadata = buildPageMetadata({
   title: 'Terms and Conditions',
   description: 'Terms and conditions for using GetReviewQR Google Review QR code generator and subscription services.',
   path: '/terms-and-conditions',
-  noIndex: true,
 });
 
 export default function TermsLayout({ children }: { children: React.ReactNode }) {
