@@ -52,6 +52,13 @@ const BusinessSearchBar = ({
         </button>
       </div>
 
+
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-500 mt-3">for example: Sharma Medical Store Rewa mp</span>
+        <span className="text-xs text-gray-500 mt-3"></span>
+      </div>
+
+
       <div className="flex flex-wrap gap-2 mt-4 justify-center">
         {BUSINESS_CATEGORIES.map((category) => (
           <button
