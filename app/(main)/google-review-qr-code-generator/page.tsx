@@ -330,7 +330,7 @@ const GeneratePageContent = () => {
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
             {isEditMode
               ? 'Customize your standee design and re-download in your preferred format.'
-              : 'Search your business, select it, and download your QR code instantly.'}
+              : 'Search your business and download a QR. Paid plans add AI review suggestions so customers finish reviews faster.'}
           </p>
           <div className="mt-4 inline-flex items-center gap-2">
             <span className={`px-3 py-1 text-xs font-bold rounded-full text-white ${plan === 'free' ? 'bg-gray-400' :

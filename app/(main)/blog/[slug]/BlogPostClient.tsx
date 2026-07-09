@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { blogPosts, type BlogPost } from '@/data/blogData';
-import { Calendar, User, ArrowLeft, Share2, Tag } from 'lucide-react';
+import { type BlogPost } from '@/data/blogData';
+import { getRelatedPosts, GENERATOR_PATH } from '@/lib/seo/internal-links';
+import { Calendar, User, ArrowLeft, Share2, Tag, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface BlogPostClientProps {
@@ -10,6 +11,8 @@ interface BlogPostClientProps {
 }
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
+  const related = getRelatedPosts(post.slug, 4);
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied to clipboard!');
@@ -60,6 +63,22 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
+            <div className="mt-12 rounded-2xl border border-primary/20 bg-primary-light/40 p-6 sm:p-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Create your Google Review QR next
+              </h2>
+              <p className="text-sm text-gray-600 mb-5 leading-relaxed">
+                Search your business and download a free review QR — or upgrade for AI suggestions that help customers finish reviews faster.
+              </p>
+              <Link
+                href={GENERATOR_PATH}
+                className="inline-flex items-center gap-2 px-5 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-dark transition-colors"
+              >
+                Open free QR generator
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
             <div className="mt-16 pt-8 border-t border-gray-100 flex flex-wrap items-center justify-between gap-6">
               <div className="flex items-center gap-2">
                 <Tag className="w-4 h-4 text-gray-400" />
@@ -89,10 +108,10 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
             <div className="bg-surface rounded-2xl p-6 border border-gray-100">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Grow Your Business</h2>
               <p className="text-sm text-gray-500 mb-6">
-                Start collecting more reviews today with our professional QR standees.
+                Start collecting more reviews today with our free Google Review QR generator and printable standees.
               </p>
               <Link
-                href="/google-review-qr-code-generator"
+                href={GENERATOR_PATH}
                 className="block w-full text-center py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all active:scale-95 shadow-md shadow-primary/10"
               >
                 Get Started Free
@@ -102,22 +121,26 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
             <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Related Articles</h2>
               <div className="space-y-4">
-                {blogPosts
-                  .filter((p) => p.id !== post.id)
-                  .slice(0, 3)
-                  .map((related) => (
-                    <Link
-                      key={related.id}
-                      href={`/blog/${related.slug}`}
-                      className="group flex flex-col gap-1"
-                    >
-                      <span className="text-xs text-gray-400">{related.date}</span>
-                      <span className="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors line-clamp-2">
-                        {related.title}
-                      </span>
-                    </Link>
-                  ))}
+                {related.map((relatedPost) => (
+                  <Link
+                    key={relatedPost.id}
+                    href={`/blog/${relatedPost.slug}`}
+                    className="group flex flex-col gap-1"
+                  >
+                    <span className="text-xs text-gray-400">{relatedPost.date}</span>
+                    <span className="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors line-clamp-2">
+                      {relatedPost.title}
+                    </span>
+                  </Link>
+                ))}
               </div>
+              <Link
+                href="/blog"
+                className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark"
+              >
+                All guides
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </aside>
         </div>
@@ -127,7 +150,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Was this article helpful?</h2>
           <p className="text-gray-500 mb-8">
-            Share it with other business owners who want to boost their Google ranking.
+            Share it with other business owners who want to boost their Google ranking — or{' '}
+            <Link href={GENERATOR_PATH} className="text-primary font-semibold hover:underline">
+              generate your free review QR
+            </Link>
+            .
           </p>
           <button
             onClick={handleShare}

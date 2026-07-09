@@ -134,15 +134,19 @@ export const TESTIMONIALS = [
 export const FAQ_DATA = [
   {
     question: "What is ReviewQR?",
-    answer: "ReviewQR is a free tool that helps local businesses generate QR codes linked directly to their Google review page. When customers scan the QR code, they can leave a review in just one tap."
+    answer: "ReviewQR is a free tool that helps local businesses generate QR codes linked directly to their Google review page. Paid plans add printable standees and AI review suggestions so customers can finish a review in seconds."
   },
   {
     question: "How does the QR code work?",
     answer: "The QR code contains a direct link to your business's Google review form. When a customer scans it with their phone camera, it opens the review page directly — no searching needed."
   },
   {
+    question: "What are AI review suggestions?",
+    answer: "On Starter and above, scanners land on your branded page with AI-written review options. They tap to copy, open Google, and paste — which removes writer's block and gets more reviews completed."
+  },
+  {
     question: "Is ReviewQR really free?",
-    answer: "Yes! Generating a QR code and downloading it as a PNG is completely free. We offer premium plans for agencies and businesses who need advanced features like PDF standees, bulk generation, and white-labeling."
+    answer: "Yes! Generating a QR code and downloading it as a PNG is completely free. Premium plans unlock PDF standees, AI review suggestions, custom branding, analytics, and white-labeling."
   },
   {
     question: "Do I need a Google My Business listing?",
@@ -158,11 +162,11 @@ export const FAQ_DATA = [
   },
   {
     question: "How many reviews can I expect?",
-    answer: "This depends on your foot traffic and QR placement. On average, businesses see a 3-5x increase in reviews within the first month of using ReviewQR."
+    answer: "This depends on your foot traffic and QR placement. On average, businesses see a 3-5x increase in reviews within the first month of using ReviewQR — especially when AI suggestions make posting faster."
   },
   {
     question: "Can I customize the QR code design?",
-    answer: "The free version generates a standard QR code. Our Agency plan includes customization options like logo embedding, color changes, and branded standee templates."
+    answer: "The free version generates a standard QR code. Pro and Agency plans include customization like logo embedding, color changes, and branded standee templates."
   },
   {
     question: "Is this available for businesses globally?",
@@ -170,6 +174,6 @@ export const FAQ_DATA = [
   },
   {
     question: "How do I get more reviews from the QR code?",
-    answer: "Pro tips: 1) Ask customers politely to scan after a positive experience. 2) Place the standee where customers wait (billing counter, reception). 3) Share the link on WhatsApp after each transaction. 4) Offer great service — happy customers review willingly!"
+    answer: "Pro tips: 1) Ask customers politely to scan after a positive experience. 2) Place the standee where customers wait (billing counter, reception). 3) Use AI suggestions so they don't have to write from scratch. 4) Share the link on WhatsApp after each transaction."
   }
 ];

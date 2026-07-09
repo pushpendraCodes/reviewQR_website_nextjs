@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { HOME_FAQS } from '@/lib/seo/home-faqs';
 
-const FAQ_ICONS: LucideIcon[] = [QrCode, Sparkles, Star, HelpCircle, TrendingUp, Globe];
+const FAQ_ICONS: LucideIcon[] = [QrCode, Sparkles, HelpCircle, Star, TrendingUp, Globe, MessageCircle];
 
 const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState(0);
@@ -27,38 +27,36 @@ const FaqSection = () => {
 
   return (
     <section className="relative py-16 sm:py-24 overflow-hidden" aria-labelledby="faq-heading">
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-amber-50/40 to-gray-50 pointer-events-none" />
-      <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-100/30 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-primary-light/30 to-[#f0f5f2] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-[minmax(0,340px)_1fr] gap-10 lg:gap-14 items-start">
-          {/* Left: intro */}
           <div className="lg:sticky lg:top-24 text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full uppercase tracking-wider mb-5">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-primary-light text-primary text-xs font-bold rounded-md uppercase tracking-wider mb-5">
               <MessageCircle className="w-3.5 h-3.5" />
               FAQ
             </span>
             <h2
               id="faq-heading"
-              className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 leading-tight"
+              className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mb-4 leading-tight tracking-tight"
             >
               Questions?{' '}
-              <span className="text-amber-500">We&apos;ve got answers.</span>
+              <span className="text-primary">We&apos;ve got answers.</span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-8 max-w-sm mx-auto lg:mx-0">
               Everything about Google Review QR codes, pricing, and getting more 5-star reviews for your business.
             </p>
             <Link
               href="/how-it-works"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors group"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark transition-colors group"
             >
               Read the full guide
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
 
-          {/* Right: accordion list */}
           <ul className="space-y-3 list-none p-0 m-0">
             {HOME_FAQS.map((faq, index) => {
               const isOpen = openIndex === index;
@@ -69,8 +67,8 @@ const FaqSection = () => {
                   <div
                     className={`rounded-2xl border transition-all duration-300 ${
                       isOpen
-                        ? 'border-amber-200 bg-white shadow-lg shadow-amber-100/50 ring-1 ring-amber-100'
-                        : 'border-gray-200/80 bg-white/80 hover:border-amber-100 hover:shadow-md hover:shadow-gray-100/80'
+                        ? 'border-primary/25 bg-white shadow-lg shadow-primary/5 ring-1 ring-primary/10'
+                        : 'border-gray-200/80 bg-white/80 hover:border-primary/20 hover:shadow-md hover:shadow-gray-100/80'
                     }`}
                   >
                     <button
@@ -79,13 +77,13 @@ const FaqSection = () => {
                       aria-expanded={isOpen}
                       aria-controls={`faq-panel-${index}`}
                       onClick={() => toggle(index)}
-                      className="w-full flex items-start gap-4 p-5 sm:p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 rounded-2xl"
+                      className="w-full flex items-start gap-4 p-5 sm:p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl"
                     >
                       <span
                         className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                           isOpen
-                            ? 'bg-amber-500 text-white shadow-md shadow-amber-200'
-                            : 'bg-amber-50 text-amber-600'
+                            ? 'bg-primary text-white shadow-md shadow-primary/20'
+                            : 'bg-primary-light text-primary'
                         }`}
                         aria-hidden
                       >
@@ -100,13 +98,13 @@ const FaqSection = () => {
 
                       <span
                         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 mt-0.5 ${
-                          isOpen ? 'bg-amber-100 rotate-180' : 'bg-gray-100'
+                          isOpen ? 'bg-primary-light rotate-180' : 'bg-gray-100'
                         }`}
                         aria-hidden
                       >
                         <ChevronDown
                           className={`w-4 h-4 transition-colors ${
-                            isOpen ? 'text-amber-600' : 'text-gray-400'
+                            isOpen ? 'text-primary' : 'text-gray-400'
                           }`}
                         />
                       </span>
@@ -121,7 +119,7 @@ const FaqSection = () => {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="px-5 sm:px-6 pb-5 sm:pb-6 pl-[4.25rem] sm:pl-[4.75rem] text-gray-600 text-sm sm:text-base leading-relaxed border-t border-amber-50/80 pt-4 -mt-1">
+                        <p className="px-5 sm:px-6 pb-5 sm:pb-6 pl-[4.25rem] sm:pl-[4.75rem] text-gray-600 text-sm sm:text-base leading-relaxed border-t border-primary/10 pt-4 -mt-1">
                           {faq.answer}
                         </p>
                       </div>
@@ -133,7 +131,6 @@ const FaqSection = () => {
           </ul>
         </div>
 
-        {/* Bottom CTA bar */}
         <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
           <p className="text-gray-600 text-sm sm:text-base text-center sm:text-left">
             <span className="font-semibold text-gray-900">Still stuck?</span>{' '}

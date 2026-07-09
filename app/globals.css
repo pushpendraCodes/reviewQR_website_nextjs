@@ -10,7 +10,8 @@
   --color-secondary-light: #E6F0FA;
   --color-surface: #F8F9FA;
   --color-surface-dark: #E9ECEF;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
 }
 
 * {
@@ -23,10 +24,14 @@ html {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #fcfcfc;
+  background-color: #f7faf8;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
 }
 
 /* Animations */
@@ -86,8 +91,22 @@ body {
   }
 }
 
+@keyframes hero-ken {
+  from {
+    transform: scale(1.05);
+  }
+
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.animate-hero-ken {
+  animation: hero-ken 18s ease-in-out infinite alternate;
+}
+
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
+  animation: fade-in-up 0.6s ease-out both;
 }
 
 .animate-fade-in {

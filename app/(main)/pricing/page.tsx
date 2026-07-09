@@ -13,6 +13,7 @@ import {
   useCreateOrderMutation,
   useCreateLemonCheckoutMutation,
   useVerifyPaymentMutation,
+  useVerifyLemonPaymentMutation,
   usePaymentFailedMutation,
   type PaymentCurrency,
 } from '@/store/api/subscriptionApi';
@@ -36,11 +37,11 @@ const INR_PLANS = [
       'Community support',
     ],
     lockedFeatures: [
+      'AI review suggestions',
+      'Branded landing page',
       'Custom logo & colors',
-      'Standee templates',
       'SVG / PDF download',
       'Analytics',
-      'White label',
     ],
     popular: false,
     isFree: true,
@@ -52,7 +53,7 @@ const INR_PLANS = [
     monthlyPrice: '₹299',
     annualMonthly: '₹209',
     annualPrice: '2,513',
-    description: 'Clean standees for small businesses',
+    description: 'AI reviews + clean standees for small businesses',
     qrLimit: '3',
     features: [
       '3 QR codes',
@@ -233,27 +234,56 @@ const PricingPage = () => {
   const [createOrder] = useCreateOrderMutation();
   const [createLemonCheckout] = useCreateLemonCheckoutMutation();
   const [verifyPayment] = useVerifyPaymentMutation();
+  const [verifyLemonPayment] = useVerifyLemonPaymentMutation();
   const [paymentFailed] = usePaymentFailedMutation();
   const [getProfile] = useLazyGetProfileQuery();
+
+  const refreshProfileAfterPayment = async () => {
+    try {
+      const profileRes = await getProfile().unwrap();
+      if (profileRes.success && profileRes.user) {
+        dispatch(updateUser({ ...profileRes.user, isVerified: profileRes.user.isVerified }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch updated profile:', err);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') !== 'success') return;
 
+    const orderId = params.get('order_id');
     let cancelled = false;
 
     const run = async () => {
       toast.success('Payment received! Activating your plan…');
 
-      // Lemon Squeezy webhook can take a few seconds.
-      // Poll until the backend updates the user plan, then route to generate.
-      for (let i = 0; i < 6; i++) {
+      // Prefer explicit verify (works on localhost where Lemon webhooks cannot reach us).
+      try {
+        const verifyRes = await verifyLemonPayment(
+          orderId ? { orderId } : {}
+        ).unwrap();
+        if (verifyRes.success) {
+          await refreshProfileAfterPayment();
+          toast.success('Payment successful! Plan activated.');
+          window.history.replaceState({}, '', '/pricing');
+          navigate.push('/google-review-qr-code-generator');
+          return;
+        }
+      } catch (err: any) {
+        console.error('Lemon verify failed, falling back to profile poll:', err);
+      }
+
+      // Fallback: poll profile in case webhook already activated the plan.
+      for (let i = 0; i < 8; i++) {
         if (cancelled) return;
         try {
           const profileRes = await getProfile().unwrap();
           const nextPlan = profileRes?.user?.plan;
           if (profileRes?.success && profileRes?.user && nextPlan && nextPlan !== 'free') {
             dispatch(updateUser(profileRes.user));
+            toast.success('Payment successful! Plan activated.');
             break;
           }
         } catch {
@@ -271,18 +301,8 @@ const PricingPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, getProfile, navigate]);
-
-  const refreshProfileAfterPayment = async () => {
-    try {
-      const profileRes = await getProfile().unwrap();
-      if (profileRes.success && profileRes.user) {
-        dispatch(updateUser({ ...profileRes.user, isVerified: profileRes.user.isVerified }));
-      }
-    } catch (err) {
-      console.error('Failed to fetch updated profile:', err);
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, getProfile, navigate, verifyLemonPayment]);
 
   const handleRazorpayPurchase = async (planKey: string, billingCycle: 'monthly' | 'annual') => {
     const isLoaded = await loadRazorpay();
@@ -353,6 +373,7 @@ const PricingPage = () => {
   };
 
   const handlePurchase = async (planKey: string) => {
+    console.log('handlePurchase', planKey);
     if (!user) {
       toast('Please log in to continue', { icon: '🔒' });
       navigate.push('/auth/login?returnTo=/pricing');
@@ -455,7 +476,7 @@ const PricingPage = () => {
             Choose Your Plan
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
-            Start free and upgrade as you grow. No hidden fees, no surprises.
+            Start free. Upgrade for AI review suggestions, branded landing pages, and print-ready standees.
           </p>
 
           {/* Currency switcher */}
@@ -467,7 +488,7 @@ const PricingPage = () => {
               <button
                 type="button"
                 onClick={() => handleCurrencyChange('INR')}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                className={`px-4 py-2 cursor-pointer text-sm font-semibold rounded-lg transition-all duration-200 ${
                   !isUsd ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -477,7 +498,7 @@ const PricingPage = () => {
                 type="button"
                 onClick={() => handleCurrencyChange('USD')}
                 disabled={pricingRegion !== undefined && !pricingRegion.lemonSqueezyEnabled}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                className={`px-4 py-2 text-sm cursor-pointer font-semibold rounded-lg transition-all duration-200 ${
                   isUsd ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
               >

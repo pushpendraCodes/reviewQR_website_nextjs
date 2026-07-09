@@ -1,45 +1,97 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';;
-import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare, Sparkles, Copy } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
+import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 
 import { FAQ_DATA } from '@/utils/mockData';
 
 /**
- * HowItWorksPage — Detailed guide + FAQ + video placeholder
+ * HowItWorksPage — Detailed guide + FAQ + video
  */
 const HowItWorksPage = () => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
   return (
     <div>
-      
-      {/* Page Header */}
+
       <section className="bg-gradient-to-br from-white via-secondary-light/20 to-white py-14 sm:py-20 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-primary text-sm font-semibold uppercase tracking-wider">Step-by-step guide</span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mt-3 mb-4">
+          <h1 className="font-display text-3xl sm:text-5xl font-semibold text-gray-900 mt-3 mb-4 tracking-tight">
             How ReviewQR Works
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Everything you need to know about generating Google Review QR codes 
-            and growing your business ratings.
+            Generate a Google Review QR, print a standee, and let AI help customers finish reviews faster.
           </p>
         </div>
       </section>
-      {/* ==================== DETAILED STEPS ==================== */}
+
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <HowItWorksSteps detailed />
         </div>
       </section>
-      {/* ==================== WHERE TO PLACE QR ==================== */}
+
+      <section className="py-16 lg:py-24 bg-[#0f3d2e] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 mb-4">
+                <Sparkles className="w-4 h-4" />
+                Starter plan and above
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-4">
+                AI review suggestions remove writer&apos;s block
+              </h2>
+              <p className="text-white/75 text-lg leading-relaxed mb-6">
+                Most happy customers never leave a review because typing feels like work.
+                ReviewQR shows ready-made options on your branded landing page after they scan.
+              </p>
+              <ol className="space-y-4">
+                {[
+                  { icon: QrCode, text: 'Customer scans your standee QR' },
+                  { icon: Sparkles, text: 'AI shows 3 natural review options' },
+                  { icon: Copy, text: 'They copy, open Google, and paste' },
+                ].map((step, i) => (
+                  <li key={step.text} className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-emerald-200">
+                      <step.icon className="w-4 h-4" />
+                    </span>
+                    <span className="text-white/90">
+                      <span className="text-emerald-200 font-semibold mr-2">{i + 1}.</span>
+                      {step.text}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8">
+              <p className="text-sm font-semibold text-emerald-200 mb-4">Why it converts better</p>
+              <ul className="space-y-4 text-white/80 text-[15px] leading-relaxed">
+                <li>Blank Google review boxes get abandoned — suggestions get finished.</li>
+                <li>Copy-paste takes seconds, even for customers in a hurry.</li>
+                <li>Reviews still sound human; customers can edit before posting.</li>
+                <li>You keep the QR + standee workflow you already know.</li>
+              </ul>
+              <Link
+                href="/pricing"
+                className="mt-8 inline-flex items-center gap-2 px-5 py-3 bg-white text-primary font-bold rounded-xl hover:bg-primary-light transition-colors"
+              >
+                Unlock AI reviews
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 lg:py-24 bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-secondary text-sm font-semibold uppercase tracking-wider">Pro Tips</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
               Where to Place Your QR Code
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
@@ -74,9 +126,9 @@ const HowItWorksPage = () => {
                 description: 'Print the QR code on the back of your business card. Professional and functional.',
               },
               {
-                icon: Star,
-                title: 'Packaging & Bags',
-                description: 'Add a small QR sticker on your product packaging or carry bags with a friendly message.',
+                icon: Sparkles,
+                title: 'After great service',
+                description: 'Ask right after a happy moment — then AI suggestions make posting almost effortless.',
               },
             ].map((tip, index) => (
               <div
@@ -93,12 +145,12 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== VIDEO ==================== */}
+
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <span className="text-primary text-sm font-semibold uppercase tracking-wider">Watch &amp; Learn</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
               See It in Action
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
@@ -117,12 +169,12 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== FAQ ==================== */}
+
       <section className="py-16 lg:py-24 bg-surface">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-primary text-sm font-semibold uppercase tracking-wider">FAQ</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-2 mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
               Frequently Asked Questions
             </h2>
           </div>
@@ -157,14 +209,41 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== CTA ==================== */}
+
+      <section className="py-16 lg:py-20 bg-[#f0f5f2] border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 max-w-2xl">
+            <h2 className="font-display text-3xl font-semibold text-gray-900 tracking-tight mb-3">
+              Keep learning
+            </h2>
+            <p className="text-gray-600">
+              Deep-dive guides Google is still discovering — linked here so crawlers (and customers) can find them.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SEO_GUIDE_LINKS.filter((g) => g.href !== '/google-review-qr-code-generator').map((guide) => (
+              <Link
+                key={guide.href}
+                href={guide.href}
+                className="group rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary/30 hover:shadow-md transition-all"
+              >
+                <p className="font-semibold text-gray-900 group-hover:text-primary transition-colors mb-1.5 leading-snug">
+                  {guide.label}
+                </p>
+                <p className="text-sm text-gray-500 leading-relaxed">{guide.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 lg:py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mb-4 tracking-tight">
             Ready to Get Started?
           </h2>
           <p className="text-lg text-gray-500 mb-8">
-            Generate your first Google Review QR code in under 60 seconds. Completely free.
+            Generate your first Google Review QR free — upgrade anytime for AI suggestions that speed up reviews.
           </p>
           <Link
             href="/google-review-qr-code-generator"

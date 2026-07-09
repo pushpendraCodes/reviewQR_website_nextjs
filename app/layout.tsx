@@ -1,14 +1,27 @@
 import { Toaster } from 'react-hot-toast';
+import { Fraunces, Manrope } from 'next/font/google';
 import ReduxProvider from '@/providers/ReduxProvider';
 import { rootMetadata } from '@/lib/seo/metadata';
 import './globals.css';
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
 
 export const metadata = rootMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="antialiased text-gray-900 bg-white min-h-screen flex flex-col">
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
+      <body className="antialiased text-gray-900 bg-white min-h-screen flex flex-col font-sans">
         <ReduxProvider>
           <Toaster
             position="top-center"

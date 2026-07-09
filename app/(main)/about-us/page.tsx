@@ -22,7 +22,7 @@ const AboutUs = () => {
             Helping Businesses Shine Online
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            ReviewQR is dedicated to empowering local businesses in India by making it incredibly easy for their customers to leave 5-star Google reviews.
+            ReviewQR helps local businesses collect more Google reviews with print-ready QR standees and AI suggestions that make posting faster for customers.
           </p>
         </div>
       </section>
@@ -37,7 +37,7 @@ const AboutUs = () => {
                 In today's digital world, a business's online reputation is its most valuable asset. However, most happy customers simply forget to leave a review.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Our mission is to bridge this gap. We provide smart, beautifully designed QR code solutions and standees that turn a physical interaction into a digital 5-star review in seconds.
+                Our mission is to bridge this gap. We provide smart QR standees and AI review suggestions that turn a physical visit into a finished Google review in seconds — without customers staring at a blank box.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">

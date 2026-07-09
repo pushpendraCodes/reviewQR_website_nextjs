@@ -129,7 +129,7 @@ const PricingCard = ({
         <button
           onClick={onPurchase}
           disabled={isLoading}
-          className={`block w-full text-center py-3 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 ${
+          className={`block w-full text-center cursor-pointer py-3 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 ${
             popular
               ? 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -162,7 +162,7 @@ const PricingCard = ({
       ) : (
         <Link
           href={ctaLink}
-          className={`block w-full text-center py-3 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 ${
+          className={`block w-full text-center cursor-pointer py-3 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 ${
             popular
               ? 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

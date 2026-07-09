@@ -50,7 +50,7 @@ const authSlice = createSlice({
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(action.payload.user));
         localStorage.setItem("accessToken", action.payload.accessToken);
-        Cookies.set("accessToken", action.payload.accessToken, { expires: 7, secure: true, sameSite: "Lax" });
+        Cookies.set("accessToken", action.payload.accessToken, { secure: true, sameSite: "Lax" });
       }
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

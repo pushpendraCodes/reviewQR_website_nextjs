@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { blogPosts } from '@/data/blogData';
 import { SITE_URL } from '@/lib/seo/site';
 
-const LAST_MOD = '2026-07-02';
+const LAST_MOD = '2026-07-09';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
@@ -19,11 +19,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/shipping-policy`, lastModified: LAST_MOD, changeFrequency: 'yearly', priority: 0.4 },
   ];
 
+  const prioritySlugs = new Set([
+    'free-google-review-qr-code-generator',
+    'google-review-qr-code-for-restaurants',
+    'google-review-qr-code-for-salons-and-spas',
+    'how-to-print-google-review-qr-code-standee',
+    'static-vs-dynamic-google-review-qr-code',
+    'what-is-a-google-place-id-and-how-to-find-it',
+  ]);
+
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: prioritySlugs.has(post.slug) ? LAST_MOD : new Date(post.date),
     changeFrequency: 'monthly' as const,
-    priority: 0.65,
+    priority: prioritySlugs.has(post.slug) ? 0.8 : 0.65,
   }));
 
   return [...staticPages, ...blogEntries];

@@ -46,6 +46,10 @@ export interface VerifyPaymentRequest {
   razorpaySignature: string;
 }
 
+export interface VerifyLemonPaymentRequest {
+  orderId?: string;
+}
+
 export interface VerifyPaymentResponse {
   success: boolean;
   message: string;
@@ -89,6 +93,13 @@ export const subscriptionApi = createApi({
         body: data,
       }),
     }),
+    verifyLemonPayment: builder.mutation<VerifyPaymentResponse, VerifyLemonPaymentRequest>({
+      query: (data) => ({
+        url: "/subscription/verify-lemon-payment",
+        method: "POST",
+        body: data,
+      }),
+    }),
     paymentFailed: builder.mutation<PaymentFailedResponse, PaymentFailedRequest>({
       query: (data) => ({
         url: "/subscription/payment-failed",
@@ -104,5 +115,6 @@ export const {
   useCreateOrderMutation,
   useCreateLemonCheckoutMutation,
   useVerifyPaymentMutation,
+  useVerifyLemonPaymentMutation,
   usePaymentFailedMutation,
 } = subscriptionApi;

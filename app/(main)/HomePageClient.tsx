@@ -2,523 +2,431 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Zap, Globe, Smartphone, Users, TrendingUp, Shield, Star, Check, QrCode, MapPin, Download, BarChart2, Palette, FileText } from 'lucide-react';
+import { ArrowRight, Star, Check, Sparkles, Copy, Smartphone } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import TestimonialCard from '@/components/TestimonialCard';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import FaqSection from '@/components/FaqSection';
 import { TESTIMONIALS } from '@/utils/mockData';
 import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import BusinessSearchBar from '@/components/BusinessSearchBar';
+import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 
-// Real-world visuals
 import standeeCafe from '@/assets/standee-cafe.jpg';
 import standeeCounter from '@/assets/standee-counter.jpg';
 import stickerDoor from '@/assets/sticker-door.jpg';
 
-/* ─────────────────────────────────────────────
-   Animated counter hook
-───────────────────────────────────────────── */
-function useCountUp(target: number, duration = 1800, start = false) {
-    const [count, setCount] = useState(0);
-    useEffect(() => {
-        if (!start) return;
-        let startTime: number | null = null;
-        const step = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            setCount(Math.floor(progress * target));
-            if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-    }, [target, duration, start]);
-    return count;
-}
+const AI_DEMO_REVIEWS = [
+  'Great service and friendly staff. Highly recommend this place for anyone nearby!',
+  'Clean, quick, and professional. Will definitely come back again.',
+  'Excellent experience from start to finish. Five stars well deserved.',
+];
 
-/* ─────────────────────────────────────────────
-   Stats Section with animated counters
-───────────────────────────────────────────── */
-const AnimatedStats = () => {
-    const ref = useRef<HTMLDivElement>(null);
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-            { threshold: 0.3 }
-        );
-        if (ref.current) observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, []);
-
-    const businesses = useCountUp(500, 1600, visible);
-    const qrCodes = useCountUp(15000, 2000, visible);
-    const reviewIncrease = useCountUp(480, 1800, visible);
-
-    return (
-        <section ref={ref} className="py-20 bg-amber-50 border-y border-amber-100">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                    {[
-                        { value: businesses, suffix: '+', label: 'Businesses Served', icon: Users },
-                        { value: qrCodes, suffix: '+', label: 'QR Codes Generated', icon: QrCode, formatK: true },
-                        { value: reviewIncrease, suffix: '%', label: 'Avg. Review Increase', icon: TrendingUp },
-                        { value: null, display: 'Free', label: 'To Get Started', icon: Zap },
-                    ].map((stat, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-1">
-                                <stat.icon className="w-5 h-5 text-amber-600" />
-                            </div>
-                            <p className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
-                                {stat.display
-                                    ? stat.display
-                                    : stat.formatK
-                                        ? `${(stat.value! / 1000).toFixed(1)}K${stat.suffix}`
-                                        : `${stat.value}${stat.suffix}`
-                                }
-                            </p>
-                            <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-};
-
-/* ─────────────────────────────────────────────
-   Pricing Section
-───────────────────────────────────────────── */
-
-
-/* ─────────────────────────────────────────────
-   Main Component
-───────────────────────────────────────────── */
 const HomePageClient = () => {
-    const router = useRouter();
-    const [query, setQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All');
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-    const handleSearch = () => {
-        if (!query.trim()) return;
-        router.push(`/google-review-qr-code-generator?q=${encodeURIComponent(query)}`);
-    };
+  const handleSearch = () => {
+    if (!query.trim()) return;
+    router.push(`/google-review-qr-code-generator?q=${encodeURIComponent(query)}`);
+  };
 
-    const OAuthHandler = () => {
-        const { isProcessing } = useOAuthCallback();
-        if (isProcessing) {
-            return (
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-3 text-gray-500">
-                        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-                        <p className="text-sm">Signing you in...</p>
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    return (
-        <div className="overflow-hidden bg-white">
-            <Suspense fallback={null}>
-                <OAuthHandler />
-            </Suspense>
-
-            {/* ══════════════════════════════════════════
-                SEARCH SECTION
-            ══════════════════════════════════════════ */}
-            <section id="search-section" className="pt-12 pb-8 lg:pt-16 lg:pb-12 bg-white relative z-20">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-6 tracking-tight">
-                        Find your business to get started
-                    </h2>
-                    <div className="bg-white p-2 sm:p-3 rounded-2xl sm:rounded-3xl shadow-xl shadow-amber-500/10 border border-gray-100">
-                        <BusinessSearchBar 
-                            query={query}
-                            setQuery={setQuery}
-                            isLoading={false}
-                            selectedCategory={selectedCategory}
-                            setSelectedCategory={setSelectedCategory}
-                            onSearch={handleSearch}
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                HERO
-            ══════════════════════════════════════════ */}
-            <section className="relative pb-24 lg:pb-36 bg-white overflow-hidden">
-                {/* Subtle warm mesh background */}
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-50 rounded-full blur-3xl opacity-60 translate-x-1/3 -translate-y-1/4" />
-                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-green-50 rounded-full blur-3xl opacity-50 -translate-x-1/4 translate-y-1/4" />
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-                        {/* Left: Copy */}
-                        <div>
-                            {/* Trust badge */}
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-full mb-7 animate-fade-in-up">
-                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                500+ businesses generating reviews right now
-                            </div>
-
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-[1.08] tracking-tight mb-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                                Free Google Review
-                                <br />
-                                <span className="text-amber-500">QR Code Generator</span>
-                            </h1>
-
-                            <p className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 animate-fade-in-up" style={{ animationDelay: '0.12s' }}>
-                                More Google Reviews. More Customers.
-                            </p>
-
-                            <p className="text-lg text-gray-500 mb-8 leading-relaxed max-w-lg animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-                                Generate a print-ready Google review QR code in 60 seconds. Place a standee at your counter — customers scan and leave 5-star reviews instantly.
-                            </p>
-
-                            {/* CTA */}
-                            <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                                <button 
-                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-                                    className="w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-all duration-200 shadow-lg shadow-primary/20 text-center flex items-center justify-center gap-2"
-                                >
-                                    Search Your Business
-                                </button>
-                            </div>
-
-                            {/* Social proof row */}
-                            <div className="flex flex-wrap items-center gap-5 text-sm animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex -space-x-2">
-                                        {['RS', 'PK', 'AV', 'SG'].map((initials, i) => (
-                                            <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm">
-                                                {initials}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <span className="text-gray-500">500+ businesses trust us</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    ))}
-                                    <span className="text-gray-500 ml-1">4.9/5 rating</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right: App mockup */}
-                        <div className="relative animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                            {/* Floating badge */}
-                            <div className="absolute -top-4 -left-4 z-10 bg-white border border-gray-100 shadow-lg rounded-2xl px-4 py-3 flex items-center gap-3">
-                                <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-                                    <Star className="w-5 h-5 text-green-600 fill-green-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-400">New review</p>
-                                    <p className="text-sm font-bold text-gray-900">★★★★★ Just now</p>
-                                </div>
-                            </div>
-
-                            {/* Main card */}
-                            <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-8">
-                                {/* Browser chrome */}
-                                <div className="flex items-center gap-2 mb-5 pb-4 border-b border-gray-100">
-                                    <div className="w-3 h-3 rounded-full bg-red-300" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-300" />
-                                    <div className="w-3 h-3 rounded-full bg-green-300" />
-                                    <div className="flex-1 mx-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 flex items-center gap-2">
-                                        <Shield className="w-3 h-3 text-green-500 flex-shrink-0" />
-                                        <span className="text-xs text-gray-400">getreviewqr.com/google-review-qr-code-generator</span>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-5">
-                                    {/* QR visual */}
-                                    <div className="w-28 h-28 bg-white rounded-xl border-2 border-amber-200 flex items-center justify-center p-3 shadow-sm flex-shrink-0">
-                                        <div className="grid grid-cols-5 gap-[3px] w-full h-full">
-                                            {Array.from({ length: 25 }).map((_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className={`rounded-[2px] ${[0, 1, 2, 4, 5, 6, 9, 10, 12, 14, 15, 18, 19, 20, 22, 23, 24].includes(i)
-                                                        ? 'bg-gray-900'
-                                                        : 'bg-gray-100'
-                                                        }`}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="text-center sm:text-left flex-1">
-                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-full text-xs text-green-700 font-medium mb-2">
-                                            <MapPin className="w-3 h-3" />
-                                            Verified on Google Maps
-                                        </div>
-                                        <p className="text-base font-bold text-gray-900">Sharma Medical Store</p>
-                                        <p className="text-xs text-gray-400 mb-2">MG Road, Rewa, MP</p>
-                                        <div className="flex items-center gap-1 justify-center sm:justify-start mb-3">
-                                            {[1, 2, 3, 4].map(i => (
-                                                <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                                            ))}
-                                            <Star className="w-3.5 h-3.5 text-gray-200 fill-gray-200" />
-                                            <span className="text-xs text-gray-400 ml-1">4.2 · 47 reviews</span>
-                                        </div>
-                                        <div className="flex gap-2 justify-center sm:justify-start">
-                                            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg">
-                                                <Download className="w-3 h-3" /> PNG
-                                            </span>
-                                            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-semibold rounded-lg">
-                                                <FileText className="w-3 h-3" /> PDF Standee
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Floating scan count */}
-                            <div className="absolute -bottom-4 -right-4 bg-white border border-gray-100 shadow-lg rounded-2xl px-4 py-3">
-                                <p className="text-xs text-gray-400 mb-0.5">This week</p>
-                                <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
-                                    <BarChart2 className="w-4 h-4 text-amber-500" />
-                                    248 scans → 31 reviews
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                LOGO / PARTNER TRUST BAR
-            ══════════════════════════════════════════ */}
-            <section className="py-8 border-y border-gray-100 bg-gray-50">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <p className="text-center text-xs text-gray-400 uppercase tracking-widest font-semibold mb-6">Trusted by businesses in India, UAE, UK, USA & more</p>
-                    <div className="flex flex-wrap items-center justify-center gap-8 text-gray-300 text-sm font-semibold">
-                        {['Restaurants', 'Medical Stores', 'Salons & Spas', 'Coaching Institutes', 'Hotels', 'Retail Shops'].map((cat, i) => (
-                            <span key={i} className="text-gray-400 text-sm">{cat}</span>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                HOW TO DISPLAY
-            ══════════════════════════════════════════ */}
-            <section className="py-20 lg:py-28 bg-white overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">How to Display</span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">
-                            Download. Print. Get Reviews.
-                        </h2>
-                        <p className="text-gray-500 max-w-xl mx-auto">
-                            We give you high-res digital designs. Print on anything — paper, acrylic, vinyl.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {[
-                            { img: standeeCafe, alt: 'Google Review Standee on Cafe Table', label: 'Cafes & Restaurants', title: 'Table Standees', desc: 'Place in a 4×6 inch acrylic stand on tables. Customers scan while they wait — effortless reviews.' },
-                            { img: standeeCounter, alt: 'Google Review Standee on Billing Counter', label: 'Billing Counters', title: 'Counter Display', desc: 'Place at checkout. Customers scan right after paying — the highest-intent moment for a review.' },
-                            { img: stickerDoor, alt: 'Google Review Sticker on Glass Door', label: 'Shops & Clinics', title: 'Window Stickers', desc: 'Print as a vinyl sticker for your door or window. Showcases your rating before customers even enter.' },
-                        ].map((item, i) => (
-                            <div key={i} className="group">
-                                <div className="relative rounded-2xl overflow-hidden mb-5 aspect-[4/5] bg-gray-100">
-                                    <Image
-                                        src={item.img}
-                                        alt={item.alt}
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 33vw"
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div className="absolute top-4 left-4">
-                                        <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/60">
-                                            {item.label}
-                                        </span>
-                                    </div>
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                HOW IT WORKS + VIDEO
-            ══════════════════════════════════════════ */}
-            <section className="py-20 lg:py-28 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-14">
-                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">Simple Process</span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">How It Works</h2>
-                        <p className="text-gray-500 max-w-xl mx-auto">Get your QR code in 3 steps. No sign-up required for the basic version.</p>
-                    </div>
-
-                    <HowItWorksSteps />
-
-                    {/* Video embed */}
-                    {/* <div className="mt-14 max-w-3xl mx-auto">
-                        <div className="relative rounded-2xl overflow-hidden bg-gray-900 shadow-2xl" style={{ paddingBottom: '56.25%' }}>
-                            <iframe
-                                src="https://www.loom.com/embed/51d5520b7c3a40b3ac4c134baba177f6?hideEmbedTopBar=true"
-                                title="ReviewQR demo video"
-                                className="absolute inset-0 w-full h-full"
-                                frameBorder="0"
-                                allowFullScreen
-                            />
-                        </div>
-                        <p className="text-center text-sm text-gray-400 mt-3">Watch how ReviewQR works in under 2 minutes</p>
-                    </div> */}
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                ANIMATED STATS
-            ══════════════════════════════════════════ */}
-            <AnimatedStats />
-
-            {/* ══════════════════════════════════════════
-                BENEFITS
-            ══════════════════════════════════════════ */}
-            <section className="py-10 lg:py-10 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-14">
-                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">Why ReviewQR</span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">Built for Local Businesses Worldwide</h2>
-                        <p className="text-gray-500 max-w-xl mx-auto">
-                            Medical store, restaurant, salon, coaching centre — if you're on Google Maps, ReviewQR works for you.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {[
-                            { icon: Zap, title: 'No Tech Skills Needed', desc: 'Search, select, download. Done in under 60 seconds.', bg: 'bg-amber-50', icon_color: 'text-amber-600' },
-                            { icon: Globe, title: 'Any Business, Any Country', desc: 'From chai stalls to hospitals — if you\'re on Google Maps, it works.', bg: 'bg-blue-50', icon_color: 'text-blue-600' },
-                            { icon: Smartphone, title: 'Scan & Review in 1 Tap', desc: 'Customers go straight to the review form. Zero friction.', bg: 'bg-green-50', icon_color: 'text-green-600' },
-                            { icon: Download, title: 'Free to Generate', desc: 'Your first QR code is absolutely free. No card required.', bg: 'bg-purple-50', icon_color: 'text-purple-600' },
-                        ].map((b, i) => (
-                            <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:border-amber-200 transition-all duration-300 group cursor-default">
-                                <div className={`w-11 h-11 ${b.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                    <b.icon className={`w-5 h-5 ${b.icon_color}`} />
-                                </div>
-                                <h3 className="font-bold text-gray-900 mb-2 text-sm">{b.title}</h3>
-                                <p className="text-sm text-gray-500 leading-relaxed">{b.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                COMPARISON TABLE
-            ══════════════════════════════════════════ */}
-            <section className="py-10 lg:py-10 bg-gray-50">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-14">
-                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">The Difference</span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">Why Choose ReviewQR?</h2>
-                    </div>
-
-                    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700 bg-gray-50 border-b border-gray-100 w-1/2">Feature</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-400 bg-gray-50 border-b border-gray-100 text-center">Generic QR</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-amber-600 bg-amber-50 border-b border-amber-100 text-center">ReviewQR Pro</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { feature: '1-Tap Google Review Link', generic: true, pro: true },
-                                    { feature: 'Print-Ready PDF Standee', generic: false, pro: true },
-                                    { feature: 'Custom Logo & Branding', generic: false, pro: true },
-                                    { feature: 'Scan & Review Analytics', generic: false, pro: true },
-                                    { feature: 'Multiple Design Templates', generic: false, pro: true },
-                                    { feature: 'Multi-location Support', generic: false, pro: true },
-                                ].map((row, i) => (
-                                    <tr key={i} className="border-b border-gray-50 last:border-0">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-800">{row.feature}</td>
-                                        <td className="px-6 py-4 text-center">
-                                            {row.generic
-                                                ? <Check className="w-4 h-4 text-green-500 mx-auto" />
-                                                : <span className="text-gray-200 font-bold">—</span>
-                                            }
-                                        </td>
-                                        <td className="px-6 py-4 text-center bg-amber-50/50">
-                                            <Check className="w-4 h-4 text-amber-500 mx-auto" />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            {/* ══════════════════════════════════════════
-                PRICING
-     
-
-            {/* ══════════════════════════════════════════
-                TESTIMONIALS
-            ══════════════════════════════════════════ */}
-            <section className=" py-10 lg:py-10 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-14">
-                        <span className="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full uppercase tracking-wider mb-4">Testimonials</span>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">Loved by Business Owners</h2>
-                        <p className="text-gray-500 max-w-xl mx-auto">See how ReviewQR is helping businesses worldwide grow their online reputation.</p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {TESTIMONIALS.map((testimonial, index) => (
-                            <TestimonialCard key={index} {...testimonial} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            <FaqSection />
-
-            {/* ══════════════════════════════════════════
-                FINAL CTA
-            ══════════════════════════════════════════ */}
-            <section className="py-10 lg:py-10 bg-white">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-3xl px-8 py-14">
-                        <div className="flex justify-center mb-5">
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <Star key={i} className="w-6 h-6 text-amber-400 fill-amber-400" />
-                            ))}
-                        </div>
-                        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">
-                            Ready to Get More Reviews?
-                        </h2>
-                        <p className="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
-                            Join 500+ businesses already using ReviewQR. Free to start. Takes less than a minute.
-                        </p>
-                        <Link
-                            href="/google-review-qr-code-generator"
-                            className="inline-flex items-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white text-base font-bold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-amber-200 active:scale-95 group"
-                        >
-                            Generate My Free QR Code
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                        <p className="text-xs text-gray-400 mt-4">No credit card required · Free forever plan available</p>
-                    </div>
-                </div>
-            </section>
+  const OAuthHandler = () => {
+    const { isProcessing } = useOAuthCallback();
+    if (isProcessing) {
+      return (
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-gray-500">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm">Signing you in...</p>
+          </div>
         </div>
-    );
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="overflow-hidden bg-[#f7faf8]">
+      <Suspense fallback={null}>
+        <OAuthHandler />
+      </Suspense>
+
+      {/* ══════════════════════════════════════════
+          HERO — brand + one line + search + standee
+      ══════════════════════════════════════════ */}
+      <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+        {/* Atmosphere */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_20%,rgba(29,158,117,0.12),transparent_50%),radial-gradient(ellipse_at_90%_10%,rgba(24,95,165,0.08),transparent_45%),linear-gradient(180deg,#f7faf8_0%,#eef6f2_55%,#f7faf8_100%)]" />
+          <div
+            className="absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.85%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")',
+              backgroundSize: '180px',
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
+          <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
+            {/* Copy + search */}
+            <div className="text-center lg:text-left">
+              <p className="font-display text-4xl sm:text-5xl lg:text-[3.5rem] font-semibold tracking-tight text-gray-900 leading-none mb-5 animate-fade-in-up">
+                Review<span className="text-primary">QR</span>
+              </p>
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-snug tracking-tight mb-3 animate-fade-in-up [animation-delay:80ms]">
+                More Google reviews from your counter
+              </h1>
+
+              <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed animate-fade-in-up [animation-delay:140ms]">
+                Print a QR standee — customers scan, pick an AI-written review, and post on Google in seconds.
+              </p>
+
+              <div
+                id="search-section"
+                className="animate-fade-in-up [animation-delay:200ms] max-w-xl mx-auto lg:mx-0"
+              >
+                <div className="rounded-2xl bg-white/90 backdrop-blur-sm p-2 sm:p-3 shadow-[0_20px_50px_-24px_rgba(29,158,117,0.45)] border border-white/80 ring-1 ring-primary/10">
+                  <BusinessSearchBar
+                    query={query}
+                    setQuery={setQuery}
+                    isLoading={false}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    onSearch={handleSearch}
+                  />
+                </div>
+              </div>
+
+              <p className="mt-5 text-sm text-gray-500 animate-fade-in-up [animation-delay:280ms] flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1">
+                <span className="inline-flex items-center gap-1.5 text-primary font-medium">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  AI review suggestions
+                </span>
+                <span className="text-gray-300 hidden sm:inline">·</span>
+                <span>Free forever plan</span>
+                <span className="text-gray-300 hidden sm:inline">·</span>
+                <span>Works worldwide</span>
+              </p>
+            </div>
+
+            {/* Dominant standee visual */}
+            <div className="relative animate-fade-in-up [animation-delay:180ms] lg:min-h-[520px]">
+              <div className="relative aspect-[4/5] sm:aspect-[5/6] lg:absolute lg:inset-0 lg:aspect-auto rounded-[1.75rem] overflow-hidden shadow-[0_32px_64px_-28px_rgba(15,40,30,0.45)]">
+                <Image
+                  src={standeeCounter}
+                  alt="Google review QR standee on a billing counter"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 48vw"
+                  className="object-cover animate-hero-ken"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                  <p className="font-display text-white text-xl sm:text-2xl font-semibold leading-snug drop-shadow-sm">
+                    Print. Place. Collect 5-star reviews.
+                  </p>
+                  <p className="text-white/80 text-sm mt-1.5">
+                    Counter standees customers actually scan
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          HOW TO DISPLAY — real product photos
+      ══════════════════════════════════════════ */}
+      <section className="py-20 lg:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mb-14">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+              Download. Print. Get reviews.
+            </h2>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              High-res designs for paper, acrylic, or vinyl — put them where customers already pause.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {[
+              {
+                img: standeeCafe,
+                alt: 'Google Review Standee on Cafe Table',
+                title: 'Table standees',
+                desc: '4×6 acrylic on tables. Guests scan while they wait.',
+              },
+              {
+                img: standeeCounter,
+                alt: 'Google Review Standee on Billing Counter',
+                title: 'Counter display',
+                desc: 'Checkout is the highest-intent moment for a review.',
+              },
+              {
+                img: stickerDoor,
+                alt: 'Google Review Sticker on Glass Door',
+                title: 'Window stickers',
+                desc: 'Show your rating before customers even walk in.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="group">
+                <div className="relative rounded-2xl overflow-hidden mb-5 aspect-[4/5] bg-gray-100">
+                  <Image
+                    src={item.img}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-1.5">{item.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          AI REVIEWS — key differentiator
+      ══════════════════════════════════════════ */}
+      <section className="py-20 lg:py-28 bg-[#0f3d2e] text-white overflow-hidden relative">
+        <div
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage:
+              'radial-gradient(ellipse at 15% 20%, rgba(43,184,137,0.45), transparent 50%), radial-gradient(ellipse at 85% 80%, rgba(24,95,165,0.25), transparent 45%)',
+          }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div>
+              <p className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 mb-4">
+                <Sparkles className="w-4 h-4" />
+                AI-powered customer reviews
+              </p>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-4 leading-snug">
+                Customers don&apos;t stare at a blank review box
+              </h2>
+              <p className="text-white/75 text-lg leading-relaxed mb-8 max-w-lg">
+                After they scan your QR, ReviewQR shows ready-to-use review text.
+                They tap to copy, open Google, and paste — reviews finish in under a minute.
+              </p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  'AI writes 3 natural review options for your business',
+                  'One tap to copy — then paste on Google Reviews',
+                  'Included on Starter and above with your branded landing page',
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-3 text-white/90">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15">
+                      <Check className="w-3.5 h-3.5 text-emerald-300" strokeWidth={2.5} />
+                    </span>
+                    <span className="text-[15px] leading-snug">{line}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 hover:text-white transition-colors group"
+              >
+                See plans with AI reviews
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Phone-style preview of AI suggestions */}
+            <div className="relative mx-auto w-full max-w-sm">
+              <div className="rounded-[1.75rem] bg-white text-gray-900 shadow-2xl shadow-black/40 p-5 sm:p-6 border border-white/10">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-9 h-9 rounded-xl bg-primary-light flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">AI review suggestions</p>
+                    <p className="text-xs text-gray-400">Tap one to copy &amp; paste</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {AI_DEMO_REVIEWS.map((text, i) => (
+                    <div
+                      key={text}
+                      className={`relative rounded-xl border-2 p-4 text-left transition-colors ${
+                        i === 0
+                          ? 'border-primary bg-primary-light/40'
+                          : 'border-gray-100 bg-gray-50'
+                      }`}
+                    >
+                      <p className="text-sm text-gray-700 leading-relaxed pr-7">
+                        &ldquo;{text}&rdquo;
+                      </p>
+                      <Copy
+                        className={`absolute top-3.5 right-3.5 w-4 h-4 ${
+                          i === 0 ? 'text-primary' : 'text-gray-300'
+                        }`}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-5 flex items-center gap-2 text-xs text-gray-500">
+                  <Smartphone className="w-3.5 h-3.5 text-primary" />
+                  What customers see after scanning your QR
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════════════ */}
+      <section className="py-20 lg:py-28 bg-[#f0f5f2]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+              How it works
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Search, print, and let AI help customers finish the review.
+            </p>
+          </div>
+          <HowItWorksSteps />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          WHY — compact proof strip (not icon cards)
+      ══════════════════════════════════════════ */}
+      <section className="py-16 lg:py-20 bg-white border-y border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ul className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
+            {[
+              'Search Google Maps → get a 1-tap review link',
+              'AI review suggestions so customers finish faster',
+              'Print-ready PNG & PDF standee downloads',
+              'Works for any business on Google Maps, worldwide',
+            ].map((line) => (
+              <li key={line} className="flex items-start gap-3 text-gray-700">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-light">
+                  <Check className="w-3.5 h-3.5 text-primary" strokeWidth={2.5} />
+                </span>
+                <span className="text-[15px] leading-snug">{line}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          GUIDES — internal links for crawl priority
+      ══════════════════════════════════════════ */}
+      <section className="py-20 lg:py-24 bg-[#f7faf8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div className="max-w-xl">
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+                Guides to get more Google reviews
+              </h2>
+              <p className="text-gray-600">
+                Practical playbooks for restaurants, salons, standees, and Place IDs — plus the free generator.
+              </p>
+            </div>
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark shrink-0"
+            >
+              View all articles
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SEO_GUIDE_LINKS.map((guide) => (
+              <Link
+                key={guide.href}
+                href={guide.href}
+                className="group rounded-2xl border border-gray-100 bg-white p-5 hover:border-primary/30 hover:shadow-md transition-all"
+              >
+                <p className="font-semibold text-gray-900 group-hover:text-primary transition-colors mb-1.5 leading-snug">
+                  {guide.label}
+                </p>
+                <p className="text-sm text-gray-500 leading-relaxed">{guide.blurb}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          TESTIMONIALS
+      ══════════════════════════════════════════ */}
+      <section className="py-20 lg:py-28 bg-[#f7faf8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+              Loved by business owners
+            </h2>
+            <p className="text-gray-600">
+              Local shops using ReviewQR to grow their Google reputation.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TESTIMONIALS.map((testimonial, index) => (
+              <TestimonialCard key={index} {...testimonial} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <FaqSection />
+
+      {/* ══════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════ */}
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-[1.75rem] px-8 py-14 sm:py-16 text-center bg-[linear-gradient(135deg,#0f3d2e_0%,#1D9E75_55%,#2bb889_100%)]">
+            <div
+              className="absolute inset-0 opacity-20 pointer-events-none"
+              style={{
+                backgroundImage:
+                  'radial-gradient(circle at 20% 30%, white 0%, transparent 40%), radial-gradient(circle at 80% 70%, white 0%, transparent 35%)',
+              }}
+            />
+            <div className="relative">
+              <div className="flex justify-center gap-1 mb-5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star key={i} className="w-5 h-5 text-white fill-white" />
+                ))}
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-white mb-3 tracking-tight">
+                Ready for more reviews?
+              </h2>
+              <p className="text-white/85 mb-8 max-w-md mx-auto leading-relaxed">
+                Free QR to start. Upgrade for AI review suggestions that help customers post faster.
+              </p>
+              <Link
+                href="/google-review-qr-code-generator"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary text-base font-bold rounded-xl transition-all duration-200 hover:bg-primary-light hover:shadow-lg active:scale-[0.98] group"
+              >
+                Generate my free QR
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <p className="text-xs text-white/70 mt-4">No credit card · Free forever plan</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default HomePageClient;
