@@ -344,7 +344,7 @@ const StandeeTeaser = () => {
             <p className="text-sm font-bold text-gray-900">
               Businesses with standees get <span className="text-primary">3× more reviews</span>
             </p>
-            <p className="text-xs text-gray-500">Starting at just ₹299/month — less than a cup of coffee a day</p>
+            <p className="text-xs text-gray-500">Starting at just ₹199/month — less than a cup of coffee a day</p>
           </div>
         </div>
         <Link href="/pricing"

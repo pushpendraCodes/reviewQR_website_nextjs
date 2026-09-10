@@ -47,7 +47,7 @@ const SignupPage: React.FC = () => {
   const password = watch("password", "");
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectUrl = searchParams.get("redirect") || "/";
+      const redirectUrl = searchParams.get("redirect") || "/dashboard";
       navigate.push(redirectUrl);
     }
   }, [isAuthenticated, navigate, searchParams]);

@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { useLogoutMutation } from '../store/api/authApi';
 import toast from 'react-hot-toast';
 import { logoutUser } from '../store/slices/authSlice';
+import { syncAccessTokenCookieFromStorage } from '@/lib/authCookie';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,12 +23,20 @@ const Navbar = () => {
 
   useEffect(() => { setMounted(true); }, []);
 
+  const goToDashboard = () => {
+    // Ensure middleware cookie exists before navigating to /dashboard
+    syncAccessTokenCookieFromStorage();
+    setIsProfileOpen(false);
+    setIsOpen(false);
+  };
+
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/google-review-qr-code-generator', label: 'Generate QR' },
     { path: '/how-it-works', label: 'How It Works' },
     { path: '/pricing', label: 'Pricing' },
     { path: '/blog', label: 'Blog' },
+    { path: '/services', label: 'Custom Dev' },
     { path: '/contact', label: 'Contact' },
   ];
 
@@ -159,7 +168,7 @@ const Navbar = () => {
                       <div className="py-1.5">
                         <Link
                           href="/dashboard"
-                          onClick={() => setIsProfileOpen(false)}
+                          onClick={goToDashboard}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors group"
                         >
                           <div className="w-7 h-7 rounded-lg bg-gray-100 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
@@ -249,7 +258,7 @@ const Navbar = () => {
                     </div>
                     <Link
                       href="/dashboard"
-                      onClick={() => setIsOpen(false)}
+                      onClick={goToDashboard}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary rounded-xl transition-colors"
                     >
                       <User className="w-4 h-4" />

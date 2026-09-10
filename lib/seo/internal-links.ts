@@ -5,6 +5,7 @@ import { blogPosts, type BlogPost } from '@/data/blogData';
  * Keep these linked from high-authority pages (home, how-it-works, blog).
  */
 export const SEO_PRIORITY_BLOG_SLUGS = [
+  'how-to-automate-google-reviews-for-local-seo',
   'free-google-review-qr-code-generator',
   'google-review-qr-code-for-restaurants',
   'google-review-qr-code-for-salons-and-spas',
@@ -38,6 +39,11 @@ export const SEO_GUIDE_LINKS: { href: string; label: string; blurb: string }[] =
     href: GENERATOR_PATH,
     label: 'Free Google Review QR Code Generator',
     blurb: 'Create a print-ready review QR in under a minute.',
+  },
+  {
+    href: '/blog/how-to-automate-google-reviews-for-local-seo',
+    label: 'Automate Google reviews for SEO',
+    blurb: 'QR workflows, follow-ups, and AI prompts that stay compliant.',
   },
   {
     href: '/blog/free-google-review-qr-code-generator',

@@ -8,6 +8,11 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!token) {
       const loginUrl = new URL('/auth/login', request.url);
+      // Preserve destination so AuthHydrator can restore cookie + bounce back
+      loginUrl.searchParams.set(
+        'redirect',
+        `${request.nextUrl.pathname}${request.nextUrl.search}`
+      );
       return NextResponse.redirect(loginUrl);
     }
     // Add X-Robots-Tag to prevent indexing of dashboard pages

@@ -3,7 +3,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../../types/auth";
-import Cookies from "js-cookie";
+import {
+  clearAccessTokenCookie,
+  persistAccessTokenCookie,
+  syncAccessTokenCookieFromStorage,
+} from "@/lib/authCookie";
 
 export interface AuthState {
   token: any;
@@ -25,7 +29,8 @@ const getStoredUser = (): User | null => {
 
 const getStoredToken = (): string | null => {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("accessToken");
+  // Keep middleware cookie aligned whenever we read storage.
+  return syncAccessTokenCookieFromStorage() ?? localStorage.getItem("accessToken");
 };
 
 const initialState: AuthState = {
@@ -50,7 +55,7 @@ const authSlice = createSlice({
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(action.payload.user));
         localStorage.setItem("accessToken", action.payload.accessToken);
-        Cookies.set("accessToken", action.payload.accessToken, { secure: true, sameSite: "Lax" });
+        persistAccessTokenCookie(action.payload.accessToken);
       }
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -63,7 +68,7 @@ const authSlice = createSlice({
       if (typeof window !== "undefined") {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
-        Cookies.remove("accessToken");
+        clearAccessTokenCookie();
       }
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {

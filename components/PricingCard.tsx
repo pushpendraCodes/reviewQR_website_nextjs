@@ -10,9 +10,11 @@ import Link from 'next/link';;
 interface PricingCardProps {
   name: string;
   monthlyPrice: string;
-  annualPrice?: string;       // Total annual amount (e.g. "₹2,513")
+  annualPrice?: string;       // Total annual amount (e.g. "2,513")
   annualMonthly?: string;     // Per-month when billed annually (e.g. "₹209")
   isAnnual: boolean;
+  currencySymbol?: string;
+  annualSavingsPercent?: number;
   period?: string;
   description: string;
   features: string[];
@@ -31,6 +33,8 @@ const PricingCard = ({
   annualPrice,
   annualMonthly,
   isAnnual,
+  currencySymbol = '₹',
+  annualSavingsPercent = 0,
   description,
   features,
   qrLimit,
@@ -42,7 +46,7 @@ const PricingCard = ({
   isLoading,
 }: PricingCardProps) => {
   const displayPrice = isFree
-    ? '₹0'
+    ? `${currencySymbol}0`
     : isAnnual
     ? annualMonthly!
     : monthlyPrice;
@@ -50,7 +54,7 @@ const PricingCard = ({
   const subLabel = isFree
     ? 'forever'
     : isAnnual
-    ? `₹${annualPrice} billed annually`
+    ? `${currencySymbol}${annualPrice} billed annually`
     : 'per month';
 
   return (
@@ -71,10 +75,10 @@ const PricingCard = ({
       )}
 
       {/* Annual savings badge */}
-      {!isFree && isAnnual && (
+      {!isFree && isAnnual && annualSavingsPercent > 0 && (
         <div className="absolute top-4 right-4">
           <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-            Save 30%
+            Save {annualSavingsPercent}%
           </span>
         </div>
       )}

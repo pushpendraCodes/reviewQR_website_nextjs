@@ -21,6 +21,28 @@ import {
 const CURRENCY_STORAGE_KEY = 'reviewqr-pricing-currency';
 import { useLazyGetProfileQuery } from '@/store/api/authApi';
 import { updateUser } from '@/store/slices/authSlice';
+import {
+  getPlanDisplayPrices,
+  annualSavingsPercent,
+  PLAN_PRICES_INR,
+  PLAN_PRICES_USD,
+} from '@/lib/pricing';
+
+const starterInr = getPlanDisplayPrices('starter', 'INR');
+const proInr = getPlanDisplayPrices('pro', 'INR');
+const agencyInr = getPlanDisplayPrices('agency', 'INR');
+const starterUsd = getPlanDisplayPrices('starter', 'USD');
+const proUsd = getPlanDisplayPrices('pro', 'USD');
+const agencyUsd = getPlanDisplayPrices('agency', 'USD');
+
+const maxAnnualSavings = Math.max(
+  annualSavingsPercent(PLAN_PRICES_INR.starter.monthly, PLAN_PRICES_INR.starter.annual),
+  annualSavingsPercent(PLAN_PRICES_INR.pro.monthly, PLAN_PRICES_INR.pro.annual),
+  annualSavingsPercent(PLAN_PRICES_INR.agency.monthly, PLAN_PRICES_INR.agency.annual),
+  annualSavingsPercent(PLAN_PRICES_USD.starter.monthly, PLAN_PRICES_USD.starter.annual),
+  annualSavingsPercent(PLAN_PRICES_USD.pro.monthly, PLAN_PRICES_USD.pro.annual),
+  annualSavingsPercent(PLAN_PRICES_USD.agency.monthly, PLAN_PRICES_USD.agency.annual),
+);
 
 const INR_PLANS = [
   {
@@ -50,9 +72,11 @@ const INR_PLANS = [
   },
   {
     name: 'Starter',
-    monthlyPrice: '₹299',
-    annualMonthly: '₹209',
-    annualPrice: '2,513',
+    monthlyPrice: starterInr.monthlyPrice,
+    annualMonthly: starterInr.annualMonthly,
+    annualPrice: starterInr.annualPrice,
+    currencySymbol: starterInr.currencySymbol,
+    annualSavingsPercent: starterInr.savingsPercent,
     description: 'AI reviews + clean standees for small businesses',
     qrLimit: '3',
     features: [
@@ -80,9 +104,11 @@ const INR_PLANS = [
   },
   {
     name: 'Pro',
-    monthlyPrice: '₹699',
-    annualMonthly: '₹489',
-    annualPrice: '5,873',
+    monthlyPrice: proInr.monthlyPrice,
+    annualMonthly: proInr.annualMonthly,
+    annualPrice: proInr.annualPrice,
+    currencySymbol: proInr.currencySymbol,
+    annualSavingsPercent: proInr.savingsPercent,
     description: 'Full customisation for growing businesses',
     qrLimit: '10',
     features: [
@@ -113,9 +139,11 @@ const INR_PLANS = [
   },
   {
     name: 'Agency',
-    monthlyPrice: '₹1,499',
-    annualMonthly: '₹1,049',
-    annualPrice: '12,593',
+    monthlyPrice: agencyInr.monthlyPrice,
+    annualMonthly: agencyInr.annualMonthly,
+    annualPrice: agencyInr.annualPrice,
+    currencySymbol: agencyInr.currencySymbol,
+    annualSavingsPercent: agencyInr.savingsPercent,
     description: 'For agencies managing multiple clients',
     qrLimit: 'Unlimited',
     features: [
@@ -139,6 +167,7 @@ const USD_PLANS = [
   {
     name: 'Free',
     monthlyPrice: '$0',
+    currencySymbol: '$',
     description: 'Try ReviewQR with zero commitment',
     qrLimit: '1',
     features: INR_PLANS[0].features,
@@ -150,9 +179,11 @@ const USD_PLANS = [
   },
   {
     name: 'Starter',
-    monthlyPrice: '$9',
-    annualMonthly: '$6.25',
-    annualPrice: '75',
+    monthlyPrice: starterUsd.monthlyPrice,
+    annualMonthly: starterUsd.annualMonthly,
+    annualPrice: starterUsd.annualPrice,
+    currencySymbol: starterUsd.currencySymbol,
+    annualSavingsPercent: starterUsd.savingsPercent,
     description: INR_PLANS[1].description,
     qrLimit: '3',
     features: INR_PLANS[1].features,
@@ -164,9 +195,11 @@ const USD_PLANS = [
   },
   {
     name: 'Pro',
-    monthlyPrice: '$19',
-    annualMonthly: '$13.25',
-    annualPrice: '159',
+    monthlyPrice: proUsd.monthlyPrice,
+    annualMonthly: proUsd.annualMonthly,
+    annualPrice: proUsd.annualPrice,
+    currencySymbol: proUsd.currencySymbol,
+    annualSavingsPercent: proUsd.savingsPercent,
     description: INR_PLANS[2].description,
     qrLimit: '10',
     features: INR_PLANS[2].features,
@@ -178,9 +211,11 @@ const USD_PLANS = [
   },
   {
     name: 'Agency',
-    monthlyPrice: '$39',
-    annualMonthly: '$27.25',
-    annualPrice: '327',
+    monthlyPrice: agencyUsd.monthlyPrice,
+    annualMonthly: agencyUsd.annualMonthly,
+    annualPrice: agencyUsd.annualPrice,
+    currencySymbol: agencyUsd.currencySymbol,
+    annualSavingsPercent: agencyUsd.savingsPercent,
     description: INR_PLANS[3].description,
     qrLimit: 'Unlimited',
     features: INR_PLANS[3].features,
@@ -530,9 +565,11 @@ const PricingPage = () => {
                 }`}
             >
               Annual
-              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-                Save 30%
-              </span>
+              {maxAnnualSavings > 0 && (
+                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                  Save up to {maxAnnualSavings}%
+                </span>
+              )}
             </button>
           </div>
         </div>

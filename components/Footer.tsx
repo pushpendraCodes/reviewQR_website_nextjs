@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';;
-import { QrCode, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
 /**
  * Footer — Site-wide footer with links, contact info, and branding
  */
@@ -36,6 +37,7 @@ const Footer = () => {
                 { to: '/how-it-works', label: 'How It Works' },
                 { to: '/pricing', label: 'Pricing' },
                 { to: '/blog', label: 'Blog' },
+                { to: '/services', label: 'Custom Development' },
                 { to: '/contact', label: 'Contact Us' },
               ].map((link) => (
                 <li key={link.to}>
@@ -93,7 +95,9 @@ const Footer = () => {
           </div>
         </div>
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col gap-4">
+          <One9TechPortfolioPromo variant="footer" className="text-center sm:text-left" />
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} ReviewQR. All rights reserved.
           </p>
@@ -113,6 +117,7 @@ const Footer = () => {
             <Link href="/shipping-policy" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">
               Shipping Policy
             </Link>
+          </div>
           </div>
         </div>
       </div>

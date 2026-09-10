@@ -102,7 +102,7 @@ const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children
                         <ArrowRight className="w-4 h-4" />
                     </button>
                     <p className="text-xs text-gray-400 mt-3">
-                        Plans start at just ₹299/month
+                        Plans start at just ₹199/month
                     </p>
                 </div>
             </div>

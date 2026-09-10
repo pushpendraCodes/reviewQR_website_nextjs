@@ -593,7 +593,7 @@ const GeneratePageContent = () => {
                         <Lock className="w-3 h-3" />
                         SVG &amp; PDF Standee available on{' '}
                         <Link href="/pricing" className="text-primary font-semibold hover:underline">
-                          Starter plan (₹299/mo)
+                          Starter plan (₹199/mo)
                         </Link>
                       </p>
                     )}

@@ -12,6 +12,7 @@ import { TESTIMONIALS } from '@/utils/mockData';
 import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import BusinessSearchBar from '@/components/BusinessSearchBar';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
+import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
 
 import standeeCafe from '@/assets/standee-cafe.jpg';
 import standeeCounter from '@/assets/standee-counter.jpg';
@@ -385,6 +386,8 @@ const HomePageClient = () => {
           </div>
         </div>
       </section>
+
+      <One9TechPortfolioPromo variant="section" />
 
       <FaqSection />
 

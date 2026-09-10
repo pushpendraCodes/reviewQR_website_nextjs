@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, MessageCircle, Send, CheckCircle } from 'lucide-re
 import toast from 'react-hot-toast';
 
 import { useSendEnquiryMutation } from '@/store/api/contactApi';
+import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
 
 /**
  * ContactPage — Contact form + WhatsApp contact + email display
@@ -74,8 +75,8 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900 text-sm">Email Us</p>
-                    <a href="mailto:contact@getreviewqr.com" className="text-primary hover:underline text-sm">
-                      contact@getreviewqr.com
+                    <a href="mailto:getreviewqr@gmail.com" className="text-primary hover:underline text-sm">
+                      getreviewqr@gmail.com
                     </a>
                   </div>
                 </div>
@@ -116,6 +117,9 @@ const ContactPage = () => {
               <p className="text-xs text-gray-400 mt-3 text-center">
                 Typically replies within 2 hours during business hours
               </p>
+              <div className="mt-8">
+                <One9TechPortfolioPromo variant="card" />
+              </div>
             </div>
             {/* Contact Form */}
             <div className="lg:col-span-3">

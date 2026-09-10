@@ -2,6 +2,7 @@
 
 
 import { Mail, Info, Target, Users, MapPin } from 'lucide-react';
+import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
 
 /**
  * AboutUs — Mandatory informational page for Razorpay compliance
@@ -67,8 +68,21 @@ const AboutUs = () => {
         </div>
       </section>
 
+      {/* Built by One9Tech */}
+      <section className="py-16 lg:py-20 bg-surface border-t border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Built with care</h2>
+            <p className="text-gray-500">
+              ReviewQR is designed and developed by One9Tech — available for custom web and app projects.
+            </p>
+          </div>
+          <One9TechPortfolioPromo variant="card" />
+        </div>
+      </section>
+
       {/* Contact Section */}
-      <section className="py-16 lg:py-24 bg-surface border-t border-gray-100">
+      <section className="py-16 lg:py-24 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
           <p className="text-gray-500 mb-10">
@@ -83,7 +97,7 @@ const AboutUs = () => {
               <div>
                 <p className="text-sm text-gray-400 font-medium">Email Us</p>
                 <a href="mailto:contact@getreviewqr.com" className="text-gray-900 font-bold hover:text-primary transition-colors">
-                  contact@getreviewqr.com
+                  getreviewqr@gmail.com
                 </a>
               </div>
             </div>
