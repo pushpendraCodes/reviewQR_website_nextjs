@@ -231,6 +231,7 @@ const PricingPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<PaymentCurrency | null>(null);
+  const [hydrated, setHydrated] = useState(false);
 
   const navigate = useRouter();
   const user = useSelector((state: any) => state.auth?.user);
@@ -248,6 +249,10 @@ const PricingPage = () => {
     () => (isUsd ? USD_PLANS : INR_PLANS),
     [isUsd]
   );
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (selectedCurrency !== null) return;
@@ -349,9 +354,7 @@ const PricingPage = () => {
     const order = await createOrder({ plan: planKey, billingCycle, currency: 'INR' }).unwrap();
 
     const options = {
-      key: order.keyId,
-      amount: order.amount,
-      currency: order.currency,
+      key: (order.keyId || '').trim(),
       name: 'ReviewQR',
       description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan - ${billingCycle}`,
       order_id: order.razorpayOrderId,
@@ -582,9 +585,10 @@ const PricingPage = () => {
             {plans.map((plan, index) => {
               const planKey = plan.name.toLowerCase();
               const isPaidPlan = planKey === 'starter' || planKey === 'pro' || planKey === 'agency';
-              const displayCtaText = user?.planExpiredNotifSent && isPaidPlan
-                ? `Renew ${plan.name}`
-                : plan.ctaText;
+              const displayCtaText =
+                hydrated && user?.planExpiredNotifSent && isPaidPlan
+                  ? `Renew ${plan.name}`
+                  : plan.ctaText;
 
               return (
                 <PricingCard
