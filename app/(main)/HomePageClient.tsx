@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Star, Check, Sparkles, Copy, Smartphone } from 'lucide-react';
+import { ArrowRight, Star, Check, Sparkles, Copy, Smartphone, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import TestimonialCard from '@/components/TestimonialCard';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import FaqSection from '@/components/FaqSection';
 import { TESTIMONIALS } from '@/utils/mockData';
@@ -28,6 +28,27 @@ const HomePageClient = () => {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!videoRef.current) return;
+    const nextMuted = !isMuted;
+    videoRef.current.muted = nextMuted;
+    setIsMuted(nextMuted);
+  };
 
   const handleSearch = () => {
     if (!query.trim()) return;
@@ -116,25 +137,78 @@ const HomePageClient = () => {
               </p>
             </div>
 
-            {/* Dominant standee visual */}
-            <div className="relative animate-fade-in-up [animation-delay:180ms] lg:min-h-[520px]">
-              <div className="relative aspect-[4/5] sm:aspect-[5/6] lg:absolute lg:inset-0 lg:aspect-auto rounded-[1.75rem] overflow-hidden shadow-[0_32px_64px_-28px_rgba(15,40,30,0.45)]">
-                <Image
-                  src={standeeCounter}
-                  alt="Google review QR standee on a billing counter"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 48vw"
-                  className="object-cover animate-hero-ken"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                  <p className="font-display text-white text-xl sm:text-2xl font-semibold leading-snug drop-shadow-sm">
-                    Print. Place. Collect 5-star reviews.
-                  </p>
-                  <p className="text-white/80 text-sm mt-1.5">
-                    Counter standees customers actually scan
-                  </p>
+            {/* Hero video showcase */}
+            <div className="relative animate-fade-in-up [animation-delay:180ms] w-full">
+              {/* Subtle ambient glow behind video card */}
+              <div className="absolute -inset-2 bg-gradient-to-tr from-primary/25 via-emerald-400/20 to-blue-500/20 rounded-[2.5rem] blur-2xl -z-10 opacity-70" />
+
+              <div className="relative rounded-[1.75rem] overflow-hidden bg-slate-950 border border-slate-800/80 shadow-[0_32px_64px_-28px_rgba(15,40,30,0.5)] group">
+                {/* Top Badge */}
+                <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full text-xs font-medium text-white shadow-lg pointer-events-none">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>How it works</span>
+                </div>
+
+                {/* Video Controls */}
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                    className="flex items-center gap-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer shadow-lg hover:scale-105 active:scale-95"
+                  >
+                    {isMuted ? (
+                      <>
+                        <VolumeX className="w-3.5 h-3.5 text-gray-300" />
+                        <span className="hidden sm:inline">Unmute</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="hidden sm:inline">Mute</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    aria-label={isPlaying ? 'Pause video' : 'Play video'}
+                    className="p-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white rounded-full text-xs font-medium transition-all duration-200 cursor-pointer shadow-lg hover:scale-105 active:scale-95"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-3.5 h-3.5" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Video element */}
+                <div className="relative aspect-[16/10] sm:aspect-video w-full bg-black flex items-center justify-center">
+                  <video
+                    ref={videoRef}
+                    src="/assets/Creating_QR_code_for_business_20261008235308.mp4"
+                    autoPlay
+                    loop
+                    muted={isMuted}
+                    playsInline
+                    className="w-full h-full object-cover sm:object-contain bg-black"
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                  />
+
+                  {/* Gradient shadow overlay at bottom for readable text */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                  {/* Caption */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7 pointer-events-none z-10">
+                    <p className="font-display text-white text-lg sm:text-2xl font-semibold leading-snug drop-shadow-sm">
+                      Print. Place. Collect 5-star reviews.
+                    </p>
+                    <p className="text-white/80 text-xs sm:text-sm mt-1 sm:mt-1.5">
+                      Watch how fast you can create and display your Google review standee
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
