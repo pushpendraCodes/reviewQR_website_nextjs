@@ -2,8 +2,9 @@
 
 import React from "react";
 import { QrCode, Download, Pencil } from "lucide-react";
-import { useRouter } from 'next/navigation';;
+import { useRouter } from 'next/navigation';
 import type { QRCode } from "../../store/api/qrApi";
+import { useUpdateQRCodeMutation } from "../../store/api/qrApi";
 
 interface QRStandeeCardProps {
     standee: QRCode;
@@ -11,6 +12,16 @@ interface QRStandeeCardProps {
 
 const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
     const navigate = useRouter();
+    const [updateQR] = useUpdateQRCodeMutation();
+
+    const handleToggle = async () => {
+        try {
+            const newIsActive = standee.isActive === false ? true : false;
+            await updateQR({ id: standee.id, data: { isActive: newIsActive } });
+        } catch (error) {
+            console.error("Failed to update QR status", error);
+        }
+    };
 
     const handleAction = () => {
         // Both buttons navigate to the edit page
@@ -30,10 +41,20 @@ const QRStandeeCard: React.FC<QRStandeeCardProps> = ({ standee }) => {
                 <div className="w-10 h-10 rounded-lg bg-[#E8F5EE] flex items-center justify-center shrink-0">
                     <QrCode size={20} className="text-[#1A6B45]" />
                 </div>
-                <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{standee.businessName}</p>
+                <div className="min-w-0 flex-1">
+                    <div className="flex justify-between items-start">
+                        <p className="text-sm font-semibold text-gray-800 truncate" title={standee.businessName}>{standee.businessName}</p>
+                        <button 
+                            onClick={handleToggle}
+                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${standee.isActive !== false ? 'bg-[#1A6B45]' : 'bg-gray-200'}`}
+                            title={standee.isActive !== false ? "Disable QR Code" : "Enable QR Code"}
+                        >
+                            <span className="sr-only">Toggle QR</span>
+                            <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${standee.isActive !== false ? 'translate-x-2' : '-translate-x-2'}`} />
+                        </button>
+                    </div>
                     <div className="flex items-center gap-1 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-[#2ECC71]" />
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${standee.isActive !== false ? 'bg-[#2ECC71]' : 'bg-gray-400'}`} />
                         <p className="text-[11px] text-gray-400 truncate">
                             {standee.placeAddress} · {standee.standeeConfig.template}
                         </p>

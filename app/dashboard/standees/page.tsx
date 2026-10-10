@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 
-import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link } from "lucide-react";
-import { useListQRCodesQuery, useDeleteQRCodeMutation } from '@/store/api/qrApi';
-;
+import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link, CreditCard } from "lucide-react";
+import { useListQRCodesQuery, useDeleteQRCodeMutation, useUpdateQRCodeMutation } from '@/store/api/qrApi';
+import { useAppSelector } from '@/store/hooks';
+import AgencyBillingDialog from '@/components/dashboard/AgencyBillingDialog';
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) =>
     status === "active" ? (
@@ -20,9 +21,14 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) =>
 
 const StandeesPage: React.FC = () => {
     const [search, setSearch] = useState("");
+    const [selectedQR, setSelectedQR] = useState<any>(null);
     const navigate = useRouter();
     const { data: qrData, isLoading, refetch } = useListQRCodesQuery();
     const [deleteQR] = useDeleteQRCodeMutation();
+    const [updateQR] = useUpdateQRCodeMutation();
+    
+    const user = useAppSelector((state) => state.auth.user);
+    const isAgency = user?.plan === 'agency';
 
     const allStandees = qrData?.qrCodes || [];
     const filtered = allStandees.filter(
@@ -40,6 +46,15 @@ const StandeesPage: React.FC = () => {
     /** Navigate to the edit page with full preview & customization */
     const handleEditOrDownload = (id: string) => {
         navigate.push(`/dashboard/generate/${id}`);
+    };
+
+    const handleToggle = async (qr: any) => {
+        try {
+            const newIsActive = qr.isActive === false ? true : false;
+            await updateQR({ id: qr.id, data: { isActive: newIsActive } });
+        } catch (error) {
+            console.error("Failed to update QR status", error);
+        }
     };
 
     if (isLoading) {
@@ -122,8 +137,24 @@ const StandeesPage: React.FC = () => {
                                         </td>
                                         <td className="px-5 py-3.5 font-bold text-gray-700">{qr.scanCount.toLocaleString()}</td>
                                         <td className="px-5 py-3.5 text-gray-500 text-xs">{new Date(qr.updatedAt).toLocaleDateString()}</td>
-                                        <td className="px-5 py-3.5">
-                                            <StatusBadge status="active" />
+                                        <td className="px-5 py-3.5 flex items-center gap-2">
+                                            <button 
+                                                onClick={() => handleToggle(qr)}
+                                                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${qr.isActive !== false ? 'bg-[#1A6B45]' : 'bg-gray-200'}`}
+                                                title={qr.isActive !== false ? "Disable QR Code" : "Enable QR Code"}
+                                            >
+                                                <span className="sr-only">Toggle QR</span>
+                                                <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${qr.isActive !== false ? 'translate-x-2' : '-translate-x-2'}`} />
+                                            </button>
+                                            {qr.isActive !== false ? (
+                                                <span className="flex items-center gap-1 text-xs text-[#1A6B45] font-medium">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71]" /> Active
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400" /> Inactive
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2 justify-end">
@@ -134,6 +165,15 @@ const StandeesPage: React.FC = () => {
                                                 >
                                                     <Pencil size={14} />
                                                 </button>
+                                                {isAgency && (
+                                                    <button
+                                                        onClick={() => setSelectedQR(qr)}
+                                                        className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition-colors"
+                                                        title="Agency Billing & Payments"
+                                                    >
+                                                        <CreditCard size={14} />
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => handleEditOrDownload(qr.id)}
                                                     className="p-1.5 rounded-lg hover:bg-[#E8F5EE] text-gray-400 hover:text-[#1A6B45] transition-colors"
@@ -169,6 +209,14 @@ const StandeesPage: React.FC = () => {
                     )}
                 </div>
             </div>
+            
+            {selectedQR && (
+                <AgencyBillingDialog
+                    isOpen={!!selectedQR}
+                    onClose={() => setSelectedQR(null)}
+                    qr={selectedQR}
+                />
+            )}
         </>
     );
 };

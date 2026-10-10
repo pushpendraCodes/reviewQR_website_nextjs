@@ -18,6 +18,7 @@ export interface QRCode {
   createdAt: string;
   updatedAt: string;
   qrImageUrl?: string;
+  isActive: boolean;
 
   // Configuration
   qrConfig: {
@@ -31,6 +32,17 @@ export interface QRCode {
     socialProof?: string;
     language: 'en' | 'hi' | 'mr' | 'ta' | 'te';
     whiteLabel: { enabled: boolean; clientName: string };
+  };
+  agencyBilling?: {
+    planType: 'monthly' | 'yearly' | 'none';
+    price: number;
+    nextPaymentDate: string | null;
+    history: {
+      _id?: string;
+      amount: number;
+      date: string;
+      notes: string;
+    }[];
   };
 }
 
@@ -126,7 +138,7 @@ export const qrApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (_r, _e, { id }) => [{ type: "QRCode", id }],
+      invalidatesTags: ["QRCode"],
     }),
     deleteQRCode: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
