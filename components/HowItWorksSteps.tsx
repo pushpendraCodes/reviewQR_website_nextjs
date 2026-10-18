@@ -21,9 +21,9 @@ const HowItWorksSteps = ({ detailed = false }: HowItWorksStepsProps) => {
       icon: QrCode,
       number: '02',
       title: 'Get Your QR & Standee',
-      description: 'Download a print-ready QR or PDF standee for your counter, table, or door.',
+      description: 'Print the standee, then add an NFC sticker with the same link for tap or scan.',
       detail:
-        'Your QR links customers straight to your Google review page. Download a high-res PNG, or a printable standee PDF with your business name and rating — perfect for the billing counter.',
+        'Your QR and NFC tag share one short link. Customers scan with the camera or tap their phone on the standee — both open the same Google review page. Write the tap URL onto an NTAG213 sticker from the generator.',
       color: 'bg-primary-light text-primary',
     },
     {

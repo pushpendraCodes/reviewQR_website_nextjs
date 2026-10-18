@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../store/slices/authSlice";
 import { authApi } from "../store/api/authApi";
+import { pendingInvitePath } from "../lib/teamInvite";
 
 export const useOAuthCallback = () => {
   const searchParams = useSearchParams(); // ✅ Next.js returns read-only params, no setter
@@ -52,7 +53,7 @@ export const useOAuthCallback = () => {
             })
           );
           // ✅ Navigate and strip ?token= from URL after success
-          router.replace("/");
+          router.replace(pendingInvitePath() ?? "/");
         } else {
           throw new Error("Failed to fetch user");
         }

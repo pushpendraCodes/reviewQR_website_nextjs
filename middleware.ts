@@ -32,9 +32,16 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
+  // ─── Client portal: own token in localStorage, just keep it out of search ───
+  if (request.nextUrl.pathname.startsWith('/client')) {
+    const response = NextResponse.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*'],
+  matcher: ['/dashboard/:path*', '/auth/:path*', '/client', '/client/:path*'],
 };

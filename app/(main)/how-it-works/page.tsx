@@ -7,6 +7,39 @@ import HowItWorksSteps from '@/components/HowItWorksSteps';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 
 import { FAQ_DATA } from '@/utils/mockData';
+import { CLIENT_BLOCK_DAYS } from '@/lib/agencyFeatures';
+
+const AGENCY_STEPS = [
+  {
+    title: 'Invite your team',
+    description:
+      'Add staff from Team settings. Each person gets their own login, can add clients and QR codes, and sees only what they create.',
+  },
+  {
+    title: 'Create a QR for each client',
+    description:
+      'Generate white-label standees with the client\u2019s name on the footer. You get an email whenever a team member adds a client or QR.',
+  },
+  {
+    title: 'Give clients their own login',
+    description:
+      'Clients sign in to see scans, Google rating and latest reviews for just their QR codes, and download their standee files.',
+  },
+  {
+    title: 'Set billing and how to pay you',
+    description:
+      'Set a plan, price, due date and currency per client, and add your UPI ID, payment link, PayPal or bank details.',
+  },
+  {
+    title: 'Clients pay, you confirm',
+    description:
+      'Clients pay you directly and tap \u201CI\u2019ve paid\u201D. You get an email and confirm or reject it in one click, with the option to move the next due date forward.',
+  },
+  {
+    title: `Overdue clients lock after ${CLIENT_BLOCK_DAYS} days`,
+    description: `If a payment is still unpaid ${CLIENT_BLOCK_DAYS} days after the due date, the client\u2019s dashboard locks and both of you get an email with the amount due.`,
+  },
+];
 
 /**
  * HowItWorksPage — Detailed guide + FAQ + video
@@ -170,7 +203,41 @@ const HowItWorksPage = () => {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-surface">
+      <section id="agency" className="py-16 lg:py-24 bg-surface border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-rose-600 text-sm font-semibold uppercase tracking-wider">For agencies</span>
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
+              How the Agency plan works
+            </h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">
+              Manage review QR codes for many businesses, with your team, your brand and your own client billing.
+            </p>
+          </div>
+          <ol className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {AGENCY_STEPS.map((step, index) => (
+              <li key={step.title} className="bg-white rounded-2xl border border-gray-100 p-6">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-sm font-bold text-rose-600 mb-3">
+                  {index + 1}
+                </span>
+                <h3 className="font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8 text-center">
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark"
+            >
+              See every Agency feature and price
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-primary text-sm font-semibold uppercase tracking-wider">FAQ</span>

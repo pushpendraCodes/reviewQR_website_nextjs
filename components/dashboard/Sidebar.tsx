@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from 'next/navigation';
-import { QrCode, LayoutDashboard, BarChart2, Star, User, Menu, X, Lock, Home, Settings } from "lucide-react";
+import { QrCode, LayoutDashboard, BarChart2, Star, User, Menu, X, Lock, Home, Settings, MessageSquare, Users, UserRound } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { useListQRCodesQuery } from "../../store/api/qrApi";
@@ -13,6 +13,7 @@ type NavItem = {
     href: string;
     /** Minimum plan required to access this page (pages still render blurred via PlanGate) */
     requiredPlan?: "free" | "starter" | "pro" | "agency";
+    comingSoon?: boolean;
 };
 
 const PLAN_RANK: Record<string, number> = {
@@ -24,9 +25,12 @@ const mainNav: NavItem[] = [
     { label: "My QR standees", icon: <QrCode size={18} />, href: "/dashboard/standees" },
     { label: "Analytics", icon: <BarChart2 size={18} />, href: "/dashboard/analytics", requiredPlan: "pro" },
     { label: "Google rating", icon: <Star size={18} />, href: "/dashboard/google-rating", requiredPlan: "pro" },
+    { label: "Google reviews", icon: <MessageSquare size={18} />, href: "/dashboard/google-reviews", comingSoon: true },
 ];
 
 const accountNav: NavItem[] = [
+    { label: "Team", icon: <Users size={18} />, href: "/dashboard/team", requiredPlan: "agency" },
+    { label: "Clients", icon: <UserRound size={18} />, href: "/dashboard/clients", requiredPlan: "agency" },
     { label: "Profile", icon: <User size={18} />, href: "/dashboard/profile" },
     { label: "Settings", icon: <Settings size={18} />, href: "/dashboard/settings" },
     { label: "Review Us", icon: <Star size={18} />, href: "/dashboard/review-platform" },
@@ -34,12 +38,12 @@ const accountNav: NavItem[] = [
 
 const allNav = [...mainNav, ...accountNav];
 
-// Plan-based QR limits
+// Plan-based QR limits (must match QR_LIMITS in the backend)
 const PLAN_LIMITS: Record<string, number> = {
     free: 1,
-    starter: 5,
+    starter: 3,
     pro: 10,
-    agency: 50,
+    agency: Infinity,
 };
 
 const Sidebar: React.FC = () => {
@@ -57,12 +61,19 @@ const Sidebar: React.FC = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const { data: qrData } = useListQRCodesQuery();
 
-    const displayName = user?.businessName || user?.name || "My Business";
+    const staffTeam = user?.team?.role === "staff" ? user.team : null;
+    const displayName = staffTeam
+        ? user?.name || "Team member"
+        : user?.businessName || user?.name || "My Business";
     const plan = user?.plan || "free";
     const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
     const qrCount = qrData?.total ?? qrData?.qrCodes?.length ?? 0;
     const qrLimit = PLAN_LIMITS[plan] ?? 1;
-    const usagePercent = Math.min((qrCount / qrLimit) * 100, 100);
+    const unlimited = !Number.isFinite(qrLimit);
+    const usagePercent = unlimited ? 100 : Math.min((qrCount / qrLimit) * 100, 100);
+    const usageText = staffTeam
+        ? `Team of ${staffTeam.owner?.businessName || staffTeam.owner?.name || "agency"} · ${qrCount} QRs`
+        : `${planLabel} plan · ${unlimited ? `${qrCount} QRs` : `${qrCount}/${qrLimit} QRs used`}`;
 
     const hasPlanAccess = (required?: string) =>
         !required || PLAN_RANK[plan] >= PLAN_RANK[required];
@@ -88,6 +99,11 @@ const Sidebar: React.FC = () => {
                     {item.icon}
                 </span>
                 <span className="flex-1">{item.label}</span>
+                {item.comingSoon && (
+                    <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 shrink-0">
+                        Soon
+                    </span>
+                )}
                 {locked && (
                     <Lock size={12} className="text-[#6BAA8A]/60 shrink-0" />
                 )}
@@ -111,15 +127,15 @@ const Sidebar: React.FC = () => {
                     <>
                         <p className="text-white text-sm font-semibold leading-tight truncate">{displayName}</p>
                         <div className="flex items-center gap-1 mt-1">
-                            <span className={`w-1.5 h-1.5 rounded-full inline-block ${user?.planExpiredNotifSent ? 'bg-amber-500 animate-pulse' : 'bg-[#2ECC71]'}`} />
-                            <p className={`text-[11px] ${user?.planExpiredNotifSent ? 'text-amber-400 font-semibold' : 'text-[#6BAA8A]'}`}>
-                                {user?.planExpiredNotifSent ? 'Plan Expired' : `${planLabel} plan`} · {qrCount}/{qrLimit} QRs used
+                            <span className={`w-1.5 h-1.5 rounded-full inline-block shrink-0 ${user?.planExpiredNotifSent && !staffTeam ? 'bg-amber-500 animate-pulse' : 'bg-[#2ECC71]'}`} />
+                            <p className={`text-[11px] truncate ${user?.planExpiredNotifSent && !staffTeam ? 'text-amber-400 font-semibold' : 'text-[#6BAA8A]'}`} title={usageText}>
+                                {user?.planExpiredNotifSent && !staffTeam ? `Plan Expired · ${qrCount} QRs` : usageText}
                             </p>
                         </div>
                         <div className="mt-2 h-1 bg-[#2E5040] rounded-full">
                             <div className="h-1 bg-[#2ECC71] rounded-full" style={{ width: `${usagePercent}%` }} />
                         </div>
-                        {user?.planExpiredNotifSent && (
+                        {user?.planExpiredNotifSent && !staffTeam && (
                             <button
                                 onClick={() => navigate.push("/pricing")}
                                 className="mt-3 w-full py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition-colors shadow-sm active:scale-[0.98] text-center"

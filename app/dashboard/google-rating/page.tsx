@@ -1,9 +1,11 @@
 'use client';
 
-import React from "react";
+import React, { useState } from "react";
 
-import { Star, TrendingUp, ExternalLink } from "lucide-react";
-import { useGetSummaryQuery } from '@/store/api/analyticsApi';
+import { Star, TrendingUp, RefreshCw } from "lucide-react";
+import toast from "react-hot-toast";
+import { useGetSummaryQuery, useSyncAnalyticsMutation } from '@/store/api/analyticsApi';
+import { formatSyncedAgo, summarizeGoogleStats } from '@/lib/googleStats';
 
 const StarRow: React.FC<{ count: number }> = ({ count }) => (
     <div className="flex items-center gap-0.5">
@@ -14,10 +16,23 @@ const StarRow: React.FC<{ count: number }> = ({ count }) => (
 );
 
 import PlanGate from '@/components/dashboard/PlanGate';
-;
+import QrFilter from '@/components/dashboard/QrFilter';
 
 const GoogleRatingPage: React.FC = () => {
-    const { data: analytics, isLoading } = useGetSummaryQuery({ range: "30d" });
+    const [qrId, setQrId] = useState("");
+    const { data: analytics, isLoading, isFetching } = useGetSummaryQuery({ range: "30d", qrId: qrId || undefined });
+    const selectedQr = qrId ? analytics?.qrCodes.find((q) => q.id === qrId) : undefined;
+    const [sync, { isLoading: isSyncing }] = useSyncAnalyticsMutation();
+
+    const handleSync = async () => {
+        try {
+            const res = await sync().unwrap();
+            toast.success(res.message || "Synced with Google");
+        } catch (err: unknown) {
+            const msg = (err as { data?: { message?: string } })?.data?.message;
+            toast.error(msg || "Failed to sync with Google");
+        }
+    };
 
     if (isLoading) {
         return (
@@ -29,9 +44,7 @@ const GoogleRatingPage: React.FC = () => {
         );
     }
 
-    const totalReviews = analytics?.qrCodes.reduce((acc, curr) => acc + curr.totalReviews, 0) || 0;
-    const avgRatingRaw = (analytics?.qrCodes.reduce((acc, curr) => acc + (curr.currentRating * curr.totalReviews), 0) || 0) / (totalReviews || 1);
-    const avgRating = parseFloat(avgRatingRaw.toFixed(1));
+    const { avgRating, totalReviews, lastSyncedAt } = summarizeGoogleStats(analytics?.qrCodes);
 
     const recentReviews = analytics?.qrCodes
         .flatMap(qr => qr.latestReviews.map(r => ({ ...r, businessName: qr.businessName })))
@@ -53,15 +66,24 @@ const GoogleRatingPage: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
                         <div>
                             <h1 className="text-xl sm:text-[22px] font-semibold text-gray-800">Google Rating</h1>
-                            <p className="text-gray-400 text-sm mt-0.5">Live monitoring of your business reputation</p>
+                            <p className="text-gray-400 text-sm mt-0.5">
+                                {selectedQr ? <>Showing <span className="font-medium text-gray-600">{selectedQr.businessName}</span> only</> : "Live monitoring of your business reputation"}
+                            </p>
                         </div>
-                        {/* <Link to="/dashboard/analytics" className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm self-start sm:self-auto">
-                            <ExternalLink size={14} />
-                            View on Google
-                        </Link> */}
+                        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                            <QrFilter options={analytics?.qrOptions} value={qrId} onChange={setQrId} />
+                            <button
+                                onClick={handleSync}
+                                disabled={isSyncing}
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-200 bg-white text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
+                            >
+                                <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
+                                Refresh from Google
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+                    <div className={`grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 transition-opacity ${isFetching ? "opacity-60" : ""}`}>
                         {/* Left column: rating summary */}
                         <div className="lg:col-span-1 flex flex-col gap-4 sm:gap-5">
                             <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100">
@@ -73,10 +95,12 @@ const GoogleRatingPage: React.FC = () => {
                                                 <Star key={i} size={20} className={i < Math.floor(avgRating) ? "text-amber-400 fill-amber-400" : "text-amber-100 fill-amber-100"} />
                                             ))}
                                         </div>
-                                        <p className="text-sm text-gray-400">Weighted average of {totalReviews} reviews</p>
+                                        <p className="text-sm text-gray-400">
+                                            {selectedQr ? `${totalReviews} reviews on Google` : `Weighted average of ${totalReviews} reviews`}
+                                        </p>
                                         <div className="mt-3 inline-flex items-center gap-1 bg-[#E8F5EE] text-[#1A6B45] text-xs font-medium px-3 py-1 rounded-full">
                                             <TrendingUp size={11} />
-                                            Live from Google API
+                                            {formatSyncedAgo(lastSyncedAt)}
                                         </div>
                                     </div>
                                 </div>
@@ -100,8 +124,8 @@ const GoogleRatingPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <StarRow count={r.rating} />
-                                                <p className="text-[11px] text-gray-500 mt-1.5 leading-relaxed italic">"{r.text}"</p>
-                                                <p className="text-[9px] text-gray-400 mt-1 uppercase font-semibold">@ {r.businessName}</p>
+                                                <p className="text-[11px] text-gray-500 mt-1.5 leading-relaxed italic">&ldquo;{r.text}&rdquo;</p>
+                                                {!selectedQr && <p className="text-[9px] text-gray-400 mt-1 uppercase font-semibold">@ {r.businessName}</p>}
                                             </div>
                                         ))
                                     )}

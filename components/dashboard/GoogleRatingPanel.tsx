@@ -3,14 +3,12 @@
 import React from "react";
 import { Star } from "lucide-react";
 import { useGetSummaryQuery } from "../../store/api/analyticsApi";
+import { formatSyncedAgo, summarizeGoogleStats } from "../../lib/googleStats";
 
 const GoogleRatingPanel: React.FC = () => {
     const { data: analytics } = useGetSummaryQuery({ range: "30d" });
 
-    const avgRating = (analytics?.qrCodes.reduce((acc, curr) => acc + curr.currentRating, 0) || 0) / (analytics?.qrCodes.length || 1);
-    const totalReviews = analytics?.qrCodes.reduce((acc, curr) => acc + curr.totalReviews, 0) || 0;
-
-    const rating = parseFloat(avgRating.toFixed(1));
+    const { avgRating: rating, totalReviews, lastSyncedAt } = summarizeGoogleStats(analytics?.qrCodes);
     const fullStars = Math.floor(rating);
     const hasHalf = rating % 1 >= 0.5;
 
@@ -42,7 +40,7 @@ const GoogleRatingPanel: React.FC = () => {
             <p className="text-xs text-gray-400 mt-2">Based on {totalReviews.toLocaleString()} reviews on Google</p>
 
             <div className="mt-3 inline-flex items-center gap-1 bg-[#E8F5EE] text-[#1A6B45] text-xs font-medium px-2.5 py-1 rounded-full">
-                Live dashboard sync
+                {formatSyncedAgo(lastSyncedAt)}
             </div>
         </div>
     );

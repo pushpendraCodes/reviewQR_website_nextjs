@@ -4,14 +4,18 @@ import React, { useState } from "react";
 
 import { TrendingUp, QrCode, Star, Users, MapPin, Tablet } from "lucide-react";
 import { useGetSummaryQuery } from '@/store/api/analyticsApi';
+import { summarizeGoogleStats } from '@/lib/googleStats';
 
 type Range = "7d" | "30d" | "90d";
 
 import PlanGate from '@/components/dashboard/PlanGate';
+import QrFilter from '@/components/dashboard/QrFilter';
 
 const AnalyticsPage: React.FC = () => {
     const [range, setRange] = useState<Range>("30d");
-    const { data: analytics, isLoading } = useGetSummaryQuery({ range });
+    const [qrId, setQrId] = useState("");
+    const { data: analytics, isLoading, isFetching } = useGetSummaryQuery({ range, qrId: qrId || undefined });
+    const selectedQr = qrId ? analytics?.qrCodes.find((q) => q.id === qrId) : undefined;
 
     if (isLoading) {
         return (
@@ -23,11 +27,15 @@ const AnalyticsPage: React.FC = () => {
         );
     }
 
+    const google = summarizeGoogleStats(analytics?.qrCodes);
+
     const summaryData = [
         { label: "Total scans", value: analytics?.totalScans.toLocaleString() || "0", icon: <QrCode size={16} />, color: "text-blue-500" },
-        { label: "Reviews Count", value: analytics?.qrCodes.reduce((acc, curr) => acc + curr.totalReviews, 0).toLocaleString() || "0", icon: <Star size={16} />, color: "text-amber-500" },
-        { label: "Avg. Rating", value: (analytics?.qrCodes.reduce((acc, curr) => acc + curr.currentRating, 0) || 0 / (analytics?.qrCodes.length || 1)).toFixed(1), icon: <Star size={16} />, color: "text-green-500" },
-        { label: "Total QRs", value: analytics?.totalQRCodes || "0", icon: <Users size={16} />, color: "text-purple-500" },
+        { label: "Reviews Count", value: google.totalReviews.toLocaleString(), icon: <Star size={16} />, color: "text-amber-500" },
+        { label: "Avg. Rating", value: google.avgRating.toFixed(1), icon: <Star size={16} />, color: "text-green-500" },
+        selectedQr
+            ? { label: "All-time scans", value: (selectedQr.totalScanCount || 0).toLocaleString(), icon: <Users size={16} />, color: "text-purple-500" }
+            : { label: "Total QRs", value: analytics?.totalQRCodes || "0", icon: <Users size={16} />, color: "text-purple-500" },
     ];
 
     const maxScans = Math.max(...(analytics?.dailyScanData.map((d) => d.count) || [1]));
@@ -40,9 +48,13 @@ const AnalyticsPage: React.FC = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
                         <div>
                             <h1 className="text-xl sm:text-[22px] font-semibold text-gray-800">Analytics</h1>
-                            <p className="text-gray-400 text-sm mt-0.5">Comprehensive performance tracking and breakdowns</p>
+                            <p className="text-gray-400 text-sm mt-0.5">
+                                {selectedQr ? <>Showing <span className="font-medium text-gray-600">{selectedQr.businessName}</span> only</> : "Comprehensive performance tracking and breakdowns"}
+                            </p>
                         </div>
-                        <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 shadow-sm self-start sm:self-auto">
+                        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                        <QrFilter options={analytics?.qrOptions} value={qrId} onChange={setQrId} />
+                        <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
                             {(["7d", "30d", "90d"] as Range[]).map((r) => (
                                 <button
                                     key={r}
@@ -53,8 +65,10 @@ const AnalyticsPage: React.FC = () => {
                                 </button>
                             ))}
                         </div>
+                        </div>
                     </div>
 
+                    <div className={`transition-opacity ${isFetching ? "opacity-60" : ""}`}>
                     {/* Summary cards */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-6">
                         {summaryData.map((card) => (
@@ -167,7 +181,7 @@ const AnalyticsPage: React.FC = () => {
                                 )}
                             </div>
                             <div className="flex flex-col gap-3">
-                                <p className="text-xs text-gray-400 mb-1 uppercase font-medium tracking-wider">Top Performing QR</p>
+                                <p className="text-xs text-gray-400 mb-1 uppercase font-medium tracking-wider">{selectedQr ? "Selected QR" : "Top Performing QR"}</p>
                                 {analytics?.qrCodes.slice(0, 3).map((qr, idx) => (
                                     <div key={qr.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
                                         <span className="text-sm font-bold text-gray-300">{idx + 1}</span>
@@ -189,6 +203,7 @@ const AnalyticsPage: React.FC = () => {
                                 ))}
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </PlanGate>

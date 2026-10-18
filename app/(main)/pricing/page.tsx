@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loadRazorpay } from '@/utils/loadRazorpay';
 import {
   useGetPricingRegionQuery,
+  useGetPricingConfigQuery,
   useCreateOrderMutation,
   useCreateLemonCheckoutMutation,
   useVerifyPaymentMutation,
@@ -24,9 +25,15 @@ import { updateUser } from '@/store/slices/authSlice';
 import {
   getPlanDisplayPrices,
   annualSavingsPercent,
+  formatPrice,
+  priceTableFromConfig,
   PLAN_PRICES_INR,
   PLAN_PRICES_USD,
+  type PaidPlanKey,
+  type PlanPriceTable,
 } from '@/lib/pricing';
+import { CLIENT_BLOCK_DAYS, PLAN_GRACE_DAYS } from '@/lib/agencyFeatures';
+import AgencyFeaturesSection from '@/components/AgencyFeaturesSection';
 
 const starterInr = getPlanDisplayPrices('starter', 'INR');
 const proInr = getPlanDisplayPrices('pro', 'INR');
@@ -35,14 +42,24 @@ const starterUsd = getPlanDisplayPrices('starter', 'USD');
 const proUsd = getPlanDisplayPrices('pro', 'USD');
 const agencyUsd = getPlanDisplayPrices('agency', 'USD');
 
-const maxAnnualSavings = Math.max(
-  annualSavingsPercent(PLAN_PRICES_INR.starter.monthly, PLAN_PRICES_INR.starter.annual),
-  annualSavingsPercent(PLAN_PRICES_INR.pro.monthly, PLAN_PRICES_INR.pro.annual),
-  annualSavingsPercent(PLAN_PRICES_INR.agency.monthly, PLAN_PRICES_INR.agency.annual),
-  annualSavingsPercent(PLAN_PRICES_USD.starter.monthly, PLAN_PRICES_USD.starter.annual),
-  annualSavingsPercent(PLAN_PRICES_USD.pro.monthly, PLAN_PRICES_USD.pro.annual),
-  annualSavingsPercent(PLAN_PRICES_USD.agency.monthly, PLAN_PRICES_USD.agency.annual),
-);
+const PLAN_KEY_BY_NAME: Record<string, PaidPlanKey> = { Starter: 'starter', Pro: 'pro', Agency: 'agency' };
+
+/** Replaced at runtime with the admin-configured seat numbers and price. */
+const TEAM_FEATURE_PLACEHOLDER = 'Team logins for your staff';
+
+const teamFeatureText = (
+  team: { includedSeats: number; maxSeats: number; seatPriceMonthly: Record<PaymentCurrency, number> },
+  currency: PaymentCurrency
+) =>
+  team.maxSeats > team.includedSeats
+    ? `Team logins: ${team.includedSeats} staff included, up to ${team.maxSeats} (+${formatPrice(team.seatPriceMonthly[currency], currency)}/extra seat/mo)`
+    : `Team logins for ${team.includedSeats} staff member${team.includedSeats === 1 ? '' : 's'}`;
+
+const maxSavingsOf = (tables: PlanPriceTable[]) =>
+  Math.max(
+    0,
+    ...tables.flatMap((t) => Object.values(t).map((p) => annualSavingsPercent(p.monthly, p.annual)))
+  );
 
 const INR_PLANS = [
   {
@@ -95,7 +112,9 @@ const INR_PLANS = [
       'Standee templates (Luxury, Bold, Festive)',
       'Social proof badge',
       'Multi-language standee',
+      'Analytics & Google rating tracking',
       'White label',
+      'Team logins',
     ],
     popular: false,
     isFree: false,
@@ -123,14 +142,16 @@ const INR_PLANS = [
       'Social proof badge ("500+ happy customers")',
       'Multi-language standee (EN, हिन्दी, मराठी, தமிழ், తెలుగు)',
       'PNG, SVG & PDF Standee downloads',
-      'Analytics dashboard',
+      'Analytics dashboard (scan trends & locations)',
+      'Live Google rating & review count tracking',
+      'Weekly performance report by email',
       'Priority email support',
     ],
     lockedFeatures: [
       'White-label branding',
-      'Client dashboard',
-      'Bulk QR generation',
-      'API & Webhooks',
+      'Team logins for your staff',
+      'Client logins & dashboard',
+      'Client billing & payment collection',
     ],
     popular: true,
     isFree: false,
@@ -149,10 +170,17 @@ const INR_PLANS = [
     features: [
       'Unlimited QR codes',
       'Everything in Pro',
+      TEAM_FEATURE_PLACEHOLDER,
+      'Staff add clients & QRs and see only their own; you see everything',
+      'Filter QRs, analytics & Google rating by QR or team member',
+      'Client logins: scans, rating, reviews & standee downloads',
+      'Client billing tracker (plan, due date, currency, payments)',
+      'Collect payments: UPI, payment link, PayPal or bank details',
+      'Clients tap "I\'ve paid" and you confirm in one click',
+      `Auto-block clients ${CLIENT_BLOCK_DAYS} days after an unpaid due date`,
+      'Email alerts for payments and new team clients & QRs',
       'White-label ("Powered by Your Brand")',
       'Client name on standee footer',
-      'Client dashboard (read-only access)',
-      'Analytics dashboard',
       'Phone + WhatsApp support',
     ],
     lockedFeatures: [],
@@ -245,10 +273,39 @@ const PricingPage = () => {
   const currencyOverridden =
     selectedCurrency !== null && selectedCurrency !== pricingRegion?.currency;
 
-  const plans = useMemo(
-    () => (isUsd ? USD_PLANS : INR_PLANS),
-    [isUsd]
-  );
+  const { data: pricingConfig, isLoading: pricesLoading } = useGetPricingConfigQuery();
+
+  const { plans, maxAnnualSavings } = useMemo(() => {
+    const currency: PaymentCurrency = isUsd ? 'USD' : 'INR';
+    const inrTable = pricingConfig ? priceTableFromConfig(pricingConfig.plans, 'INR') : PLAN_PRICES_INR;
+    const usdTable = pricingConfig ? priceTableFromConfig(pricingConfig.plans, 'USD') : PLAN_PRICES_USD;
+    const table = isUsd ? usdTable : inrTable;
+    const team = pricingConfig?.team;
+
+    const list = (isUsd ? USD_PLANS : INR_PLANS).map((plan) => {
+      const key = PLAN_KEY_BY_NAME[plan.name];
+      if (!key) return plan;
+      const d = getPlanDisplayPrices(key, currency, table);
+      const priced = {
+        ...plan,
+        monthlyPrice: d.monthlyPrice,
+        annualMonthly: d.annualMonthly,
+        annualPrice: d.annualPrice,
+        annualTotal: d.annualTotal,
+        currencySymbol: d.currencySymbol,
+        annualSavingsPercent: d.savingsPercent,
+      };
+      if (key !== 'agency' || !team) return priced;
+      return {
+        ...priced,
+        features: plan.features
+          .map((f) => (f === TEAM_FEATURE_PLACEHOLDER ? (team.maxSeats > 0 ? teamFeatureText(team, currency) : null) : f))
+          .filter((f): f is string => f !== null),
+      };
+    });
+
+    return { plans: list, maxAnnualSavings: maxSavingsOf([inrTable, usdTable]) };
+  }, [isUsd, pricingConfig]);
 
   useEffect(() => {
     setHydrated(true);
@@ -481,12 +538,57 @@ const PricingPage = () => {
         ],
       },
       {
-        category: 'Advanced',
+        category: 'Insights',
         rows: [
-          { feature: 'Analytics', free: false, starter: false, pro: true, agency: true },
-          // { feature: 'Bulk QR (CSV)', free: false, starter: false, pro: false, agency: true },
-          // { feature: 'API & Webhooks', free: false, starter: false, pro: false, agency: true },
-          { feature: 'Client dashboard', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Dashboard overview', free: false, starter: false, pro: true, agency: true },
+          { feature: 'Scan analytics (trends & locations)', free: false, starter: false, pro: true, agency: true },
+          { feature: 'Live Google rating & review count', free: false, starter: false, pro: true, agency: true },
+          { feature: 'Weekly performance email', free: false, starter: false, pro: true, agency: true },
+          { feature: 'Reply to Google reviews with AI', free: false, starter: false, pro: 'Coming soon', agency: 'Coming soon' },
+        ],
+      },
+      {
+        category: 'Agency & team',
+        rows: [
+          {
+            feature: 'Team member logins',
+            free: false,
+            starter: false,
+            pro: false,
+            agency: pricingConfig
+              ? pricingConfig.team.maxSeats > pricingConfig.team.includedSeats
+                ? `${pricingConfig.team.includedSeats} included, up to ${pricingConfig.team.maxSeats}`
+                : pricingConfig.team.maxSeats > 0
+                  ? `${pricingConfig.team.includedSeats} staff`
+                  : false
+              : true,
+          },
+          ...(pricingConfig && pricingConfig.team.maxSeats > pricingConfig.team.includedSeats
+            ? [{
+                feature: 'Extra team seats',
+                free: false,
+                starter: false,
+                pro: false,
+                agency: `${formatPrice(pricingConfig.team.seatPriceMonthly[effectiveCurrency], effectiveCurrency)}/seat/mo`,
+              }]
+            : []),
+          { feature: 'Staff see only their own QRs', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Staff can add clients, not change billing', free: false, starter: false, pro: false, agency: true },
+          { feature: 'See every QR, filter by team member', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Email alerts when staff add clients or QRs', free: false, starter: false, pro: false, agency: true },
+        ],
+      },
+      {
+        category: 'Clients & billing',
+        rows: [
+          { feature: 'Client logins (scans, rating & reviews)', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Clients download their own standees', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Client billing tracker (plan & due dates)', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Bill each client in INR, USD and more', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Your payment methods (UPI, link, PayPal, bank)', free: false, starter: false, pro: false, agency: true },
+          { feature: '"I\'ve paid" claims with one-click confirm', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Email when a client reports a payment', free: false, starter: false, pro: false, agency: true },
+          { feature: 'Auto-block overdue clients', free: false, starter: false, pro: false, agency: `After ${CLIENT_BLOCK_DAYS} days` },
         ],
       },
     ];
@@ -514,7 +616,8 @@ const PricingPage = () => {
             Choose Your Plan
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
-            Start free. Upgrade for AI review suggestions, branded landing pages, and print-ready standees.
+            Start free. Upgrade for AI review suggestions, branded landing pages, print-ready standees and Google rating
+            tracking. Agencies get team logins, client dashboards and client billing with payment collection.
           </p>
 
           {/* Currency switcher */}
@@ -596,6 +699,7 @@ const PricingPage = () => {
                   {...plan}
                   ctaText={displayCtaText}
                   isAnnual={isAnnual}
+                  isPriceLoading={pricesLoading && isPaidPlan}
                   isLoading={loadingPlan === planKey}
                   onPurchase={isPaidPlan ? () => handlePurchase(planKey) : undefined}
                 />
@@ -603,8 +707,14 @@ const PricingPage = () => {
             })}
           </div>
 
+          <p className="mt-8 text-center text-xs text-gray-400 max-w-2xl mx-auto">
+            If a paid plan isn&apos;t renewed, every QR code keeps working for {PLAN_GRACE_DAYS} days. After that, only the
+            most-scanned QR stays live (the Free limit) until you renew, and renewing brings the rest back instantly.
+          </p>
         </div>
       </section>
+
+      <AgencyFeaturesSection showCta={false} />
 
       {/* ── Feature comparison table ─────────────────────────────────── */}
       <section className="py-16 bg-white border-t border-gray-100">

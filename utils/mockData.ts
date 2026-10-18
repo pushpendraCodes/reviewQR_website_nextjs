@@ -169,6 +169,18 @@ export const FAQ_DATA = [
     answer: "The free version generates a standard QR code. Pro and Agency plans include customization like logo embedding, color changes, and branded standee templates."
   },
   {
+    question: "Can agencies manage QR codes for many clients?",
+    answer: "Yes. The Agency plan includes unlimited QR codes, team logins (staff see only the QRs and clients they add), white-label standees, and a separate login for each client. Clients see their own scans, Google rating and reviews, and can download their standees."
+  },
+  {
+    question: "How do agencies collect payments from clients?",
+    answer: "Set a plan, price, due date and currency for each client, then add your UPI ID, payment link, PayPal or bank details. Clients pay you directly and tap \"I've paid\". You get an email and confirm it in one click. If a payment is 15 days overdue, the client's dashboard locks automatically until the payment is confirmed."
+  },
+  {
+    question: "What happens if my paid plan expires?",
+    answer: "All your QR codes keep working for 15 days. After that, only your most-scanned QR stays live until you renew. Nothing is deleted, and renewing brings everything back instantly."
+  },
+  {
     question: "Is this available for businesses globally?",
     answer: "Yes, absolutely! ReviewQR works for any business listed on Google Maps anywhere in the world. The review URL and QR code format are universal."
   },

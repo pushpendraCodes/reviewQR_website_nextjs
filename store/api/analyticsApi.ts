@@ -9,6 +9,10 @@ export interface AnalyticsSummaryResponse {
     days: number;
     since: string;
   };
+  /** Set when the response is filtered to one QR. */
+  selectedQrId: string | null;
+  /** Every QR the user can see, for the QR filter. */
+  qrOptions: { id: string; businessName: string; placeAddress: string }[];
   totalQRCodes: number;
   totalScans: number;
   dailyScanData: { _id: string; count: number }[];
@@ -25,6 +29,7 @@ export interface AnalyticsSummaryResponse {
     totalScanCount: number;
     currentRating: number;
     totalReviews: number;
+    googleSyncedAt?: string | null;
     latestReviews: {
       authorName: string;
       rating: number;
@@ -39,8 +44,8 @@ export const analyticsApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Analytics"],
   endpoints: (builder) => ({
-    getSummary: builder.query<AnalyticsSummaryResponse, { range: string }>({
-      query: ({ range }) => `/analytics/summary?range=${range}`,
+    getSummary: builder.query<AnalyticsSummaryResponse, { range: string; qrId?: string }>({
+      query: ({ range, qrId }) => `/analytics/summary?range=${range}${qrId ? `&qrId=${encodeURIComponent(qrId)}` : ""}`,
       providesTags: ["Analytics"],
     }),
     syncAnalytics: builder.mutation<{ success: boolean; message: string }, void>({

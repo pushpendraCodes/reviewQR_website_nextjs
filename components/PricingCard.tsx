@@ -12,6 +12,7 @@ interface PricingCardProps {
   monthlyPrice: string;
   annualPrice?: string;       // Total annual amount (e.g. "2,513")
   annualMonthly?: string;     // Per-month when billed annually (e.g. "₹209")
+  annualTotal?: string;       // Formatted yearly price as set in admin (e.g. "₹1,990")
   isAnnual: boolean;
   currencySymbol?: string;
   annualSavingsPercent?: number;
@@ -25,6 +26,8 @@ interface PricingCardProps {
   isFree?: boolean;
   onPurchase?: () => void;
   isLoading?: boolean;
+  /** Admin prices still loading: show a placeholder instead of fallback prices */
+  isPriceLoading?: boolean;
 }
 
 const PricingCard = ({
@@ -32,6 +35,7 @@ const PricingCard = ({
   monthlyPrice,
   annualPrice,
   annualMonthly,
+  annualTotal,
   isAnnual,
   currencySymbol = '₹',
   annualSavingsPercent = 0,
@@ -44,18 +48,20 @@ const PricingCard = ({
   isFree,
   onPurchase,
   isLoading,
+  isPriceLoading,
 }: PricingCardProps) => {
+  const showAnnual = !isFree && isAnnual;
   const displayPrice = isFree
     ? `${currencySymbol}0`
-    : isAnnual
-    ? annualMonthly!
+    : showAnnual
+    ? annualTotal ?? `${currencySymbol}${annualPrice}`
     : monthlyPrice;
 
   const subLabel = isFree
     ? 'forever'
-    : isAnnual
-    ? `${currencySymbol}${annualPrice} billed annually`
-    : 'per month';
+    : showAnnual
+    ? `Billed once a year${annualMonthly ? ` · works out to ${annualMonthly}/mo` : ''}`
+    : 'billed monthly';
 
   return (
     <div
@@ -100,13 +106,22 @@ const PricingCard = ({
       <p className="text-sm text-gray-500 mb-5">{description}</p>
 
       {/* Price */}
-      <div className="mb-1">
-        <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
-        {!isFree && (
-          <span className="text-sm text-gray-400 ml-1">/mo</span>
-        )}
-      </div>
-      <p className="text-xs text-gray-400 mb-6 min-h-[16px]">{subLabel}</p>
+      {isPriceLoading ? (
+        <div className="mb-6 space-y-2" aria-label="Loading price">
+          <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-100" />
+          <div className="h-3 w-40 animate-pulse rounded bg-gray-100" />
+        </div>
+      ) : (
+        <>
+          <div className="mb-1">
+            <span className="text-4xl font-extrabold text-gray-900">{displayPrice}</span>
+            {!isFree && (
+              <span className="text-sm text-gray-400 ml-1">{showAnnual ? '/year' : '/mo'}</span>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 mb-6 min-h-[16px]">{subLabel}</p>
+        </>
+      )}
 
       {/* Features */}
       <ul className="space-y-3 mb-8 flex-grow">

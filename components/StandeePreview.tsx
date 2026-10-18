@@ -62,9 +62,9 @@ const TEMPLATES: Record<StandeeTemplate, TemplateConfig> = {
 };
 
 const LANG: Record<StandeeLanguage, { cta: string; sub: string; reviews: string; poweredBy: string }> = {
-  en: { cta: 'Scan to Review Us', sub: 'on Google Maps', reviews: 'Reviews', poweredBy: 'Powered by' },
-  hi: { cta: 'समीक्षा करने के लिए स्कैन करें', sub: 'Google Maps पर', reviews: 'समीक्षाएं', poweredBy: 'द्वारा संचालित' },
-  mr: { cta: 'पुनरावलोकनासाठी स्कॅन करा', sub: 'Google Maps वर', reviews: 'पुनरावलोकने', poweredBy: 'द्वारे संचालित' },
+  en: { cta: 'Tap or Scan to Review Us', sub: 'on Google Maps', reviews: 'Reviews', poweredBy: 'Powered by' },
+  hi: { cta: 'टैप या स्कैन करके समीक्षा करें', sub: 'Google Maps पर', reviews: 'समीक्षाएं', poweredBy: 'द्वारा संचालित' },
+  mr: { cta: 'टॅप किंवा स्कॅन करून रिव्ह्यू द्या', sub: 'Google Maps वर', reviews: 'पुनरावलोकने', poweredBy: 'द्वारे संचालित' },
   ta: { cta: 'மதிப்பாய்வுக்கு ஸ்கேன் செய்யுங்கள்', sub: 'Google Maps இல்', reviews: 'மதிப்பாய்வுகள்', poweredBy: 'இயக்குவது' },
   te: { cta: 'సమీక్షకు స్కాన్ చేయండి', sub: 'Google Maps లో', reviews: 'సమీక్షలు', poweredBy: 'ద్వారా నడిచే' },
 };
@@ -73,6 +73,8 @@ interface StandeePreviewProps {
   business: Business;
   reviewURL: string;
   shortURL?: string;
+  /** What the QR image encodes (defaults to shortURL || reviewURL) */
+  qrEncodeURL?: string;
   plan: string;
   logo?: string | null;
   qrColor?: string;
@@ -105,7 +107,7 @@ function getContrastTextColors(hex: string) {
 }
 
 const StandeePreview = ({
-  business, reviewURL, shortURL, plan, logo, qrColor, whiteLabel,
+  business, reviewURL, shortURL, qrEncodeURL, plan, logo, qrColor, whiteLabel,
   qrShape = 'square',
   template = 'minimal',
   standeeBgColor,
@@ -139,6 +141,8 @@ const StandeePreview = ({
   const t = LANG[isProPlus ? language : 'en'];
 
   const qrRef = useRef<HTMLDivElement>(null);
+  const encodedUrl =
+    qrEncodeURL || shortURL || reviewURL || 'https://getreviewqr.com';
 
   useEffect(() => {
     if (!qrRef.current) return;
@@ -149,7 +153,7 @@ const StandeePreview = ({
     const qrInstance = new QRCodeStyling({
       width: 160,
       height: 160,
-      data: shortURL || reviewURL || 'https://getreviewqr.com',
+      data: encodedUrl,
       dotsOptions: { type: isProPlus ? qrShape : 'square', color: resolvedColor },
       cornersSquareOptions: { type: cornerType, color: resolvedColor },
       cornersDotOptions: { type: isProPlus && qrShape === 'dots' ? 'dot' : 'square', color: resolvedColor },
@@ -161,7 +165,7 @@ const StandeePreview = ({
 
     qrRef.current.innerHTML = '';
     qrInstance.append(qrRef.current);
-  }, [reviewURL, shortURL, resolvedColor, qrShape, logo, isProPlus]);
+  }, [encodedUrl, resolvedColor, qrShape, logo, isProPlus]);
 
   const renderStars = (rating: number) => {
     // ✅ Star color also respects the bg — amber on light, white on dark

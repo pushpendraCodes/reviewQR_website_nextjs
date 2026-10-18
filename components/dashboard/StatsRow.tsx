@@ -4,13 +4,13 @@ import React from "react";
 import StatsCard from "./StatsCard";
 import { Eye, Star, MessageSquare, Layers } from "lucide-react";
 import { useGetSummaryQuery } from "../../store/api/analyticsApi";
+import { formatSyncedAgo, summarizeGoogleStats } from "../../lib/googleStats";
 
 const StatsRow: React.FC = () => {
     const { data: analytics } = useGetSummaryQuery({ range: "30d" });
 
     const totalScans = analytics?.totalScans || 0;
-    const avgRating = (analytics?.qrCodes.reduce((acc, curr) => acc + curr.currentRating, 0) || 0) / (analytics?.qrCodes.length || 1);
-    const totalReviews = analytics?.qrCodes.reduce((acc, curr) => acc + curr.totalReviews, 0) || 0;
+    const { avgRating, totalReviews, lastSyncedAt } = summarizeGoogleStats(analytics?.qrCodes);
     const activeQRs = analytics?.totalQRCodes || 0;
 
     return (
@@ -37,7 +37,7 @@ const StatsRow: React.FC = () => {
                 label="Total Reviews"
                 value={totalReviews.toLocaleString()}
                 subValue={`${totalScans > 0 ? Math.round((totalReviews / totalScans) * 100) : 0}% conversion`}
-                trend="Live from Google"
+                trend={formatSyncedAgo(lastSyncedAt)}
                 trendUp={true}
                 trendColor="green"
             />

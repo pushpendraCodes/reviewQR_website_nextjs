@@ -1,6 +1,6 @@
 /**
- * Display pricing — keep in sync with be/src/utils/helpers.js (PLAN_PRICES, PLAN_PRICES_USD).
- * Amounts are in smallest currency units (paise / cents).
+ * Fallback display pricing, used until the admin-editable prices load from
+ * GET /api/subscription/pricing. Amounts are in smallest currency units (paise / cents).
  */
 export const PLAN_PRICES_INR = {
   starter: { monthly: 19900, annual: 19900 },
@@ -32,9 +32,7 @@ export const PLAN_PRICES_USD = buildUsdPrices();
 
 function formatInr(amountPaise: number): string {
   const rupees = amountPaise / 100;
-  return rupees >= 1000
-    ? `₹${rupees.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-    : `₹${rupees.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+  return `₹${rupees.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 }
 
 function formatUsd(amountCents: number): string {
@@ -69,15 +67,33 @@ export function annualSavingsPercent(
   return Math.round(((yearlyIfMonthly - annualAmount) / yearlyIfMonthly) * 100);
 }
 
+export type PlanPriceTable = Record<PaidPlanKey, { monthly: number; annual: number }>;
+
+/** Live server pricing (subscriptionApi `getPricingConfig`) → per-currency price table. */
+export function priceTableFromConfig(
+  plans: Record<PaidPlanKey, Record<'monthly' | 'annual', Record<'INR' | 'USD', number>>>,
+  currency: 'INR' | 'USD'
+): PlanPriceTable {
+  return (Object.keys(PLAN_PRICES_INR) as PaidPlanKey[]).reduce((acc, plan) => {
+    acc[plan] = { monthly: plans[plan].monthly[currency], annual: plans[plan].annual[currency] };
+    return acc;
+  }, {} as PlanPriceTable);
+}
+
+export function formatPrice(amount: number, currency: 'INR' | 'USD'): string {
+  return currency === 'INR' ? formatInr(amount) : formatUsd(amount);
+}
+
 export function getPlanDisplayPrices(
   plan: PaidPlanKey,
-  currency: 'INR' | 'USD'
+  currency: 'INR' | 'USD',
+  table?: PlanPriceTable
 ) {
-  const prices = currency === 'INR' ? PLAN_PRICES_INR[plan] : PLAN_PRICES_USD[plan];
+  const prices = table?.[plan] ?? (currency === 'INR' ? PLAN_PRICES_INR[plan] : PLAN_PRICES_USD[plan]);
   const format = currency === 'INR' ? formatInr : formatUsd;
   const formatNum = currency === 'INR' ? formatInrNumber : formatUsdNumber;
   const symbol = currency === 'INR' ? '₹' : '$';
-  const monthlyEq = annualMonthlyEquivalent(prices.monthly, prices.annual);
+  const monthlyEq = annualMonthlyEquivalent(prices.monthly, prices.annual) / 100;
 
   return {
     monthlyPrice: format(prices.monthly),

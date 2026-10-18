@@ -11,7 +11,8 @@ export interface QRCode {
   placeAddress: string;
   placeRating: number;
   totalReviews: number;
-  reviewURL: string;
+  reviewURL?: string;
+  reviewUrl?: string;
   shortCode: string;
   shortURL: string;
   scanCount: number;
@@ -19,6 +20,10 @@ export interface QRCode {
   updatedAt: string;
   qrImageUrl?: string;
   isActive: boolean;
+  /** Over the Free limit after the plan lapsed and the grace period ended. */
+  planPaused?: boolean;
+  /** Who created the QR (populated). Null on QRs created before Agency teams existed. */
+  createdBy?: { _id: string; name: string; email: string; picture?: string } | null;
 
   // Configuration
   qrConfig: {
@@ -124,8 +129,14 @@ export const qrApi = createApi({
       }),
       invalidatesTags: ["QRCode"],
     }),
-    listQRCodes: builder.query<ListQRResponse, void>({
-      query: () => "/qr",
+    /** `member` (agency owners only): "me" or a staff user id. */
+    listQRCodes: builder.query<ListQRResponse, { member?: string; limit?: number } | void>({
+      query: (params) => {
+        const query: Record<string, string | number> = {};
+        if (params?.member) query.member = params.member;
+        if (params?.limit) query.limit = params.limit;
+        return { url: "/qr", params: Object.keys(query).length ? query : undefined };
+      },
       providesTags: ["QRCode"],
     }),
     getQRCode: builder.query<{ success: boolean; qr: QRCode }, string>({

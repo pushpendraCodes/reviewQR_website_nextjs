@@ -17,16 +17,17 @@ import UpsellBanner from '@/components/UpsellBanner';
 import QRCustomizer, { QRCustomizerTeaser } from '@/components/Qrcustomizer';
 import StandeeTeaser from '@/components/Standeeteaser';
 import StandeePreview from '@/components/StandeePreview';
+import TapScanSetup from '@/components/TapScanSetup';
 import { useBusinessSearch } from '@/hooks/useBusinessSearch';
 import { useQRGenerator } from '@/hooks/useQRGenerator';
-import { usePlan } from '@/hooks/Useplan';
+import { usePlan, getScanLink } from '@/hooks/Useplan';
 import type { QRDotShape, StandeeLanguage, StandeeTemplate } from '@/components/StandeePreview';
 import { useStandeeDownload } from '@/hooks/useStandeeDownload';
 import toast from 'react-hot-toast';
 import { useGenerateQRMutation, useGetQRCodeQuery } from '@/store/api/qrApi';
 
 const GeneratePageContent = () => {
-  const { plan, hasAccess, planExpiredNotifSent } = usePlan();
+  const { plan, hasAccess, planExpiredNotifSent, isPaidActive } = usePlan();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
@@ -143,7 +144,7 @@ const GeneratePageContent = () => {
         rating: qr.placeRating,
         totalReviews: qr.totalReviews,
       });
-      setReviewURL(qr.reviewURL);
+      setReviewURL(qr.reviewURL || qr.reviewUrl || '');
       setShortURL(qr.shortURL);
 
       // 2. Set customizer state
@@ -165,9 +166,14 @@ const GeneratePageContent = () => {
 
   // ── Copy link ─────────────────────────────────────────────────────
   const [copied, setCopied] = useState(false);
+  const scanLink = getScanLink(isPaidActive, shortURL, reviewURL);
+  const scanLinkLabel = isPaidActive
+    ? 'Paid plan — scan opens your business page (AI reviews)'
+    : 'Free plan — scan opens Google Reviews directly';
+
   const handleCopy = () => {
-    if (!reviewURL) return;
-    navigator.clipboard.writeText(reviewURL);
+    if (!scanLink) return;
+    navigator.clipboard.writeText(scanLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -554,7 +560,7 @@ const GeneratePageContent = () => {
                       />
 
 
-                      <a href={`https://wa.me/?text=${encodeURIComponent(reviewURL ?? '')}`}
+                      <a href={`https://wa.me/?text=${encodeURIComponent(scanLink ?? '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-all duration-200 active:scale-95"
@@ -575,17 +581,20 @@ const GeneratePageContent = () => {
                       </button>
                     </div>
 
-                    {/* Review URL strip */}
-                    <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
-                      <code className="flex-1 text-xs text-gray-500 truncate">{reviewURL}</code>
-                      <button
-                        onClick={handleCopy}
-                        className="flex-shrink-0 p-1.5 hover:bg-gray-200 rounded transition-colors"
-                      >
-                        {copied
-                          ? <Check className="w-3.5 h-3.5 text-green-500" />
-                          : <Copy className="w-3.5 h-3.5 text-gray-400" />}
-                      </button>
+                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                      <p className="text-[11px] font-semibold text-gray-600 mb-1.5">{scanLinkLabel}</p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 text-xs text-gray-500 truncate">{scanLink || 'Generate a QR to see your scan link'}</code>
+                        <button
+                          onClick={handleCopy}
+                          disabled={!scanLink}
+                          className="flex-shrink-0 p-1.5 hover:bg-gray-200 rounded transition-colors disabled:opacity-40"
+                        >
+                          {copied
+                            ? <Check className="w-3.5 h-3.5 text-green-500" />
+                            : <Copy className="w-3.5 h-3.5 text-gray-400" />}
+                        </button>
+                      </div>
                     </div>
 
                     {!hasAccess('starter') && (
@@ -626,6 +635,7 @@ const GeneratePageContent = () => {
                         business={selectedBusiness}
                         reviewURL={reviewURL}
                         shortURL={shortURL}
+                        qrEncodeURL={shortURL || reviewURL}
                         plan={plan}
                         logo={_logo}
                         qrColor={_qrColor}
@@ -680,6 +690,10 @@ const GeneratePageContent = () => {
             </div>{/* end two-column grid */}
           </div>
         )}
+
+        <div className="mt-10">
+          <TapScanSetup tapUrl={shortURL || reviewURL} />
+        </div>
       </div>
 
       {/* Auth Modal for Gating Download */}

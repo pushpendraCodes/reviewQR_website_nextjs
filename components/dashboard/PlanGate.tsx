@@ -1,11 +1,13 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';;
 import { Lock, Sparkles, ArrowRight } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import type { Plan } from "../../hooks/Useplan";
+import { useGetPricingConfigQuery, useGetPricingRegionQuery } from "../../store/api/subscriptionApi";
+import { PLAN_PRICES_INR, PLAN_PRICES_USD, formatPrice } from "../../lib/pricing";
 
 const PLAN_RANK: Record<Plan, number> = {
     free: 0,
@@ -27,10 +29,21 @@ interface PlanGateProps {
  */
 const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children }) => {
     const navigate = useRouter();
+    const [hydrated, setHydrated] = useState(false);
+    useEffect(() => setHydrated(true), []);
+
     const user = useSelector((state: RootState) => state.auth.user);
-    const userPlan: Plan = (user?.plan as Plan) || "free";
+    // Keep SSR and first client render consistent to avoid hydration mismatch.
+    const userPlan: Plan = hydrated ? ((user?.plan as Plan) || "free") : "free";
     const hasAccess = PLAN_RANK[userPlan] >= PLAN_RANK[requiredPlan];
-    const planExpired = !!user?.planExpiredNotifSent;
+    const planExpired = hydrated && !!user?.planExpiredNotifSent;
+
+    const { data: pricingRegion } = useGetPricingRegionQuery(undefined, { skip: hasAccess });
+    const { data: pricingConfig } = useGetPricingConfigQuery(undefined, { skip: hasAccess });
+    const currency = pricingRegion?.currency ?? "INR";
+    const starterMonthly =
+        pricingConfig?.plans.starter.monthly[currency] ??
+        (currency === "USD" ? PLAN_PRICES_USD : PLAN_PRICES_INR).starter.monthly;
 
     if (hasAccess) {
         return <>{children}</>;
@@ -75,7 +88,7 @@ const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children
                     {/* Feature bullets */}
                     <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-                            What you'll get
+                            What you&apos;ll get
                         </p>
                         <ul className="space-y-2">
                             {[
@@ -102,7 +115,7 @@ const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children
                         <ArrowRight className="w-4 h-4" />
                     </button>
                     <p className="text-xs text-gray-400 mt-3">
-                        Plans start at just ₹199/month
+                        Plans start at just {formatPrice(starterMonthly, currency)}/month
                     </p>
                 </div>
             </div>

@@ -36,6 +36,7 @@ const Footer = () => {
                 { to: '/google-review-qr-code-generator', label: 'Generate QR Code' },
                 { to: '/how-it-works', label: 'How It Works' },
                 { to: '/pricing', label: 'Pricing' },
+                { to: '/pricing#agency', label: 'For Agencies' },
                 { to: '/blog', label: 'Blog' },
                 { to: '/services', label: 'Custom Development' },
                 { to: '/contact', label: 'Contact Us' },

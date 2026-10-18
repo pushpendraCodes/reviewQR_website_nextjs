@@ -13,6 +13,14 @@ export interface PricingRegionResponse {
   lemonSqueezyEnabled: boolean;
 }
 
+type Money = Record<PaymentCurrency, number>;
+
+/** Admin-editable pricing; amounts in paise / cents. */
+export interface PricingConfig {
+  plans: Record<"starter" | "pro" | "agency", Record<"monthly" | "annual", Money>>;
+  team: { includedSeats: number; maxSeats: number; seatPriceMonthly: Money };
+}
+
 export interface CreateOrderRequest {
   plan: string;
   billingCycle: "monthly" | "annual";
@@ -48,6 +56,8 @@ export interface VerifyPaymentRequest {
 
 export interface VerifyLemonPaymentRequest {
   orderId?: string;
+  /** "seats" verifies an extra-seat purchase instead of a plan */
+  kind?: "seats";
 }
 
 export interface VerifyPaymentResponse {
@@ -71,6 +81,9 @@ export const subscriptionApi = createApi({
   endpoints: (builder) => ({
     getPricingRegion: builder.query<PricingRegionResponse, void>({
       query: () => "/subscription/pricing-region",
+    }),
+    getPricingConfig: builder.query<PricingConfig, void>({
+      query: () => "/subscription/pricing",
     }),
     createOrder: builder.mutation<RazorpayOrderResponse, CreateOrderRequest>({
       query: (data) => ({
@@ -112,6 +125,7 @@ export const subscriptionApi = createApi({
 
 export const {
   useGetPricingRegionQuery,
+  useGetPricingConfigQuery,
   useCreateOrderMutation,
   useCreateLemonCheckoutMutation,
   useVerifyPaymentMutation,

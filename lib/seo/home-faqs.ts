@@ -33,4 +33,19 @@ export const HOME_FAQS = [
     answer:
       'GetReviewQR works for any business listed on Google Maps, anywhere in the world. We support payments in INR and USD.',
   },
+  {
+    question: 'Is there a plan for marketing agencies?',
+    answer:
+      'Yes. The Agency plan gives you unlimited QR codes, team logins for your staff, white-label standees, and a login for each client to see their own scans, Google rating and reviews. You can also track client billing, share your UPI, payment link, PayPal or bank details, and confirm payments when clients tap "I\'ve paid".',
+  },
+  {
+    question: 'What happens if an agency client does not pay?',
+    answer:
+      'If a client payment is still unpaid 15 days after the due date, that client\'s dashboard is locked automatically and they get an email with the amount due. They can still pay and report the payment, and access returns as soon as you confirm it and move their next due date forward.',
+  },
+  {
+    question: 'What happens if my paid plan expires?',
+    answer:
+      'Every QR code keeps working for 15 days after expiry. After that, only your most-scanned QR stays live until you renew. Nothing is deleted, and renewing brings all your QR codes back instantly.',
+  },
 ] as const;

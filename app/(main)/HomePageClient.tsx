@@ -13,6 +13,7 @@ import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import BusinessSearchBar from '@/components/BusinessSearchBar';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
+import AgencyFeaturesSection from '@/components/AgencyFeaturesSection';
 
 import standeeCafe from '@/assets/standee-cafe.jpg';
 import standeeCounter from '@/assets/standee-counter.jpg';
@@ -399,6 +400,8 @@ const HomePageClient = () => {
           </ul>
         </div>
       </section>
+
+      <AgencyFeaturesSection tone="light" />
 
       {/* ══════════════════════════════════════════
           GUIDES — internal links for crawl priority
