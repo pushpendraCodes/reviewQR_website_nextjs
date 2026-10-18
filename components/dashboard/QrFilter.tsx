@@ -4,7 +4,7 @@ import React from "react";
 import { QrCode } from "lucide-react";
 import type { AnalyticsSummaryResponse } from "@/store/api/analyticsApi";
 
-/** Picks "All QR codes" (empty string) or a single QR. Hidden when there's nothing to choose between. */
+/** Picks . "All QR codes" (empty string) or a single QR. Hidden when there's nothing to choose between. */
 const QrFilter: React.FC<{
     options: AnalyticsSummaryResponse["qrOptions"] | undefined;
     value: string;
