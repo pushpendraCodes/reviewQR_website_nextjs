@@ -96,6 +96,10 @@ export interface ListQRResponse {
   success: boolean;
   qrCodes: QRCode[];
   total: number;
+  /** Whole-account active / plan-paused QR counts (agency owners and solo users; null for staff). */
+  accountTotal: number | null;
+  accountPaused: number | null;
+  pagination: { total: number; page: number; pages: number };
 }
 
 export interface AnalyticsResponse {

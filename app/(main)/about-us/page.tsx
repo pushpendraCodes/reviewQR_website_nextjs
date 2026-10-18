@@ -35,7 +35,7 @@ const AboutUs = () => {
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                In today's digital world, a business's online reputation is its most valuable asset. However, most happy customers simply forget to leave a review.
+                In today&apos;s digital world, a business&apos;s online reputation is its most valuable asset. However, most happy customers simply forget to leave a review.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
                 Our mission is to bridge this gap. We provide smart QR standees and AI review suggestions that turn a physical visit into a finished Google review in seconds — without customers staring at a blank box.
@@ -54,7 +54,7 @@ const AboutUs = () => {
                   <Users className="w-6 h-6 text-secondary" />
                 </div>
                 <h3 className="font-bold text-gray-900">Impact</h3>
-                <p className="text-sm text-gray-500 mt-2">1000+ businesses</p>
+                <p className="text-sm text-gray-500 mt-2">More reviews for local businesses</p>
               </div>
               <div className="bg-surface p-8 rounded-2xl border border-gray-100 text-center col-span-2">
                 <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -86,7 +86,7 @@ const AboutUs = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
           <p className="text-gray-500 mb-10">
-            Have a question or want to collaborate? We're always open to chat.
+            Have a question or want to collaborate? We&apos;re always open to chat.
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

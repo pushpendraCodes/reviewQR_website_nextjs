@@ -20,6 +20,7 @@ import InputField from "../../components/auth/InputField";
 import { useRegisterMutation } from "../../store/api/authApi";
 import { useAppSelector } from "../../store/hooks";
 import VerifyEmailModal from "./VerifyEmailModal";
+import { safeRedirect } from "@/lib/safeRedirect";
 interface SignupFormData {
   name: string;
   email: string;
@@ -47,7 +48,7 @@ const SignupPage: React.FC = () => {
   const password = watch("password", "");
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectUrl = searchParams.get("redirect") || "/dashboard";
+      const redirectUrl = safeRedirect(searchParams.get("redirect"));
       navigate.push(redirectUrl);
     }
   }, [isAuthenticated, navigate, searchParams]);

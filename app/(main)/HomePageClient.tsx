@@ -8,7 +8,7 @@ import TestimonialCard from '@/components/TestimonialCard';
 import { Suspense, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import FaqSection from '@/components/FaqSection';
-import { TESTIMONIALS } from '@/utils/mockData';
+import { useGetFeaturedReviewsQuery } from '@/store/api/landingApi';
 import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import BusinessSearchBar from '@/components/BusinessSearchBar';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
@@ -25,6 +25,21 @@ const AI_DEMO_REVIEWS = [
   'Excellent experience from start to finish. Five stars well deserved.',
 ];
 
+const OAuthHandler = () => {
+  const { isProcessing } = useOAuthCallback();
+  if (isProcessing) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-gray-500">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm">Signing you in...</p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 const HomePageClient = () => {
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -32,6 +47,7 @@ const HomePageClient = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { data: testimonials = [] } = useGetFeaturedReviewsQuery();
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -54,21 +70,6 @@ const HomePageClient = () => {
   const handleSearch = () => {
     if (!query.trim()) return;
     router.push(`/google-review-qr-code-generator?q=${encodeURIComponent(query)}`);
-  };
-
-  const OAuthHandler = () => {
-    const { isProcessing } = useOAuthCallback();
-    if (isProcessing) {
-      return (
-        <div className="min-h-[40vh] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3 text-gray-500">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm">Signing you in...</p>
-          </div>
-        </div>
-      );
-    }
-    return null;
   };
 
   return (
@@ -446,23 +447,31 @@ const HomePageClient = () => {
       {/* ══════════════════════════════════════════
           TESTIMONIALS
       ══════════════════════════════════════════ */}
-      <section className="py-20 lg:py-28 bg-[#f7faf8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
-              Loved by business owners
-            </h2>
-            <p className="text-gray-600">
-              Local shops using ReviewQR to grow their Google reputation.
-            </p>
+      {testimonials.length > 0 && (
+        <section className="py-20 lg:py-28 bg-[#f7faf8]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight mb-3">
+                Loved by business owners
+              </h2>
+              <p className="text-gray-600">
+                What ReviewQR users say about growing their Google reviews.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.map((review) => (
+                <TestimonialCard
+                  key={review._id}
+                  name={review.name}
+                  business={review.business}
+                  quote={review.text}
+                  rating={review.rating}
+                />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((testimonial, index) => (
-              <TestimonialCard key={index} {...testimonial} />
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <One9TechPortfolioPromo variant="section" />
 

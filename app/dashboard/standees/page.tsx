@@ -42,7 +42,7 @@ const StandeesPageInner: React.FC = () => {
     const members = team?.role === 'owner' ? team.members : [];
     const showCreator = isAgencyOwner && members.length > 0;
 
-    const { data: qrData, isLoading, refetch } = useListQRCodesQuery(member ? { member } : undefined);
+    const { data: qrData, isLoading, refetch } = useListQRCodesQuery(member ? { member, limit: 500 } : { limit: 500 });
     const [deleteQR] = useDeleteQRCodeMutation();
     const [updateQR] = useUpdateQRCodeMutation();
 
@@ -50,9 +50,9 @@ const StandeesPageInner: React.FC = () => {
         !qr.createdBy || qr.createdBy._id === (user?._id || user?.id) ? 'You' : qr.createdBy.name;
 
     const allStandees = qrData?.qrCodes || [];
-    const pausedCount = allStandees.filter((q) => q.planPaused).length;
+    const pausedCount = qrData?.accountPaused ?? allStandees.filter((q) => q.planPaused).length;
     const grace = !isStaff ? user?.planGrace : null;
-    const willPause = grace ? Math.max(0, (qrData?.total ?? allStandees.length) - grace.freeQrLimit) : 0;
+    const willPause = grace ? Math.max(0, (qrData?.accountTotal ?? allStandees.length) - grace.freeQrLimit) : 0;
     const filtered = allStandees.filter(
         (s) =>
             s.businessName.toLowerCase().includes(search.toLowerCase())

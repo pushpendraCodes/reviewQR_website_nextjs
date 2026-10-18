@@ -15,9 +15,9 @@ const features = [
 ];
 
 const stats = [
-  { value: "10K+", label: "Businesses" },
-  { value: "2.4M+", label: "QR Scans" },
-  { value: "4.9★", label: "Avg Rating" },
+  { value: "60s", label: "To set up" },
+  { value: "5", label: "Standee languages" },
+  { value: "Free", label: "To start" },
 ];
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
@@ -51,7 +51,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             <div className="inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-4 py-1.5">
               <TrendingUp className="w-3 h-3 text-violet-200" />
               <span className="text-white/90 text-xs font-medium tracking-wide">
-                Trusted by 10,000+ businesses worldwide
+                Works for any business on Google Maps
               </span>
             </div>
             <h1 className="text-4xl font-bold text-white leading-[1.15]">
@@ -92,21 +92,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         {/* Social proof */}
         <div className="relative z-10">
           <div className="flex items-center gap-4 p-3.5 bg-white/10 rounded-2xl border border-white/15">
-            <div className="flex -space-x-2.5">
-              {["🧑‍💼", "👩‍💼", "👨‍💻", "👩‍💻"].map((emoji, i) => (
-                <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 border-2 border-white/30 flex items-center justify-center text-xs shadow-sm">
-                  {emoji}
-                </div>
-              ))}
+            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-0.5 mb-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 text-yellow-300 fill-yellow-300" />
-                ))}
-                <span className="text-white font-semibold text-xs ml-1">4.9 / 5</span>
-              </div>
-              <p className="text-violet-100/70 text-xs">From 2,400+ verified customer reviews</p>
+              <p className="text-white font-semibold text-xs">No app needed</p>
+              <p className="text-violet-100/70 text-xs">Customers scan with their phone camera and land straight on your Google review form.</p>
             </div>
           </div>
         </div>

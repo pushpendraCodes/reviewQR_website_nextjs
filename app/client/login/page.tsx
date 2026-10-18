@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { BarChart3, Eye, EyeOff, Loader2, Lock, Mail, Star } from "lucide-react";
-import { useClientLoginMutation, clientPortalApi } from "@/store/api/clientPortalApi";
-import { getClientToken, setClientToken } from "@/lib/clientSession";
+import { ArrowRight, BarChart3, Eye, EyeOff, Loader2, Lock, Mail, Star } from "lucide-react";
+import { useClientLoginMutation, useGetClientMeQuery, clientPortalApi } from "@/store/api/clientPortalApi";
+import { clearClientToken, getClientToken, setClientToken } from "@/lib/clientSession";
 import { useAppDispatch } from "@/store/hooks";
 
 const errMsg = (err: unknown, fallback: string) =>
     (err as { data?: { message?: string } })?.data?.message || fallback;
+
+const noopSubscribe = () => () => {};
 
 const ClientLoginPage: React.FC = () => {
     const router = useRouter();
@@ -19,9 +21,18 @@ const ClientLoginPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [login, { isLoading }] = useClientLoginMutation();
 
-    useEffect(() => {
-        if (getClientToken()) router.replace("/client");
-    }, [router]);
+    // A saved session is never used automatically: on a shared device the next person
+    // must choose to continue as that client or sign out.
+    const storedToken = useSyncExternalStore(noopSubscribe, getClientToken, () => null);
+    const [signedOut, setSignedOut] = useState(false);
+    const { data: session } = useGetClientMeQuery(undefined, { skip: !storedToken || signedOut });
+    const savedSession = !signedOut && storedToken ? session : undefined;
+
+    const signOutSaved = () => {
+        clearClientToken();
+        dispatch(clientPortalApi.util.resetApiState());
+        setSignedOut(true);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,6 +59,31 @@ const ClientLoginPage: React.FC = () => {
                         Sign in with the email and password your agency gave you.
                     </p>
                 </div>
+
+                {savedSession && (
+                    <div className="mb-4 rounded-2xl border border-[#D1E7DA] bg-white p-4 shadow-sm">
+                        <p className="text-sm text-gray-600">
+                            Signed in as <span className="font-semibold text-gray-900">{savedSession.client.name}</span>
+                            <span className="block truncate text-xs text-gray-400">{savedSession.client.email}</span>
+                        </p>
+                        <div className="mt-3 flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => router.replace("/client")}
+                                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#1A6B45] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#165a3a]"
+                            >
+                                Continue <ArrowRight className="h-4 w-4" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={signOutSaved}
+                                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                                Not you? Sign out
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/60 sm:p-8">
                     <div>

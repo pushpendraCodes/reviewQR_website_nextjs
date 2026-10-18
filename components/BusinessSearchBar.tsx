@@ -1,8 +1,7 @@
 'use client';
 
 import { Search, Loader2 } from 'lucide-react';
-import { BUSINESS_CATEGORIES } from '../utils/mockData';
-import { useRouter } from 'next/navigation';
+import { BUSINESS_CATEGORIES } from '../utils/content';
 interface BusinessSearchBarProps {
   query: string;
   setQuery: (query: string) => void;
@@ -23,7 +22,6 @@ const BusinessSearchBar = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') onSearch();
   };
-  const router = useRouter();
 
   return (
     <div className="w-full max-w-2xl mx-auto">

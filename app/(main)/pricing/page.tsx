@@ -471,7 +471,7 @@ const PricingPage = () => {
     console.log('handlePurchase', planKey);
     if (!user) {
       toast('Please log in to continue', { icon: '🔒' });
-      navigate.push('/auth/login?returnTo=/pricing');
+      navigate.push('/auth/login?redirect=/pricing');
       return;
     }
 

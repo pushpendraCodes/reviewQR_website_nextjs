@@ -6,7 +6,7 @@ import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare, Sparkles
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 
-import { FAQ_DATA } from '@/utils/mockData';
+import { FAQ_DATA } from '@/utils/content';
 import { CLIENT_BLOCK_DAYS } from '@/lib/agencyFeatures';
 
 const AGENCY_STEPS = [

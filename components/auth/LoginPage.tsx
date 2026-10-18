@@ -13,6 +13,7 @@ import { useLoginMutation } from "../../store/api/authApi";
 import { setCredentials } from "../../store/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { syncAccessTokenCookieFromStorage } from "@/lib/authCookie";
+import { safeRedirect } from "@/lib/safeRedirect";
 
 interface LoginFormData {
   email: string;
@@ -36,7 +37,7 @@ const LoginPage: React.FC = () => {
     if (isAuthenticated && user) {
       // Cookie may be missing while localStorage still has the session.
       syncAccessTokenCookieFromStorage();
-      const redirectUrl = searchParams.get("redirect") || "/dashboard";
+      const redirectUrl = safeRedirect(searchParams.get("redirect"));
       router.replace(redirectUrl);
     }
   }, [isAuthenticated, user, router, searchParams]);
@@ -60,7 +61,7 @@ const LoginPage: React.FC = () => {
           })
         );
         toast.success("Welcome back! 🎉");
-        const redirectUrl = searchParams.get("redirect") || "/dashboard";
+        const redirectUrl = safeRedirect(searchParams.get("redirect"));
         router.replace(redirectUrl);
       }
     } catch (err: unknown) {
