@@ -133,7 +133,7 @@ const HomePageClient = () => {
                   AI review suggestions
                 </span>
                 <span className="text-gray-300 hidden sm:inline">·</span>
-                <span>Free forever plan</span>
+                <span>Free for 15 days</span>
                 <span className="text-gray-300 hidden sm:inline">·</span>
                 <span>Works worldwide</span>
               </p>
@@ -509,7 +509,7 @@ const HomePageClient = () => {
                 Generate my free QR
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <p className="text-xs text-white/70 mt-4">No credit card · Free forever plan</p>
+              <p className="text-xs text-white/70 mt-4">No credit card · Free for 15 days</p>
             </div>
           </div>
         </div>

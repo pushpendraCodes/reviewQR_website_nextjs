@@ -12,7 +12,7 @@
 export const FAQ_DATA = [
   {
     question: "What is ReviewQR?",
-    answer: "ReviewQR is a free tool that helps local businesses generate QR codes linked directly to their Google review page. Paid plans add printable standees and AI review suggestions so customers can finish a review in seconds."
+    answer: "ReviewQR is a tool you can try free for 15 days that helps local businesses generate QR codes linked directly to their Google review page. Paid plans add printable standees and AI review suggestions so customers can finish a review in seconds."
   },
   {
     question: "How does the QR code work?",
@@ -24,7 +24,7 @@ export const FAQ_DATA = [
   },
   {
     question: "Is ReviewQR really free?",
-    answer: "Yes! Generating a QR code and downloading it as a PNG is completely free. Premium plans unlock PDF standees, AI review suggestions, custom branding, analytics, and white-labeling."
+    answer: "You can try it free for 15 days. Create your QR code and download it as a PNG at no cost — it works for 15 days from when you create it, and we email you 3 days before it stops. Paid plans keep your QR codes working and add PDF standees, AI review suggestions, custom branding, analytics, and white-labeling."
   },
   {
     question: "Do I need a Google My Business listing?",
@@ -56,7 +56,7 @@ export const FAQ_DATA = [
   },
   {
     question: "What happens if my paid plan expires?",
-    answer: "All your QR codes keep working for 15 days. After that, only your most-scanned QR stays live until you renew. Nothing is deleted, and renewing brings everything back instantly."
+    answer: "All your QR codes keep working for 15 days. We email you 3 days before they stop, and after that they're paused until you renew. Nothing is deleted, and renewing brings everything back instantly — no reprinting needed."
   },
   {
     question: "Is this available for businesses globally?",

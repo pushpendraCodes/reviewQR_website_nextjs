@@ -4,6 +4,10 @@ import { useRef, useEffect } from 'react';
 import { Star, MapPin, Users } from 'lucide-react';
 import QRCodeStyling from 'qr-code-styling';
 import type { Business } from '../store/api/placesApi';
+import { SITE_URL } from '../lib/seo/site';
+
+/** Encoded in the on-screen preview before a QR is saved, so a screenshot never links straight to Google. */
+const PREVIEW_QR_URL = `${SITE_URL}/google-review-qr-code-generator`;
 
 export type QRDotShape = 'square' | 'rounded' | 'dots' | 'classy' | 'extra-rounded';
 export type StandeeTemplate = 'minimal' | 'luxury' | 'bold' | 'festive';
@@ -71,9 +75,11 @@ const LANG: Record<StandeeLanguage, { cta: string; sub: string; reviews: string;
 
 interface StandeePreviewProps {
   business: Business;
-  reviewURL: string;
   shortURL?: string;
-  /** What the QR image encodes (defaults to shortURL || reviewURL) */
+  /**
+   * What the QR image encodes (defaults to shortURL). Never the raw Google review link:
+   * every printed QR must go through /r/ so it can be tracked and paused.
+   */
   qrEncodeURL?: string;
   plan: string;
   logo?: string | null;
@@ -107,7 +113,7 @@ function getContrastTextColors(hex: string) {
 }
 
 const StandeePreview = ({
-  business, reviewURL, shortURL, qrEncodeURL, plan, logo, qrColor, whiteLabel,
+  business, shortURL, qrEncodeURL, plan, logo, qrColor, whiteLabel,
   qrShape = 'square',
   template = 'minimal',
   standeeBgColor,
@@ -141,8 +147,8 @@ const StandeePreview = ({
   const t = LANG[isProPlus ? language : 'en'];
 
   const qrRef = useRef<HTMLDivElement>(null);
-  const encodedUrl =
-    qrEncodeURL || shortURL || reviewURL || 'https://getreviewqr.com';
+  const liveUrl = qrEncodeURL || shortURL || '';
+  const encodedUrl = liveUrl || PREVIEW_QR_URL;
 
   useEffect(() => {
     if (!qrRef.current) return;
@@ -165,7 +171,8 @@ const StandeePreview = ({
 
     qrRef.current.innerHTML = '';
     qrInstance.append(qrRef.current);
-  }, [encodedUrl, resolvedColor, qrShape, logo, isProPlus]);
+    qrRef.current.dataset.qrUrl = liveUrl;
+  }, [encodedUrl, liveUrl, resolvedColor, qrShape, logo, isProPlus]);
 
   const renderStars = (rating: number) => {
     // ✅ Star color also respects the bg — amber on light, white on dark
@@ -260,8 +267,14 @@ const StandeePreview = ({
             </div>
           )}
 
-          <div className="mb-3 p-2 rounded-xl" style={{ background: '#fff', border: `2px solid ${accent}22` }}>
-            <div ref={qrRef} />
+          <div className="relative mb-3 p-2 rounded-xl" style={{ background: '#fff', border: `2px solid ${accent}22` }}>
+            <div ref={qrRef} data-standee-qr />
+            {!liveUrl && (
+              <div className="absolute inset-2 flex flex-col items-center justify-center gap-1 rounded-lg bg-white/85 px-3 text-center backdrop-blur-[2px]">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-700">Preview</span>
+                <span className="text-[10px] leading-snug text-gray-500">Your scannable QR is created when you download</span>
+              </div>
+            )}
           </div>
 
           {isProPlus && socialProof && (

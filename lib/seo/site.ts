@@ -4,7 +4,7 @@ export const SITE_URL = 'https://www.getreviewqr.com';
 export const SITE_NAME = 'GetReviewQR';
 export const SITE_TAGLINE = 'Free Google Review QR Code Generator';
 export const SITE_DESCRIPTION =
-  'Generate a free Google Review QR code in seconds. Direct customers to your Google review page with a scannable QR code or printable standee — no app, no expiry.';
+  'Generate a free Google Review QR code in seconds. Direct customers to your Google review page with a scannable QR code or printable standee — no app needed, free for 15 days.';
 
 export const DEFAULT_OG_IMAGE = '/og-image.png';
 

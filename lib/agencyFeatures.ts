@@ -21,6 +21,8 @@ export interface AgencyFeature {
 export const CLIENT_BLOCK_DAYS = 15;
 /** Days an expired paid plan keeps every QR working (mirrors PLAN_GRACE_DAYS default in the backend). */
 export const PLAN_GRACE_DAYS = 15;
+/** Days a Free account's QRs work after its first QR (mirrors FREE_TRIAL_DAYS default in the backend). */
+export const FREE_TRIAL_DAYS = 15;
 
 export const AGENCY_FEATURES: AgencyFeature[] = [
   {

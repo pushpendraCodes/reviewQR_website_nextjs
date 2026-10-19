@@ -166,7 +166,7 @@ const GeneratePageContent = () => {
 
   // ── Copy link ─────────────────────────────────────────────────────
   const [copied, setCopied] = useState(false);
-  const scanLink = getScanLink(isPaidActive, shortURL, reviewURL);
+  const scanLink = getScanLink(shortURL);
   const scanLinkLabel = isPaidActive
     ? 'Paid plan — scan opens your business page (AI reviews)'
     : 'Free plan — scan opens Google Reviews directly';
@@ -186,6 +186,7 @@ const GeneratePageContent = () => {
     downloadPNG,
     downloadSVG,
     downloadPDF,
+    waitForPreviewQr,
   } = useStandeeDownload(selectedBusiness?.name ?? '');
 
   const [generateQR] = useGenerateQRMutation();
@@ -252,11 +253,13 @@ const GeneratePageContent = () => {
         return;
       }
 
-      // 2️⃣  API succeeded — now update shortURL for preview captured image
-      if (result.qr?.shortURL) {
-        setShortURL(result.qr.shortURL);
-        // Delay to ensure StandeePreview re-renders
-        await new Promise(resolve => setTimeout(resolve, 50));
+      // 2️⃣  API succeeded — show the saved /r/ link in the preview, then capture it
+      const liveUrl = result.qr?.shortURL;
+      if (!liveUrl) throw new Error('missing short link');
+      setShortURL(liveUrl);
+      if (!(await waitForPreviewQr(liveUrl))) {
+        toast.error('Your QR was saved but the preview took too long to update. Please tap download again.', { id: tid });
+        return;
       }
 
       await fn();
@@ -560,10 +563,12 @@ const GeneratePageContent = () => {
                       />
 
 
-                      <a href={`https://wa.me/?text=${encodeURIComponent(scanLink ?? '')}`}
+                      <a href={scanLink ? `https://wa.me/?text=${encodeURIComponent(scanLink)}` : undefined}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-all duration-200 active:scale-95"
+                        aria-disabled={!scanLink}
+                        title={scanLink ? undefined : 'Download your QR first to get your share link'}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-green-200 bg-green-50 text-green-700 transition-all duration-200 ${scanLink ? 'hover:bg-green-100 active:scale-95' : 'opacity-50 cursor-not-allowed'}`}
                       >
                         <Share2 className="w-4 h-4" />
                         WhatsApp
@@ -584,7 +589,7 @@ const GeneratePageContent = () => {
                     <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                       <p className="text-[11px] font-semibold text-gray-600 mb-1.5">{scanLinkLabel}</p>
                       <div className="flex items-center gap-2">
-                        <code className="flex-1 text-xs text-gray-500 truncate">{scanLink || 'Generate a QR to see your scan link'}</code>
+                        <code className="flex-1 text-xs text-gray-500 truncate">{scanLink || 'Download your QR to get your scan link'}</code>
                         <button
                           onClick={handleCopy}
                           disabled={!scanLink}
@@ -633,9 +638,7 @@ const GeneratePageContent = () => {
                     <div ref={standeeRef} className="inline-block w-full">
                       <StandeePreview
                         business={selectedBusiness}
-                        reviewURL={reviewURL}
                         shortURL={shortURL}
-                        qrEncodeURL={shortURL || reviewURL}
                         plan={plan}
                         logo={_logo}
                         qrColor={_qrColor}
@@ -692,7 +695,7 @@ const GeneratePageContent = () => {
         )}
 
         <div className="mt-10">
-          <TapScanSetup tapUrl={shortURL || reviewURL} />
+          <TapScanSetup tapUrl={shortURL} />
         </div>
       </div>
 
@@ -739,7 +742,7 @@ const GeneratePageContent = () => {
             </div>
 
             <p className="text-center text-xs text-gray-400 mt-5">
-              No credit card required. Free plan includes custom QR downloads.
+              No credit card required. Your free QR code works for 15 days — upgrade anytime to keep it running.
             </p>
           </div>
         </div>

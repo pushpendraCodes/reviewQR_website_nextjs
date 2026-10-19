@@ -35,8 +35,14 @@ export interface User {
   firstLogin?: boolean;
   inactivityReminderSent?: boolean;
   planExpiredNotifSent?: boolean;
-  /** Owners whose paid plan lapsed: QRs over the Free limit pause on `pauseOn`. */
-  planGrace?: { lapsedAt: string; pauseOn: string; graceDays: number; freeQrLimit: number } | null;
+  /** Owners not on a paid plan: every QR pauses on `pauseOn`. */
+  planGrace?: {
+    reason: 'trial' | 'lapsed';
+    lapsedAt: string | null;
+    pauseOn: string;
+    graceDays: number;
+    trialDays: number;
+  } | null;
   teamOwner?: string | null;
   team?: UserTeam;
 }

@@ -35,20 +35,10 @@ export function usePlan() {
   return { plan, authPlan, hydrated, hasAccess, planExpiredNotifSent, isPaidActive };
 }
 
-/** URL encoded in QR / NFC / copy — paid: tracking link; free: Google write-review */
-export function getScanLink(
-  isPaidActive: boolean,
-  shortURL?: string | null,
-  reviewURL?: string | null,
-): string {
-  if (isPaidActive && shortURL) return shortURL;
-  return reviewURL || '';
-}
-
-/** Backend JSON uses reviewUrl; some UI types use reviewURL */
-export function reviewUrlFromQr(qr: {
-  reviewURL?: string | null;
-  reviewUrl?: string | null;
-}): string {
-  return qr.reviewURL || qr.reviewUrl || '';
+/**
+ * URL encoded in QR / NFC / copy. Always the /r/ tracking link (paid: opens the business
+ * page, free: forwards to Google) so it can be counted and paused; never the raw Google link.
+ */
+export function getScanLink(shortURL?: string | null): string {
+  return shortURL || '';
 }

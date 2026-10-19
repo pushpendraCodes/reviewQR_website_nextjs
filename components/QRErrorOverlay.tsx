@@ -4,8 +4,9 @@
 import { useRouter } from 'next/navigation';;
 import { ShieldAlert, Clock, ArrowRight, RefreshCw } from 'lucide-react';
 import { usePlan } from '../hooks/Useplan';
+import { FREE_TRIAL_DAYS } from '../lib/agencyFeatures';
 
-type QRError = "limit_reached" | "rate_limited" | "unknown";
+type QRError = "limit_reached" | "qr_stopped" | "rate_limited" | "unknown";
 
 interface QRErrorOverlayProps {
   error: QRError;
@@ -23,6 +24,19 @@ const ERROR_CONFIG = {
     description:
       'Upgrade to Pro to generate unlimited QR codes, access analytics, and unlock custom branding.',
     primaryLabel: 'Upgrade to Pro',
+    primaryTo: '/pricing',
+    showRetry: false,
+  },
+  qr_stopped: {
+    icon: Clock,
+    iconBg: 'bg-red-100',
+    iconColor: 'text-red-500',
+    badge: 'Free Period Ended',
+    badgeBg: 'bg-red-100 text-red-700',
+    title: `Your ${FREE_TRIAL_DAYS}-day free period has ended`,
+    description:
+      'Your QR code is paused, so new downloads are turned off. Upgrade to download QR codes again — your printed QR starts working instantly, no reprint needed.',
+    primaryLabel: 'Upgrade Now',
     primaryTo: '/pricing',
     showRetry: false,
   },
@@ -61,7 +75,12 @@ const QRErrorOverlay = ({ error, onRetry }: QRErrorOverlayProps) => {
   const cfg = { ...ERROR_CONFIG[error] };
 
   if (planExpiredNotifSent) {
-    if (error === 'limit_reached') {
+    if (error === 'qr_stopped') {
+      cfg.badge = 'Plan Expired';
+      cfg.title = 'Your plan has expired';
+      cfg.description = 'Your QR codes are paused, so new downloads are turned off. Renew to download again and bring every QR back instantly.';
+      cfg.primaryLabel = 'Renew Your Plan';
+    } else if (error === 'limit_reached') {
       cfg.title = "Your plan has expired";
       cfg.description = "Renew your plan now to continue generating QR codes, access detailed analytics, and unlock premium standees.";
       cfg.primaryLabel = "Renew Your Plan";

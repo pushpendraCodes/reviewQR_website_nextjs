@@ -3,13 +3,13 @@
 import React, { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link, Nfc, Users, AlertTriangle } from "lucide-react";
+import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link, Nfc, Users } from "lucide-react";
 import TapScanSetup from '@/components/TapScanSetup';
 import toast from 'react-hot-toast';
 import { useListQRCodesQuery, useDeleteQRCodeMutation, useUpdateQRCodeMutation } from '@/store/api/qrApi';
 import { useGetTeamQuery } from '@/store/api/teamApi';
 import { useAppSelector } from '@/store/hooks';
-import { usePlan, getScanLink, reviewUrlFromQr } from '@/hooks/Useplan';
+import { getScanLink } from '@/hooks/Useplan';
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) =>
     status === "active" ? (
@@ -32,8 +32,6 @@ const StandeesPageInner: React.FC = () => {
     const isAgency = user?.plan === 'agency';
     const isStaff = user?.team?.role === 'staff';
     const isAgencyOwner = isAgency && !isStaff;
-    const { isPaidActive } = usePlan();
-
     const member = isAgencyOwner ? searchParams.get('member') || '' : '';
     const setMember = (value: string) =>
         navigate.replace(value ? `/dashboard/standees?member=${value}` : '/dashboard/standees');
@@ -50,9 +48,6 @@ const StandeesPageInner: React.FC = () => {
         !qr.createdBy || qr.createdBy._id === (user?._id || user?.id) ? 'You' : qr.createdBy.name;
 
     const allStandees = qrData?.qrCodes || [];
-    const pausedCount = qrData?.accountPaused ?? allStandees.filter((q) => q.planPaused).length;
-    const grace = !isStaff ? user?.planGrace : null;
-    const willPause = grace ? Math.max(0, (qrData?.accountTotal ?? allStandees.length) - grace.freeQrLimit) : 0;
     const filtered = allStandees.filter(
         (s) =>
             s.businessName.toLowerCase().includes(search.toLowerCase())
@@ -113,36 +108,6 @@ const StandeesPageInner: React.FC = () => {
                         <span className="sm:hidden">New</span>
                     </button>
                 </div>
-
-                {pausedCount > 0 ? (
-                    <div className="mb-4 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="flex items-start gap-2">
-                            <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                            <span>
-                                <span className="font-semibold">{pausedCount} QR code{pausedCount === 1 ? " is" : "s are"} paused because your plan expired.</span>{" "}
-                                Customers scanning {pausedCount === 1 ? "it" : "them"} see a &quot;temporarily unavailable&quot; page. Renew to bring every QR back instantly.
-                            </span>
-                        </p>
-                        <button onClick={() => navigate.push("/pricing")} className="shrink-0 rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700">
-                            Renew plan
-                        </button>
-                    </div>
-                ) : grace && willPause > 0 ? (
-                    <div className="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="flex items-start gap-2">
-                            <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                            <span>
-                                <span className="font-semibold">Your plan has expired.</span> The Free plan includes {grace.freeQrLimit} QR code, so{" "}
-                                {willPause} QR code{willPause === 1 ? "" : "s"} will stop working on{" "}
-                                <span className="font-semibold">{new Date(grace.pauseOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>{" "}
-                                unless you renew. Your most-scanned QR keeps working.
-                            </span>
-                        </p>
-                        <button onClick={() => navigate.push("/pricing")} className="shrink-0 rounded-lg bg-[#1A6B45] px-4 py-2 text-xs font-semibold text-white hover:bg-[#165a3a]">
-                            Renew plan
-                        </button>
-                    </div>
-                ) : null}
 
                 {/* Search bar */}
                 <div className="flex items-center gap-3 mb-4 sm:mb-5">
@@ -217,7 +182,7 @@ const StandeesPageInner: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={async () => {
-                                                    const url = getScanLink(isPaidActive, qr.shortURL, reviewUrlFromQr(qr));
+                                                    const url = getScanLink(qr.shortURL);
                                                     if (url) {
                                                         await navigator.clipboard.writeText(url);
                                                         toast.success('Scan link copied');
@@ -242,8 +207,8 @@ const StandeesPageInner: React.FC = () => {
                                                 <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${qr.isActive !== false ? 'translate-x-2' : '-translate-x-2'}`} />
                                             </button>
                                             {qr.planPaused ? (
-                                                <span className="flex items-center gap-1 text-xs text-red-600 font-medium" title="Paused because your plan expired. Renew to restore it.">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Paused · plan expired
+                                                <span className="flex items-center gap-1 text-xs text-red-600 font-medium" title="Paused until you choose a paid plan. Upgrade to restore it instantly.">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Paused · upgrade to restore
                                                 </span>
                                             ) : qr.isActive !== false ? (
                                                 <span className="flex items-center gap-1 text-xs text-[#1A6B45] font-medium">
@@ -307,14 +272,14 @@ const StandeesPageInner: React.FC = () => {
                 </div>
             </div>
             
-            {nfcQR && getScanLink(isPaidActive, nfcQR.shortURL, reviewUrlFromQr(nfcQR)) && (
+            {nfcQR && getScanLink(nfcQR.shortURL) && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={() => setNfcQR(null)}>
                     <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="font-bold text-gray-900">{nfcQR.businessName}</h2>
                             <button type="button" onClick={() => setNfcQR(null)} className="text-sm text-gray-400 hover:text-gray-700">Close</button>
                         </div>
-                        <TapScanSetup tapUrl={nfcQR.shortURL || reviewUrlFromQr(nfcQR)} />
+                        <TapScanSetup tapUrl={nfcQR.shortURL} />
                     </div>
                 </div>
             )}

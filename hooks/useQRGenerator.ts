@@ -8,7 +8,7 @@ import { generateReviewURL } from "../utils/generateReviewURL";
 import toast from "react-hot-toast";
 import { useAppSelector } from "../store/hooks";
 
-type QRError = "limit_reached" | "rate_limited" | "unknown" | null;
+type QRError = "limit_reached" | "qr_stopped" | "rate_limited" | "unknown" | null;
 
 export const useQRGenerator = () => {
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
@@ -47,7 +47,9 @@ export const useQRGenerator = () => {
         // We return early and treat them as guests.
         return;
       }
-      if (status === 403) {
+      if (status === 403 && err?.data?.code === "qr_stopped") {
+        setQRError("qr_stopped");
+      } else if (status === 403) {
         toast.error("You've reached your plan limit. Upgrade to generate more QR codes.");
         setQRError("limit_reached");
       } else if (status === 429) {

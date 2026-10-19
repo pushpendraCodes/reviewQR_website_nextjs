@@ -171,27 +171,27 @@ export const blogPosts: BlogPost[] = [
   {
     id: '7',
     slug: 'free-google-review-qr-code-generator',
-    title: 'Free Google Review QR Code Generator: No Sign-Up, No Expiry',
-    description: 'Generate a free Google Review QR code in seconds. No hidden fees, no expiration date — just a scannable code your customers can use instantly.',
+    title: 'Free Google Review QR Code Generator: Try It Free for 15 Days',
+    description: 'Generate a free Google Review QR code in seconds and try it free for 15 days. No credit card — just a scannable code your customers can use instantly.',
     date: 'May 11, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=800',
     category: 'Tutorial',
     keywords: 'free google review qr code generator, free qr code for google reviews, google review qr code free, no sign up qr code generator',
     content: `
-      <p>Searching for a truly free Google Review QR code generator — one without watermarks, hidden fees, or codes that expire after 30 days? You've come to the right place. Here's everything you need to know before you generate yours.</p>
+      <p>Searching for a free Google Review QR code generator you can try without a credit card or hidden fees? You've come to the right place. Here's everything you need to know before you generate yours.</p>
  
-      <h3>What Makes a QR Code Generator "Truly Free"?</h3>
-      <p>Many tools advertise free QR codes but bury the catch: the code stops working after a trial period, or it redirects customers through an ad page before reaching your review form. A genuine free Google Review QR code should work indefinitely, send customers directly to your Google review page with zero redirects, and require no paid subscription to keep functioning.</p>
+      <h3>What to Look For in a Free QR Code Generator</h3>
+      <p>Many tools advertise free QR codes but bury the catch: an ad page before your review form, or a code that stops working without warning. A good free Google Review QR code should send customers straight to your Google review page with no ads, be clear about how long the free period lasts, and warn you before anything changes.</p>
  
       <h3>How to Generate Your Free QR Code in Under 2 Minutes</h3>
       <p>Using ReviewQR, the process is simple. Create a free account using just your email — no password required. Search for your business by name and we automatically pull your Google Business Profile. Your QR code is generated instantly and delivered in three print-ready sizes (small, medium, and large). Place it at your checkout counter, on your receipt, or on a table tent and customers can scan and leave a review in under 30 seconds.</p>
  
-      <h3>Does the Free QR Code Ever Expire?</h3>
-      <p>No. Your QR code links directly to your Google review page URL, which is permanent. As long as your Google Business Profile is active, your QR code will work — forever. You never need to reprint or regenerate it unless you change business locations.</p>
+      <h3>How Long Does the Free QR Code Work?</h3>
+      <p>Your free ReviewQR code works for 15 days from when you create it, so you can test it with real customers. We email you 3 days before it stops. Choose any paid plan and the same printed QR code keeps working — you never need to reprint or regenerate it.</p>
  
-      <h3>Free vs. Pro: What's the Difference?</h3>
-      <p>The free plan gives you everything you need to start collecting reviews. The optional Pro plan ($3/month) unlocks scan analytics — peak hours, daily trends, conversion tracking — and removes the small ReviewQR branding from your printed standees. But the QR code itself is free, always.</p>
+      <h3>Free vs. Paid: What's the Difference?</h3>
+      <p>The free plan lets you try the full scan-to-review flow for 15 days. Paid plans keep your QR codes working and add AI review suggestions, a branded landing page, print-ready PDF standees and, on Pro, scan analytics — while removing the small ReviewQR branding from your printed standees.</p>
  
       <h3>Tips to Get the Most Out of Your Free QR Code</h3>
       <p>Print it at a size of at least 2x2 inches (5x5 cm) so any smartphone camera can read it from a comfortable distance. Test it on both an iPhone and an Android device before displaying it publicly. Place it where customers naturally have their phones out — at the billing counter, on the dining table, or near the exit door.</p>

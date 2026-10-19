@@ -12,7 +12,7 @@ export const HOME_FAQS = [
   {
     question: 'Is the QR code generator really free?',
     answer:
-      'Yes. Generate a basic PNG QR code for free, no account needed. Paid plans unlock print-ready PDF standees, custom branding, AI review suggestions, and analytics.',
+      'You can try it free for 15 days. Your free QR code works for 15 days from when you create it, and we email you before it stops. Paid plans keep it working and unlock print-ready PDF standees, custom branding, AI review suggestions, and analytics.',
   },
   {
     question: 'How can I get more 5-star reviews?',
@@ -46,6 +46,6 @@ export const HOME_FAQS = [
   {
     question: 'What happens if my paid plan expires?',
     answer:
-      'Every QR code keeps working for 15 days after expiry. After that, only your most-scanned QR stays live until you renew. Nothing is deleted, and renewing brings all your QR codes back instantly.',
+      'Every QR code keeps working for 15 days after expiry. We email you 3 days before they stop, and after that they are paused until you renew. Nothing is deleted, and renewing brings all your QR codes back instantly.',
   },
 ] as const;

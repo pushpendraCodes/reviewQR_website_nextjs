@@ -32,7 +32,7 @@ import {
   type PaidPlanKey,
   type PlanPriceTable,
 } from '@/lib/pricing';
-import { CLIENT_BLOCK_DAYS, PLAN_GRACE_DAYS } from '@/lib/agencyFeatures';
+import { CLIENT_BLOCK_DAYS, FREE_TRIAL_DAYS, PLAN_GRACE_DAYS } from '@/lib/agencyFeatures';
 import AgencyFeaturesSection from '@/components/AgencyFeaturesSection';
 
 const starterInr = getPlanDisplayPrices('starter', 'INR');
@@ -65,9 +65,10 @@ const INR_PLANS = [
   {
     name: 'Free',
     monthlyPrice: '₹0',
-    description: 'Try ReviewQR with zero commitment',
+    description: `Try ReviewQR free for ${FREE_TRIAL_DAYS} days`,
     qrLimit: '1',
     features: [
+      `QR works for ${FREE_TRIAL_DAYS} days`,
       'Basic QR code (square dots, green only)',
       'Watermarked standee',
       'PNG download only',
@@ -196,7 +197,7 @@ const USD_PLANS = [
     name: 'Free',
     monthlyPrice: '$0',
     currencySymbol: '$',
-    description: 'Try ReviewQR with zero commitment',
+    description: `Try ReviewQR free for ${FREE_TRIAL_DAYS} days`,
     qrLimit: '1',
     features: INR_PLANS[0].features,
     lockedFeatures: INR_PLANS[0].lockedFeatures,
@@ -504,6 +505,7 @@ const PricingPage = () => {
         category: 'QR Code',
         rows: [
           { feature: 'QR codes', free: '1', starter: '3', pro: '10', agency: 'Unlimited' },
+          { feature: 'QR keeps working', free: `${FREE_TRIAL_DAYS} days`, starter: true, pro: true, agency: true },
           { feature: 'Dot shape', free: 'Square only', starter: 'Square only', pro: '5 shapes', agency: '5 shapes' },
           { feature: 'Custom QR color', free: false, starter: false, pro: true, agency: true },
           { feature: 'Logo in QR centre', free: false, starter: false, pro: true, agency: true },
@@ -708,8 +710,9 @@ const PricingPage = () => {
           </div>
 
           <p className="mt-8 text-center text-xs text-gray-400 max-w-2xl mx-auto">
-            If a paid plan isn&apos;t renewed, every QR code keeps working for {PLAN_GRACE_DAYS} days. After that, only the
-            most-scanned QR stays live (the Free limit) until you renew, and renewing brings the rest back instantly.
+            On the Free plan, your QR code works for {FREE_TRIAL_DAYS} days from when you create it. If a paid plan
+            isn&apos;t renewed, every QR code keeps working for {PLAN_GRACE_DAYS} days. We email you 3 days before
+            anything stops, and upgrading brings paused QR codes back instantly — nothing is deleted or needs reprinting.
           </p>
         </div>
       </section>

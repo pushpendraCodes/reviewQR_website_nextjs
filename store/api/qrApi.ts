@@ -20,7 +20,7 @@ export interface QRCode {
   updatedAt: string;
   qrImageUrl?: string;
   isActive: boolean;
-  /** Over the Free limit after the plan lapsed and the grace period ended. */
+  /** Paused because the Free period or the plan's grace period ended. */
   planPaused?: boolean;
   /** Who created the QR (populated). Null on QRs created before Agency teams existed. */
   createdBy?: { _id: string; name: string; email: string; picture?: string } | null;
@@ -99,7 +99,17 @@ export interface ListQRResponse {
   /** Whole-account active / plan-paused QR counts (agency owners and solo users; null for staff). */
   accountTotal: number | null;
   accountPaused: number | null;
+  /** When every QR in the account stops (owners not on a paid plan). */
+  qrStop: QrStopInfo | null;
   pagination: { total: number; page: number; pages: number };
+}
+
+export interface QrStopInfo {
+  reason: 'trial' | 'lapsed';
+  lapsedAt: string | null;
+  pauseOn: string;
+  graceDays: number;
+  trialDays: number;
 }
 
 export interface AnalyticsResponse {

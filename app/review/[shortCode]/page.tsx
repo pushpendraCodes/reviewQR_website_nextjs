@@ -74,13 +74,7 @@ const ReviewLandingPage: React.FC = () => {
                         <Info size={32} />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 mb-2">Profile Not Found</h2>
-                    <p className="text-gray-500 text-sm mb-6">This review link may have expired or is invalid.</p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="w-full py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
-                    >
-                        Try Again
-                    </button>
+                    <p className="text-gray-500 text-sm mb-6">This review link may have expired or is invalid Contact To Admin <a href="mailto:getreviewqr@gmail.com" className="text-blue-500 hover:text-blue-600">getreviewqr@gmail.com</a>.</p>
                 </div>
             </div>
         );

@@ -134,9 +134,21 @@ export const useStandeeDownload = (businessName: string) => {
         }
     }, [businessName]);
 
+    /** Resolves true once the preview's QR encodes `url`, false after `timeoutMs`. */
+    const waitForPreviewQr = useCallback(async (url: string, timeoutMs = 3000) => {
+        const deadline = Date.now() + timeoutMs;
+        while (Date.now() < deadline) {
+            const qr = standeeRef.current?.querySelector<HTMLElement>('[data-standee-qr]');
+            if (qr?.dataset.qrUrl === url) return true;
+            await new Promise(r => setTimeout(r, 50));
+        }
+        return false;
+    }, []);
+
     return {
         standeeRef,
         downloading,
+        waitForPreviewQr,
         downloadPNG,
         downloadSVG,
         downloadPDF,

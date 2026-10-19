@@ -37,8 +37,8 @@ const PlanInfoBanner: React.FC = () => {
                             </div>
                         </div>
                         <p className="mt-1 text-gray-500 text-sm leading-relaxed max-w-2xl">
-                            If you ever pause your plan, your QR still works — customers are redirected directly to your Google review page Instead Of Your Business Page.
-                            <span className="text-gray-900 font-semibold ml-1">Resubscribe anytime to get AI Review Generation & Smart suggestions and Business Page features.</span>
+                            If your plan runs out, your QR codes keep working for 15 days (customers go straight to Google, without your business page). After that they pause until you renew, and we email you 3 days before.
+                            <span className="text-gray-900 font-semibold ml-1">Renew anytime to restore AI review suggestions and your business page instantly.</span>
                         </p>
                     </div>
 

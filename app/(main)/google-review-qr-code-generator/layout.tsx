@@ -4,7 +4,7 @@ import { buildPageMetadata } from '@/lib/seo/metadata';
 export const metadata: Metadata = buildPageMetadata({
   title: 'Free Google Review QR Code Generator (Instant Setup)',
   description:
-    'Free Google Review QR Code Generator and Google Review Link Generator. Easily create a custom QR code for Google reviews in under 60 seconds and download your print-ready PDF standee. No expiry.',
+    'Free Google Review QR Code Generator and Google Review Link Generator. Easily create a custom QR code for Google reviews in under 60 seconds and download your print-ready PDF standee. Free for 15 days.',
   path: '/google-review-qr-code-generator',
   keywords: [
     'Google Review QR Code Generator',

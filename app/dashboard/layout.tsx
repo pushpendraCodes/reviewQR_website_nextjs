@@ -2,6 +2,7 @@
 
 import React from "react";
 import Sidebar from "../../components/dashboard/Sidebar";
+import QrStopBanner from "../../components/dashboard/QrStopBanner";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -12,6 +13,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <div className="flex h-screen bg-[#F4F7F4] overflow-hidden font-sans">
             <Sidebar />
             <main className="flex-1 h-[calc(100vh-64px)]  overflow-y-auto">
+                <QrStopBanner />
                 {children}
             </main>
         </div>

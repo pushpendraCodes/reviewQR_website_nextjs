@@ -20,14 +20,6 @@ export interface AIReviewsResponse {
   reviews: string[];
 }
 
-export interface PublicPlace {
-  placeId: string;
-  name: string;
-  address: string;
-  rating: number | null;
-  totalReviews: number;
-}
-
 export interface FeaturedReview {
   _id: string;
   name: string;
@@ -40,10 +32,6 @@ export const landingApi = createApi({
   reducerPath: "landingApi",
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE }),
   endpoints: (builder) => ({
-    getPublicPlace: builder.query<PublicPlace, string>({
-      query: (placeId) => `/places/details/${encodeURIComponent(placeId)}`,
-      transformResponse: (res: { place: PublicPlace }) => res.place,
-    }),
     getFeaturedReviews: builder.query<FeaturedReview[], void>({
       query: () => "/reviews/featured",
       transformResponse: (res: { reviews: FeaturedReview[] }) => res.reviews,
@@ -64,6 +52,5 @@ export const landingApi = createApi({
 export const {
   useGetLandingDataQuery,
   useGenerateAIReviewsMutation,
-  useGetPublicPlaceQuery,
   useGetFeaturedReviewsQuery,
 } = landingApi;

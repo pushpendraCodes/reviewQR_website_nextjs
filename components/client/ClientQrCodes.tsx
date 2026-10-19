@@ -19,7 +19,7 @@ const buildQr = (qr: ClientQrSummary, size: number) => {
     return new QRCodeStyling({
         width: size,
         height: size,
-        data: qr.shortUrl || qr.reviewUrl,
+        data: qr.shortUrl,
         margin: Math.round(size * 0.04),
         dotsOptions: { type: shape, color },
         cornersSquareOptions: { type: shape === "extra-rounded" || shape === "rounded" ? "extra-rounded" : "square", color },
@@ -90,9 +90,7 @@ const DownloadDialog: React.FC<{ qr: ClientQrSummary; onClose: () => void }> = (
                                     rating: qr.rating,
                                     totalReviews: qr.totalReviews,
                                 }}
-                                reviewURL={qr.reviewUrl}
                                 shortURL={qr.shortUrl}
-                                qrEncodeURL={qr.shortUrl || qr.reviewUrl}
                                 plan="agency"
                                 logo={qr.qrConfig.logoUrl || null}
                                 qrColor={qr.qrConfig.color || undefined}
@@ -139,11 +137,11 @@ const DownloadDialog: React.FC<{ qr: ClientQrSummary; onClose: () => void }> = (
                         <div>
                             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">Review link</p>
                             <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-                                <code className="min-w-0 flex-1 truncate text-xs text-gray-700">{qr.shortUrl || qr.reviewUrl}</code>
+                                <code className="min-w-0 flex-1 truncate text-xs text-gray-700">{qr.shortUrl}</code>
                                 <button
                                     onClick={async () => {
                                         try {
-                                            await navigator.clipboard.writeText(qr.shortUrl || qr.reviewUrl);
+                                            await navigator.clipboard.writeText(qr.shortUrl);
                                             toast.success("Link copied");
                                         } catch {
                                             toast.error("Couldn't copy the link");
