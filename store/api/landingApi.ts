@@ -13,11 +13,28 @@ export interface LandingData {
   reviewUrl: string;
   placeAddress: string;
   aiEnabled: boolean;
+  questions: ReviewQuestions | null;
+}
+
+export interface ReviewQuestions {
+  services: string[];
+  liked: string[];
+  staff: string[];
+}
+
+export type ReviewLanguage = "en" | "hi" | "hinglish" | "mr";
+
+export interface ReviewAnswers {
+  services: string[];
+  liked: string[];
+  staff: string;
+  language: ReviewLanguage;
 }
 
 export interface AIReviewsResponse {
   success: boolean;
   reviews: string[];
+  personalised?: boolean;
 }
 
 export interface FeaturedReview {
@@ -39,11 +56,11 @@ export const landingApi = createApi({
     getLandingData: builder.query<LandingData, string>({
       query: (shortCode) => `/qr/landing/${shortCode}`,
     }),
-    generateAIReviews: builder.mutation<AIReviewsResponse, string>({
-      query: (shortCode) => ({
+    generateAIReviews: builder.mutation<AIReviewsResponse, { shortCode: string; answers?: ReviewAnswers }>({
+      query: ({ shortCode, answers }) => ({
         url: "/qr/ai-reviews",
         method: "POST",
-        body: { shortCode },
+        body: { shortCode, answers },
       }),
     }),
   }),

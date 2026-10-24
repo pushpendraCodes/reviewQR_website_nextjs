@@ -23,6 +23,10 @@ export const FAQ_DATA = [
     answer: "On Starter and above, scanners land on your branded page with AI-written review options. They tap to copy, open Google, and paste — which removes writer's block and gets more reviews completed."
   },
   {
+    question: "Can the AI reviews mention my services?",
+    answer: "Yes, on Pro and Agency. Add your services, highlights and staff names to each QR's AI review profile (or auto-fill it from Google). Customers tap which service they used, what they liked and who helped them, and the AI writes reviews about that visit in English, Hindi, Hinglish or Marathi. It only uses the details you add, never invents anything, and customers can always skip or write their own."
+  },
+  {
     question: "Is ReviewQR really free?",
     answer: "You can try it free for 15 days. Create your QR code and download it as a PNG at no cost — it works for 15 days from when you create it, and we email you 3 days before it stops. Paid plans keep your QR codes working and add PDF standees, AI review suggestions, custom branding, analytics, and white-labeling."
   },

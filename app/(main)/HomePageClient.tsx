@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ArrowRight, Star, Check, Sparkles, Copy, Smartphone, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import TestimonialCard from '@/components/TestimonialCard';
-import { Suspense, useState, useRef } from 'react';
+import { Suspense, useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import FaqSection from '@/components/FaqSection';
 import { useGetFeaturedReviewsQuery } from '@/store/api/landingApi';
@@ -19,10 +19,13 @@ import standeeCafe from '@/assets/standee-cafe.jpg';
 import standeeCounter from '@/assets/standee-counter.jpg';
 import stickerDoor from '@/assets/sticker-door.jpg';
 
+const HERO_VIDEO_SRC = '/assets/Creating_QR_code_for_business_20261008235308.mp4';
+
+const AI_DEMO_ANSWERS = ['Root canal', 'Painless', 'Dr. Rao'];
+
 const AI_DEMO_REVIEWS = [
-  'Great service and friendly staff. Highly recommend this place for anyone nearby!',
-  'Clean, quick, and professional. Will definitely come back again.',
-  'Excellent experience from start to finish. Five stars well deserved.',
+  'Had my root canal done in a single sitting and it was completely painless. Thank you Dr. Rao!',
+  'Was nervous about the root canal, but Dr. Rao made it so easy. Friendly staff and a spotless clinic.',
 ];
 
 const OAuthHandler = () => {
@@ -44,15 +47,41 @@ const HomePageClient = () => {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { data: testimonials = [] } = useGetFeaturedReviewsQuery();
 
+  // The 3 MB hero video must not compete with the page's own HTML, CSS and fonts.
+  useEffect(() => {
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const start = () => {
+      const video = videoRef.current;
+      if (!video || video.src) return;
+      video.src = HERO_VIDEO_SRC;
+      video.play().catch(() => {});
+    };
+    const schedule = () => {
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(start, { timeout: 2000 });
+      else timeoutId = setTimeout(start, 200);
+    };
+
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
+
+    return () => {
+      window.removeEventListener('load', schedule);
+      if (idleId !== undefined) window.cancelIdleCallback(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
+  }, []);
+
   const togglePlay = () => {
     if (!videoRef.current) return;
     if (videoRef.current.paused) {
-      videoRef.current.play();
+      if (!videoRef.current.src) videoRef.current.src = HERO_VIDEO_SRC;
+      videoRef.current.play().catch(() => {});
       setIsPlaying(true);
     } else {
       videoRef.current.pause();
@@ -104,11 +133,12 @@ const HomePageClient = () => {
               </p>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-snug tracking-tight mb-3 animate-fade-in-up [animation-delay:80ms]">
-                More Google reviews from your counter
+                Free review QR code generator for more Google reviews
               </h1>
 
               <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed animate-fade-in-up [animation-delay:140ms]">
-                Print a QR standee — customers scan, pick an AI-written review, and post on Google in seconds.
+                Print a &ldquo;scan to leave a review&rdquo; QR standee for your counter. Customers scan,
+                pick an AI-written review, and post on Google in seconds.
               </p>
 
               <div
@@ -130,7 +160,7 @@ const HomePageClient = () => {
               <p className="mt-5 text-sm text-gray-500 animate-fade-in-up [animation-delay:280ms] flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1">
                 <span className="inline-flex items-center gap-1.5 text-primary font-medium">
                   <Sparkles className="w-3.5 h-3.5" />
-                  AI review suggestions
+                  Personalised AI reviews
                 </span>
                 <span className="text-gray-300 hidden sm:inline">·</span>
                 <span>Free for 15 days</span>
@@ -189,11 +219,11 @@ const HomePageClient = () => {
                 <div className="relative aspect-[16/10] sm:aspect-video w-full bg-black flex items-center justify-center">
                   <video
                     ref={videoRef}
-                    src="/assets/Creating_QR_code_for_business_20261008235308.mp4"
-                    autoPlay
+                    preload="none"
                     loop
                     muted={isMuted}
                     playsInline
+                    aria-label="How to create a Google review QR code standee with GetReviewQR"
                     className="w-full h-full object-cover sm:object-contain bg-black"
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
@@ -293,14 +323,16 @@ const HomePageClient = () => {
                 Customers don&apos;t stare at a blank review box
               </h2>
               <p className="text-white/75 text-lg leading-relaxed mb-8 max-w-lg">
-                After they scan your QR, ReviewQR shows ready-to-use review text.
-                They tap to copy, open Google, and paste — reviews finish in under a minute.
+                After they scan your QR, customers tap which service they used and what they liked.
+                ReviewQR writes reviews about their actual visit. They tap to copy, open Google and paste,
+                and the review is done in under a minute.
               </p>
               <ul className="space-y-3 mb-8">
                 {[
                   'AI writes 3 natural review options for your business',
-                  'One tap to copy — then paste on Google Reviews',
-                  'Included on Starter and above with your branded landing page',
+                  'Personalised: mentions the services, highlights and staff you add (Pro & Agency)',
+                  'English, हिंदी, Hinglish and मराठी',
+                  'One tap to copy, then paste on Google Reviews',
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-3 text-white/90">
                     <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15">
@@ -327,8 +359,22 @@ const HomePageClient = () => {
                     <Sparkles className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900">AI review suggestions</p>
+                    <p className="text-sm font-bold text-gray-900">Personalised AI reviews</p>
                     <p className="text-xs text-gray-400">Tap one to copy &amp; paste</p>
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-gray-500 mb-2">Customer picked</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {AI_DEMO_ANSWERS.map((chip) => (
+                      <span
+                        key={chip}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border-2 border-primary bg-primary-light/60 text-primary text-xs font-semibold"
+                      >
+                        <Check className="w-3 h-3" strokeWidth={3} />
+                        {chip}
+                      </span>
+                    ))}
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -387,7 +433,7 @@ const HomePageClient = () => {
           <ul className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
             {[
               'Search Google Maps → get a 1-tap review link',
-              'AI review suggestions so customers finish faster',
+              'Personalised AI reviews that mention your real services',
               'Print-ready PNG & PDF standee downloads',
               'Works for any business on Google Maps, worldwide',
             ].map((line) => (

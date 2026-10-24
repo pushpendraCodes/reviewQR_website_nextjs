@@ -3,7 +3,11 @@ export interface BlogPost {
   slug: string;
   title: string;
   description: string;
+  /** 40–60 word direct answer shown first ("Quick answer") — what AI answers and snippets quote. */
+  summary: string;
   date: string;
+  /** Last meaningful content change (sitemap lastmod / dateModified). Defaults to `date`. */
+  updated?: string;
   author: string;
   image: string;
   category: string;
@@ -17,6 +21,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'how-to-get-more-google-reviews',
     title: 'How to Get Google Reviews: The Ultimate Guide for Local Businesses',
     description: 'Discover proven strategies on how to get google reviews to boost your business rating and rank higher on Google Maps.',
+    summary:
+      'To get more Google reviews, make reviewing effortless: give customers a direct review link or QR code, ask right after a good experience, place a review standee at your counter and tables, follow up by WhatsApp or email, and reply to every review. Never buy reviews or offer rewards for them.',
     date: 'May 5, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=800',
@@ -43,6 +49,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'how-to-create-google-review-qr-code',
     title: 'How to Create a Google Review QR Code (Step by Step)',
     description: 'Learn how to create a qr code for google reviews step by step to connect customers directly with your Google Business review page.',
+    summary:
+      'To create a Google review QR code, open a review QR code generator such as ReviewQR, search your business name, select your Google Maps listing, and download the QR code or a printable standee. The code links to your Google review box, so customers can rate you in one scan.',
     date: 'May 6, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800',
@@ -69,6 +77,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'best-places-to-put-google-review-qr-code',
     title: 'Best Places to Put Your Google Review QR Code',
     description: 'Maximize your review collection by placing your QR codes in these high-visibility locations.',
+    summary:
+      'The best places for a Google review QR code are where customers pause after a good experience: the billing counter, dining tables, reception and waiting areas, receipts and bills, product packaging, and follow-up WhatsApp or email messages. Keep the code large, high-contrast and at eye level.',
     date: 'May 7, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=800',
@@ -95,6 +105,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'why-google-reviews-matter-for-local-seo',
     title: 'Why Google Reviews Matter for Local SEO',
     description: 'Understand the critical role reviews play in your business ranking on Google Maps and local search results.',
+    summary:
+      'Google reviews matter for local SEO because review count, rating, recency and keywords in review text are signals Google uses to rank businesses in Maps and the local pack. More recent, detailed, positive reviews also raise click-through rates, since searchers trust businesses with strong ratings.',
     date: 'May 8, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800',
@@ -121,6 +133,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'how-to-handle-negative-google-reviews',
     title: 'How to Handle Negative Google Reviews Like a Pro',
     description: 'Learn the best practices for responding to negative feedback and turning unhappy customers into loyal fans.',
+    summary:
+      'Handle a negative Google review by replying quickly, politely and publicly: thank the customer, apologise for their experience, address the specific issue without arguing, and invite them to continue offline. Fix the underlying problem, and report only reviews that break Google policy, such as spam or fake reviews.',
     date: 'May 9, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800',
@@ -147,6 +161,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'using-social-proof-to-grow-your-business',
     title: 'Using Social Proof to Grow Your Business Fast',
     description: 'Discover how to leverage your positive Google reviews across your website and social media to build trust.',
+    summary:
+      'Social proof grows a business because people trust what other customers say. Show your Google rating and review count on standees, your website and social media, share real customer quotes, and keep collecting fresh reviews so new visitors see recent, positive experiences.',
     date: 'May 10, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=800',
@@ -173,7 +189,10 @@ export const blogPosts: BlogPost[] = [
     slug: 'free-google-review-qr-code-generator',
     title: 'Free Google Review QR Code Generator: Try It Free for 15 Days',
     description: 'Generate a free Google Review QR code in seconds and try it free for 15 days. No credit card — just a scannable code your customers can use instantly.',
+    summary:
+      'ReviewQR lets you create a Google review QR code free for 15 days: search your business, pick your listing and download a PNG. Paid plans keep the QR working and add printable PDF standees, AI review suggestions, custom branding and analytics.',
     date: 'May 11, 2026',
+    updated: 'October 23, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&q=80&w=800',
     category: 'Tutorial',
@@ -202,6 +221,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'google-review-qr-code-for-restaurants',
     title: 'Google Review QR Code for Restaurants: The Complete Setup Guide',
     description: 'A step-by-step guide for restaurant owners to set up Google Review QR codes on tables, menus, and receipts to consistently collect 5-star reviews.',
+    summary:
+      'For restaurants, put a Google review QR code on table tents, billing folders and the counter, and have staff mention it when presenting the bill. Customers scan while waiting, land straight on your review box, and can finish a review before they leave.',
     date: 'May 12, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800',
@@ -231,6 +252,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'static-vs-dynamic-google-review-qr-code',
     title: 'Static vs Dynamic Google Review QR Code: Which One Do You Need?',
     description: 'Understand the difference between static and dynamic QR codes for Google Reviews and choose the right option for your business.',
+    summary:
+      'A static review QR code stores your Google review link directly and can never be changed or tracked. A dynamic QR code stores a short link that redirects to your review page, so you can track scans and update the destination without reprinting. Dynamic is better for printed standees.',
     date: 'May 13, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&q=80&w=800',
@@ -262,6 +285,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'how-to-print-google-review-qr-code-standee',
     title: 'How to Print a Google Review QR Code Standee That Actually Gets Scanned',
     description: 'Learn the right size, format, and design principles for printing a Google Review QR code standee that customers will notice and scan.',
+    summary:
+      'To print a review QR standee that gets scanned, use a high-resolution PDF, keep the QR code at least 2.5 cm (1 inch) wide, use dark code on a light background, add a short call to action like "Scan to review us", and place it at eye level on the counter or tables.',
     date: 'May 14, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&q=80&w=800',
@@ -291,6 +316,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'google-review-qr-code-for-salons-and-spas',
     title: 'Google Review QR Code for Salons and Spas: Grow Your 5-Star Rating',
     description: 'A practical guide for salons, spas, and beauty businesses to use Google Review QR codes to build a strong online reputation.',
+    summary:
+      'Salons and spas get the most Google reviews by placing a review QR code at reception and the checkout counter, and asking right after a service while the client is happy with the result. Mentioning the service and stylist in reviews also helps you rank for those services.',
     date: 'May 15, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=800',
@@ -320,6 +347,8 @@ export const blogPosts: BlogPost[] = [
     slug: 'what-is-a-google-place-id-and-how-to-find-it',
     title: 'What is a Google Place ID and How to Find Yours in 60 Seconds',
     description: 'Your Google Place ID is the key to creating a direct review link for your business. Here is what it is, why it matters, and exactly how to find it.',
+    summary:
+      'A Google Place ID is a unique code that identifies your business listing on Google Maps. Find it with Google\'s Place ID Finder or by searching your business in ReviewQR. Your direct review link is https://search.google.com/local/writereview?placeid= followed by your Place ID.',
     date: 'May 16, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?auto=format&fit=crop&q=80&w=800',
@@ -350,7 +379,10 @@ export const blogPosts: BlogPost[] = [
     title: 'How to Automate Google Reviews for Local SEO (The Right Way)',
     description:
       'Learn how to automate Google review collection for local SEO — QR codes, follow-up workflows, and AI-assisted prompts that stay within Google guidelines.',
+    summary:
+      'Automate Google reviews by making every touchpoint ask for you: a permanent review QR code on standees, a review link in post-visit WhatsApp or email messages, and AI suggestions that help customers write. Keep it compliant: ask everyone, never filter by rating, and never offer rewards.',
     date: 'September 10, 2026',
+    updated: 'October 24, 2026',
     author: 'ReviewQR Team',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
     category: 'SEO',
@@ -398,6 +430,8 @@ export const blogPosts: BlogPost[] = [
       <p>Many customers abandon reviews because they don't know what to write. That's where AI-assisted suggestions help — not by posting on their behalf, but by giving them a starting draft they can edit and submit themselves.</p>
 
       <p>ReviewQR's <a href="/how-it-works">AI review suggestions</a> generate context-aware prompts on your branded landing page after a customer scans your QR code. The customer stays in control; Google gets authentic, detailed feedback with natural keywords that support local SEO (service type, location, staff names).</p>
+
+      <p>On Pro and Agency, you can add your services, highlights and staff to each QR. Customers tap which service they used and what they liked, and the suggestions describe that visit — in English, Hindi, Hinglish or Marathi — instead of generic praise that could fit any business.</p>
 
       <h3>Step 5: Automate Review Monitoring &amp; Responses</h3>
       <p>Collecting reviews is half the job. Responding quickly signals active management to both customers and Google. Set a simple rule:</p>
@@ -448,6 +482,70 @@ export const blogPosts: BlogPost[] = [
       <p>You don't need expensive reputation software to build a review engine. A permanent QR code, smart placement, light follow-ups, and AI-assisted prompts create a system that runs while you focus on service.</p>
 
       <p>Create your free review QR code now on our <a href="/google-review-qr-code-generator">Google Review QR code generator</a>, explore <a href="/pricing">plans with AI suggestions and analytics</a>, or browse more tactics in our guide on <a href="/blog/how-to-get-more-google-reviews">how to get more Google reviews</a>.</p>
+    `
+  },
+  {
+    id: '14',
+    slug: 'leave-us-a-review-qr-code',
+    title: 'Leave Us a Review QR Code: Free Generator, Sign Wording & Placement',
+    description:
+      'Make a free "leave us a review" QR code that opens your Google review page in one scan. Sign wording that works, where to put it, and mistakes to avoid.',
+    summary:
+      'A "leave us a review" QR code opens your Google review box when customers scan it. Create one free with ReviewQR by searching your business and downloading the QR or standee, add short wording like "Scan to review us on Google", and place it at your counter, tables or on receipts.',
+    date: 'October 24, 2026',
+    author: 'ReviewQR Team',
+    image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=800',
+    category: 'Tutorial',
+    keywords:
+      'leave us a review qr code, review us qr code, scan to leave a review, review qr code, qr code for business reviews, qr code for reviews, rating qr code, review qr code sign',
+    content: `
+      <p>A "leave us a review" QR code is the simplest way to turn happy customers into Google reviews. Customers point their phone camera at the code, and your Google review box opens straight away, with no searching, no typing your business name, and no getting lost on Maps. This guide shows you how to make one for free, what to write on the sign, and where to put it.</p>
+
+      <h3>What Is a Review QR Code?</h3>
+      <p>A review QR code (also called a "review us" QR code, rating QR code or "scan to leave a review" code) is a QR code that links directly to your business's review form. For Google, that link is your <a href="/blog/what-is-a-google-place-id-and-how-to-find-it">Place ID review link</a>, which opens the star rating and review box for your exact listing. Any phone camera can scan it; customers don't need an app.</p>
+
+      <h3>How to Make a "Leave Us a Review" QR Code (Free)</h3>
+      <ol>
+        <li>Open the free <a href="/google-review-qr-code-generator">review QR code generator</a>.</li>
+        <li>Search your business name and city, and pick your Google listing.</li>
+        <li>Download the QR code as a PNG, or download a print-ready standee that already says "Tap or Scan to Review Us".</li>
+        <li>Scan it with your own phone before printing to check it opens your review page.</li>
+      </ol>
+      <p>It takes under a minute, and you can try it free for 15 days.</p>
+
+      <h3>Sign Wording That Gets More Scans</h3>
+      <p>The words next to the QR code matter as much as the code. Keep them short, specific and friendly:</p>
+      <ul>
+        <li><strong>"Enjoyed your visit? Scan to leave us a review"</strong>: works for restaurants, cafés and salons.</li>
+        <li><strong>"Scan to review us on Google. It takes 30 seconds"</strong>: tells people it's quick.</li>
+        <li><strong>"Your review helps a small business grow"</strong>: good for local shops and clinics.</li>
+        <li><strong>"Rate your experience"</strong>: short, ideal for packaging and bills.</li>
+      </ul>
+      <p>Avoid offering discounts or gifts in exchange for reviews. Google's policies don't allow incentivised reviews, and they can be removed.</p>
+
+      <h3>Where to Put Your Review QR Code</h3>
+      <ul>
+        <li><strong>Billing counter:</strong> the moment people pay is the moment they decide how they feel.</li>
+        <li><strong>Tables and waiting areas:</strong> customers scan while they wait for food or an appointment.</li>
+        <li><strong>Bills, receipts and packaging:</strong> reaches customers after they leave.</li>
+        <li><strong>Reception desks</strong> in clinics, hotels and offices.</li>
+        <li><strong>WhatsApp and email</strong>: share the same short link after a service visit.</li>
+      </ul>
+      <p>See our full guide on the <a href="/blog/best-places-to-put-google-review-qr-code">best places to put a review QR code</a> and <a href="/blog/how-to-print-google-review-qr-code-standee">how to print a review standee</a>.</p>
+
+      <h3>Make Writing the Review Easy, Too</h3>
+      <p>Scanning is only half the job; many customers stop at the empty review box. On paid plans, ReviewQR shows AI review suggestions after the scan. On Pro and Agency, customers first tap which service they used and what they liked, and get reviews about their actual visit in English, Hindi, Hinglish or Marathi. They copy one, edit it if they like, and post it on Google. They can always skip and write their own.</p>
+
+      <h3>Common Mistakes to Avoid</h3>
+      <ul>
+        <li><strong>Linking to your Maps profile instead of the review box.</strong> Customers then have to find the "Write a review" button themselves.</li>
+        <li><strong>Printing too small.</strong> Keep the code at least 2.5 cm (1 inch) wide, and bigger on posters people scan from a distance.</li>
+        <li><strong>Low contrast.</strong> Dark code on a light background scans best.</li>
+        <li><strong>Picking the wrong listing.</strong> If your name is common, check the address before you download.</li>
+      </ul>
+
+      <h3>Get Your Free Review QR Code</h3>
+      <p>Create your "leave us a review" QR code now with the <a href="/google-review-qr-code-generator">free review QR code generator</a>, or read <a href="/blog/how-to-get-more-google-reviews">how to get more Google reviews</a> for more ideas.</p>
     `
   }
 ];

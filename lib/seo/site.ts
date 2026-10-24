@@ -2,15 +2,28 @@
 export const SITE_URL = 'https://www.getreviewqr.com';
 
 export const SITE_NAME = 'GetReviewQR';
-export const SITE_TAGLINE = 'Free Google Review QR Code Generator';
+/** Names people search for the brand ("reviewqr", "review qr"). */
+export const SITE_ALT_NAMES = ['ReviewQR', 'Review QR'];
+export const SITE_TAGLINE = 'Free Review QR Code Generator for Google Reviews';
 export const SITE_DESCRIPTION =
-  'Generate a free Google Review QR code in seconds. Direct customers to your Google review page with a scannable QR code or printable standee — no app needed, free for 15 days.';
+  'Free review QR code generator. Make a "leave us a review" QR code that opens your Google review page in one scan, and print it as a "scan to leave a review" standee. Free for 15 days.';
 
 export const DEFAULT_OG_IMAGE = '/og-image.png';
+
+/** Raster logo for structured data (served by app/logo.png/route.tsx). */
+export const LOGO_URL = `${SITE_URL}/logo.png`;
+
+/** Official brand profiles (LinkedIn, Instagram, YouTube, X, Product Hunt…) — used as Organization `sameAs`. */
+export const SOCIAL_PROFILES: string[] = [];
 
 export const TWITTER_HANDLE = '@GetReviewQR';
 
 export const PRIMARY_KEYWORDS = [
+  'review qr code',
+  'review qr code generator',
+  'qr code for business reviews',
+  'leave us a review qr code',
+  'scan to leave a review',
   'google review qr code generator',
   'free google review qr code',
   'qr code for google reviews',

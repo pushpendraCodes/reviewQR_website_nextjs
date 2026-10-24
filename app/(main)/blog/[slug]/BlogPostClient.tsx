@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { type BlogPost } from '@/data/blogData';
 import { getRelatedPosts, GENERATOR_PATH } from '@/lib/seo/internal-links';
+import { isoDate } from '@/lib/seo/dates';
 import { Calendar, User, ArrowLeft, Share2, Tag, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -41,7 +42,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
               <div className="flex items-center gap-4 text-xs text-white/70">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" />
-                  <time dateTime={post.date}>{post.date}</time>
+                  {post.updated ? (
+                    <span>
+                      Updated <time dateTime={isoDate(post.updated)}>{post.updated}</time>
+                    </span>
+                  ) : (
+                    <time dateTime={isoDate(post.date)}>{post.date}</time>
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5" />
@@ -58,6 +65,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       <main className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-12">
           <article className="flex-1 max-w-4xl">
+            <section
+              aria-label="Quick answer"
+              className="mb-10 rounded-2xl border-l-4 border-primary bg-primary-light/40 p-5 sm:p-6"
+            >
+              <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Quick answer</p>
+              <p className="text-gray-800 text-base sm:text-lg leading-relaxed">{post.summary}</p>
+            </section>
             <div
               className="prose prose-lg prose-slate max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-600 prose-a:text-primary prose-code:text-primary prose-strong:text-gray-900"
               dangerouslySetInnerHTML={{ __html: post.content }}

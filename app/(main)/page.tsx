@@ -7,15 +7,21 @@ import {
   webApplicationSchema,
   webSiteSchema,
 } from '@/lib/seo/schema';
-import { SITE_TAGLINE } from '@/lib/seo/site';
 import HomePageClient from './HomePageClient';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: `${SITE_TAGLINE} — Get More Google Reviews Instantly`,
+  title: 'ReviewQR: Free Review QR Code Generator for Google Reviews',
   description:
-    'Generate a free Google review QR code in seconds. Instantly direct customers to your Google review page — no app needed. Perfect for restaurants, salons, clinics, shops & local businesses worldwide (including USA, UK, Canada, Australia & India).',
+    'Create a free review QR code in 60 seconds. Customers scan and land straight on your Google review page. Print a "leave us a review" standee for restaurants, salons, clinics and shops.',
   path: '/',
   keywords: [
+    'review qr code',
+    'review qr code generator',
+    'reviewqr',
+    'qr code for business reviews',
+    'leave us a review qr code',
+    'qr code for reviews',
+    'scan to leave a review',
     'google review qr code generator',
     'free google review qr code',
     'qr code for google reviews',

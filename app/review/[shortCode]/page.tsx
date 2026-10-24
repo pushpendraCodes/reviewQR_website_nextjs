@@ -1,34 +1,109 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { useParams } from 'next/navigation';;
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from 'next/navigation';
 import {
     Star,
     Copy,
     Check,
     ExternalLink,
-    Loader2,
-    MessageSquare,
+    Info,
     Sparkles,
     ShieldCheck,
-    Info
+    RefreshCw,
+    ArrowLeft,
+    Loader2,
 } from "lucide-react";
-import { useGetLandingDataQuery, useGenerateAIReviewsMutation } from '@/store/api/landingApi';
+import {
+    useGetLandingDataQuery,
+    useGenerateAIReviewsMutation,
+    type ReviewAnswers,
+    type ReviewLanguage,
+} from '@/store/api/landingApi';
 import toast, { Toaster } from "react-hot-toast";
+
+const MAX_SERVICES = 3;
+const MAX_LIKED = 4;
+
+const LANGUAGES: { id: ReviewLanguage; label: string }[] = [
+    { id: "en", label: "English" },
+    { id: "hi", label: "हिंदी" },
+    { id: "hinglish", label: "Hinglish" },
+    { id: "mr", label: "मराठी" },
+];
+
+const toggle = (list: string[], value: string, max: number) =>
+    list.includes(value)
+        ? list.filter((v) => v !== value)
+        : list.length >= max ? list : [...list, value];
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            aria-pressed={active}
+            className={`px-3.5 py-2 rounded-full text-sm font-semibold border-2 transition-all ${active
+                ? "border-[#1A6B45] bg-[#E8F5EE] text-[#1A6B45]"
+                : "border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200 hover:bg-white"
+                }`}
+        >
+            {active && <Check size={13} className="inline -mt-0.5 mr-1" />}
+            {children}
+        </button>
+    );
+}
+
+function QuestionBlock({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+    return (
+        <div>
+            <p className="text-sm font-bold text-gray-900">{title}</p>
+            {hint && <p className="text-xs text-gray-400 mt-0.5">{hint}</p>}
+            <div className="flex flex-wrap gap-2 mt-3">{children}</div>
+        </div>
+    );
+}
 
 const ReviewLandingPage: React.FC = () => {
     const { shortCode } = useParams<{ shortCode: string }>();
     const { data: landingData, isLoading: isLandingLoading, error } = useGetLandingDataQuery(shortCode || "");
-    const [generateAIReviews, { data: aiData, isLoading: isAiLoading }] = useGenerateAIReviewsMutation();
+    const [generateAIReviews, { data: aiData, isLoading: isAiLoading, reset: resetAi }] = useGenerateAIReviewsMutation();
 
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [selectedReview, setSelectedReview] = useState<string | null>(null);
+    const [services, setServices] = useState<string[]>([]);
+    const [liked, setLiked] = useState<string[]>([]);
+    const [staff, setStaff] = useState("");
+    const [language, setLanguage] = useState<ReviewLanguage>("en");
+    const [lastAnswers, setLastAnswers] = useState<ReviewAnswers | undefined>(undefined);
+    const autoStarted = useRef(false);
+
+    const questions = landingData?.questions || null;
+    const showQuestions = Boolean(questions) && !aiData && !isAiLoading;
 
     useEffect(() => {
-        if (landingData?.aiEnabled && shortCode) {
-            generateAIReviews(shortCode);
-        }
+        if (autoStarted.current || !shortCode || !landingData?.aiEnabled || landingData.questions) return;
+        autoStarted.current = true;
+        generateAIReviews({ shortCode });
     }, [landingData, shortCode, generateAIReviews]);
+
+    const runGenerate = (answers?: ReviewAnswers) => {
+        if (!shortCode) return;
+        setSelectedReview(null);
+        setCopiedIndex(null);
+        setLastAnswers(answers);
+        generateAIReviews({ shortCode, answers })
+            .unwrap()
+            .catch(() => toast.error("Couldn't load suggestions. You can still write your own review."));
+    };
+
+    const handleWrite = () => runGenerate({ services, liked, staff, language });
+    const handleSkip = () => runGenerate({ services: [], liked: [], staff: "", language });
+    const handleRegenerate = () => runGenerate(lastAnswers);
+    const handleChangeAnswers = () => {
+        setSelectedReview(null);
+        resetAi();
+    };
 
     const handleCopy = (text: string, index: number) => {
         navigator.clipboard.writeText(text);
@@ -46,13 +121,7 @@ const ReviewLandingPage: React.FC = () => {
     };
 
     const handleOpenGoogle = () => {
-        if (!selectedReview) {
-            toast.error("Please pick a review first!", {
-                style: { borderRadius: '10px' }
-            });
-            return;
-        }
-        window.open(landingData?.reviewUrl, "_blank");
+        if (landingData?.reviewUrl) window.open(landingData.reviewUrl, "_blank", "noopener,noreferrer");
     };
 
     if (isLandingLoading) {
@@ -81,6 +150,7 @@ const ReviewLandingPage: React.FC = () => {
     }
 
     const reviews = aiData?.reviews || [];
+    const hasAnswers = services.length > 0 || liked.length > 0 || Boolean(staff);
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center py-8 px-4 sm:px-6">
@@ -129,12 +199,82 @@ const ReviewLandingPage: React.FC = () => {
                             <Sparkles size={16} className="text-[#1A6B45]" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900 leading-tight">AI Review Suggestions</h2>
-                            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-0.5">Pick one to copy & paste</p>
+                            <h2 className="text-lg font-bold text-gray-900 leading-tight">
+                                {showQuestions ? "Tell us about your visit" : "AI Review Suggestions"}
+                            </h2>
+                            <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-0.5">
+                                {showQuestions ? "Tap what applies · takes 10 seconds" : "Pick one to copy & paste"}
+                            </p>
                         </div>
                     </div>
 
-                    {isAiLoading ? (
+                    {showQuestions && questions ? (
+                        <div className="space-y-6">
+                            <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
+                                {LANGUAGES.map((lang) => (
+                                    <button
+                                        key={lang.id}
+                                        type="button"
+                                        onClick={() => setLanguage(lang.id)}
+                                        className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${language === lang.id ? "bg-white text-[#1A6B45] shadow-sm" : "text-gray-500"}`}
+                                    >
+                                        {lang.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {questions.services.length > 0 && (
+                                <QuestionBlock title="Which service did you use?" hint={`Pick up to ${MAX_SERVICES}`}>
+                                    {questions.services.map((name) => (
+                                        <Chip key={name} active={services.includes(name)} onClick={() => setServices((s) => toggle(s, name, MAX_SERVICES))}>
+                                            {name}
+                                        </Chip>
+                                    ))}
+                                </QuestionBlock>
+                            )}
+
+                            {questions.liked.length > 0 && (
+                                <QuestionBlock title="What did you like?" hint={`Pick up to ${MAX_LIKED}`}>
+                                    {questions.liked.map((item) => (
+                                        <Chip key={item} active={liked.includes(item)} onClick={() => setLiked((l) => toggle(l, item, MAX_LIKED))}>
+                                            {item}
+                                        </Chip>
+                                    ))}
+                                </QuestionBlock>
+                            )}
+
+                            {questions.staff.length > 0 && (
+                                <QuestionBlock title="Who helped you?" hint="Optional">
+                                    {questions.staff.map((name) => (
+                                        <Chip key={name} active={staff === name} onClick={() => setStaff((s) => (s === name ? "" : name))}>
+                                            {name}
+                                        </Chip>
+                                    ))}
+                                </QuestionBlock>
+                            )}
+
+                            <div className="space-y-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={handleWrite}
+                                    disabled={!hasAnswers}
+                                    className={`w-full py-3.5 rounded-2xl font-black text-base flex items-center justify-center gap-2 transition-all ${hasAnswers
+                                        ? "bg-gradient-to-r from-[#1A6B45] to-[#2ECC71] text-white shadow-lg shadow-[#1A6B45]/25 hover:scale-[1.01]"
+                                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                        }`}
+                                >
+                                    <Sparkles size={18} /> Suggest my review
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleSkip}
+                                    className="w-full py-2.5 rounded-2xl text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                                >
+                                    Skip questions
+                                </button>
+                            </div>
+                        </div>
+                    ) : isAiLoading ? (
                         <div className="space-y-4 py-4">
                             {[...Array(3)].map((_, i) => (
                                 <div key={i} className="h-24 bg-gray-50 rounded-2xl animate-pulse flex flex-col p-4 gap-2">
@@ -150,12 +290,12 @@ const ReviewLandingPage: React.FC = () => {
                                     key={idx}
                                     onClick={() => handleCopy(text, idx)}
                                     className={`w-full text-left p-5 rounded-2xl border-2 transition-all relative group overflow-hidden ${selectedReview === text
-                                            ? "border-[#1A6B45] bg-[#F0FDF4]"
-                                            : "border-gray-50 bg-gray-50 hover:border-gray-200 hover:bg-white"
+                                        ? "border-[#1A6B45] bg-[#F0FDF4]"
+                                        : "border-gray-50 bg-gray-50 hover:border-gray-200 hover:bg-white"
                                         }`}
                                 >
                                     <p className="text-gray-700 text-sm leading-relaxed pr-8 font-medium">
-                                        "{text}"
+                                        &ldquo;{text}&rdquo;
                                     </p>
                                     <div className={`absolute top-4 right-4 ${selectedReview === text ? "text-[#1A6B45]" : "text-gray-300 group-hover:text-gray-400"}`}>
                                         {copiedIndex === idx ? <Check size={18} /> : <Copy size={18} />}
@@ -167,46 +307,60 @@ const ReviewLandingPage: React.FC = () => {
                                     )}
                                 </button>
                             ))}
+
+                            {reviews.length > 0 && (
+                                <div className="flex items-center justify-between gap-2 text-sm">
+                                    {questions ? (
+                                        <button type="button" onClick={handleChangeAnswers} className="flex items-center gap-1.5 font-semibold text-gray-500 hover:text-gray-800">
+                                            <ArrowLeft size={15} /> Change answers
+                                        </button>
+                                    ) : <span />}
+                                    <button type="button" onClick={handleRegenerate} className="flex items-center gap-1.5 font-semibold text-[#1A6B45] hover:text-[#145536]">
+                                        <RefreshCw size={15} /> More suggestions
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {/* Step Instructions */}
-                    <div className="mt-8 space-y-4">
-                        <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center shrink-0 font-bold text-sm shadow-sm">
-                                1
-                            </div>
-                            <p className="text-sm text-blue-900 font-medium leading-snug">
-                                Tap a suggestion above to <span className="font-bold underline">copy</span> the review text.
-                            </p>
-                        </div>
-
-                        <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center shrink-0 font-bold text-sm shadow-sm">
-                                2
-                            </div>
-                            <div className="space-y-1">
+                    {!showQuestions && (
+                        <div className="mt-8 space-y-4">
+                            <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center shrink-0 font-bold text-sm shadow-sm">
+                                    1
+                                </div>
                                 <p className="text-sm text-blue-900 font-medium leading-snug">
-                                    Click the button below to open Google Reviews and <span className="font-bold underline">paste</span> your text.
-                                </p>
-                                <p className="text-[11px] text-blue-500 font-semibold italic flex items-center gap-1">
-                                    <Info size={10} /> Tip: Long press on the review box to paste!
+                                    Tap a suggestion above to <span className="font-bold underline">copy</span> it, and edit it to match your experience.
                                 </p>
                             </div>
-                        </div>
 
-                        <button
-                            onClick={handleOpenGoogle}
-                            disabled={!selectedReview}
-                            className={`w-full py-4 rounded-2xl font-black text-lg shadow-xl transition-all flex items-center justify-center gap-2 group ${selectedReview
-                                    ? "bg-gradient-to-r from-[#1A6B45] to-[#2ECC71] text-white hover:scale-[1.02] active:scale-[0.98] shadow-[#1A6B45]/25"
-                                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                }`}
-                        >
-                            Open Google Reviews
-                            <ExternalLink size={20} className={selectedReview ? "group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" : ""} />
-                        </button>
-                    </div>
+                            <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center shrink-0 font-bold text-sm shadow-sm">
+                                    2
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-blue-900 font-medium leading-snug">
+                                        Click the button below to open Google Reviews and <span className="font-bold underline">paste</span> your text.
+                                    </p>
+                                    <p className="text-[11px] text-blue-500 font-semibold italic flex items-center gap-1">
+                                        <Info size={10} /> Tip: Long press on the review box to paste!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleOpenGoogle}
+                        className={`w-full mt-6 py-4 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 group ${selectedReview || !showQuestions
+                            ? "bg-gradient-to-r from-[#1A6B45] to-[#2ECC71] text-white shadow-xl hover:scale-[1.02] active:scale-[0.98] shadow-[#1A6B45]/25"
+                            : "bg-white text-[#1A6B45] border-2 border-[#1A6B45]/20 hover:border-[#1A6B45]/50"
+                            }`}
+                    >
+                        {selectedReview || !showQuestions ? "Open Google Reviews" : "Write my own on Google"}
+                        <ExternalLink size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </button>
                 </div>
             </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare, Sparkles, Copy } from 'lucide-react';
+import { ArrowRight, ChevronDown, QrCode, Printer, Star, MessageSquare, Sparkles, Copy, MousePointerClick } from 'lucide-react';
 import HowItWorksSteps from '@/components/HowItWorksSteps';
 import { SEO_GUIDE_LINKS } from '@/lib/seo/internal-links';
 
@@ -56,7 +56,9 @@ const HowItWorksPage = () => {
             How ReviewQR Works
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Generate a Google Review QR, print a standee, and let AI help customers finish reviews faster.
+            ReviewQR turns your Google review link into a QR code in three steps: search your business, download
+            the QR or standee, and place it where customers pause. One scan opens your Google review box, and paid
+            plans add AI suggestions so customers finish faster.
           </p>
         </div>
       </section>
@@ -76,16 +78,18 @@ const HowItWorksPage = () => {
                 Starter plan and above
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-4">
-                AI review suggestions remove writer&apos;s block
+                How do AI review suggestions help customers?
               </h2>
               <p className="text-white/75 text-lg leading-relaxed mb-6">
                 Most happy customers never leave a review because typing feels like work.
                 ReviewQR shows ready-made options on your branded landing page after they scan.
+                On Pro and Agency, the options are personalised to the services the customer actually used.
               </p>
               <ol className="space-y-4">
                 {[
                   { icon: QrCode, text: 'Customer scans your standee QR' },
-                  { icon: Sparkles, text: 'AI shows 3 natural review options' },
+                  { icon: MousePointerClick, text: 'They tap which service they used, what they liked and who helped (Pro & Agency)' },
+                  { icon: Sparkles, text: 'AI writes 3 reviews in English, हिंदी, Hinglish or मराठी' },
                   { icon: Copy, text: 'They copy, open Google, and paste' },
                 ].map((step, i) => (
                   <li key={step.text} className="flex items-center gap-3">
@@ -106,6 +110,8 @@ const HowItWorksPage = () => {
                 <li>Blank Google review boxes get abandoned — suggestions get finished.</li>
                 <li>Copy-paste takes seconds, even for customers in a hurry.</li>
                 <li>Reviews still sound human; customers can edit before posting.</li>
+                <li>Personalised reviews mention real services and staff, which helps your local SEO.</li>
+                <li>Customers can always skip the questions or write their own review.</li>
                 <li>You keep the QR + standee workflow you already know.</li>
               </ul>
               <Link
@@ -125,10 +131,11 @@ const HowItWorksPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-sm font-semibold uppercase tracking-wider">Pro Tips</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
-              Where to Place Your QR Code
+              Where should you place a review QR code?
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              Maximize your reviews by placing QR codes where customers can easily scan them.
+              Place it where customers pause right after a good experience: the billing counter, reception,
+              dining tables, receipts and follow-up WhatsApp messages.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -184,10 +191,10 @@ const HowItWorksPage = () => {
           <div className="text-center mb-8">
             <span className="text-primary text-sm font-semibold uppercase tracking-wider">Watch &amp; Learn</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
-              See It in Action
+              How long does it take to make a review QR code?
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
-              Watch how to generate your Google Review QR code in under 60 seconds.
+              Under 60 seconds. Watch how to generate your Google review QR code from start to finish.
             </p>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ padding: '46.98% 0 0 0', position: 'relative' }}>
@@ -208,7 +215,7 @@ const HowItWorksPage = () => {
           <div className="text-center mb-12">
             <span className="text-rose-600 text-sm font-semibold uppercase tracking-wider">For agencies</span>
             <h2 className="font-display text-3xl sm:text-4xl font-semibold text-gray-900 mt-2 mb-4 tracking-tight">
-              How the Agency plan works
+              How does the Agency plan work?
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
               Manage review QR codes for many businesses, with your team, your brand and your own client billing.

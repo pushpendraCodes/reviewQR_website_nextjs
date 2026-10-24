@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
 import { buildPageMetadata } from '@/lib/seo/metadata';
+import { breadcrumbSchema, faqPageSchema, howToCreateQrSchema } from '@/lib/seo/schema';
+import { FAQ_DATA } from '@/utils/content';
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'How Google Review QR Codes Work',
@@ -16,5 +19,19 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default function HowItWorksLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd
+        data={[
+          howToCreateQrSchema(),
+          faqPageSchema(FAQ_DATA),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'How it works', path: '/how-it-works' },
+          ]),
+        ]}
+      />
+      {children}
+    </>
+  );
 }

@@ -334,12 +334,12 @@ const GeneratePageContent = () => {
       <section className="bg-gradient-to-br from-white via-primary-light/20 to-white py-10 sm:py-14 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-            {isEditMode ? 'Edit & Re-download Your QR Standee' : 'Generate Your Google Review QR Code'}
+            {isEditMode ? 'Edit & Re-download Your QR Standee' : 'Free Review QR Code Generator for Google Reviews'}
           </h1>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
             {isEditMode
               ? 'Customize your standee design and re-download in your preferred format.'
-              : 'Search your business and download a QR. Paid plans add AI review suggestions so customers finish reviews faster.'}
+              : 'A review QR code opens your Google review page in one scan. Search your business, pick your listing, and download a QR code or printable standee in about 60 seconds. Paid plans add AI review suggestions, personalised to your services on Pro.'}
           </p>
           <div className="mt-4 inline-flex items-center gap-2">
             <span className={`px-3 py-1 text-xs font-bold rounded-full text-white ${plan === 'free' ? 'bg-gray-400' :
@@ -352,6 +352,11 @@ const GeneratePageContent = () => {
             {plan === 'free' && (
               <Link href="/pricing" className="text-xs text-primary font-semibold hover:underline">
                 {planExpiredNotifSent ? 'Renew your plan for more features →' : 'Upgrade for more features →'}
+              </Link>
+            )}
+            {isEditMode && isPaidActive && (plan === 'pro' || plan === 'agency') && (
+              <Link href={`/dashboard/ai-profile/${id}`} className="text-xs text-amber-600 font-semibold hover:underline">
+                ✨ Personalise AI reviews for this QR →
               </Link>
             )}
           </div>

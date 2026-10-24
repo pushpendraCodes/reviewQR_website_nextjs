@@ -4,6 +4,17 @@
 import { Mail, Info, Target, Users, MapPin } from 'lucide-react';
 import One9TechPortfolioPromo from '@/components/One9TechPortfolioPromo';
 
+const AT_A_GLANCE = [
+  { term: 'What it is', detail: 'A review QR code generator for Google reviews (also known as GetReviewQR).' },
+  { term: 'How it works', detail: 'Search your business, download a QR code or standee, and customers scan it to open your Google review box.' },
+  { term: 'Who it is for', detail: 'Restaurants, salons, clinics, shops, hotels, service businesses and marketing agencies, anywhere on Google Maps.' },
+  { term: 'Setup time', detail: 'About 60 seconds. No app needed for you or your customers.' },
+  { term: 'Price', detail: 'Free for 15 days. Paid Starter, Pro and Agency plans in INR and USD.' },
+  { term: 'AI reviews', detail: 'Paid plans suggest reviews after a scan. Pro and Agency personalise them to the services and staff a customer picks, in English, Hindi, Hinglish or Marathi.' },
+  { term: 'For agencies', detail: 'Team logins, client dashboards, client billing and white-label standees.' },
+  { term: 'Made by', detail: 'One9Tech, Rewa, Madhya Pradesh, India.' },
+];
+
 /**
  * AboutUs — Mandatory informational page for Razorpay compliance
  */
@@ -28,6 +39,20 @@ const AboutUs = () => {
         </div>
       </section>
 
+      <section className="py-12 bg-white border-b border-gray-100" aria-labelledby="at-a-glance">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 id="at-a-glance" className="text-2xl font-bold text-gray-900 mb-6">ReviewQR at a glance</h2>
+          <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-5">
+            {AT_A_GLANCE.map((fact) => (
+              <div key={fact.term} className="border-l-2 border-primary/30 pl-4">
+                <dt className="text-xs font-bold uppercase tracking-wider text-gray-400">{fact.term}</dt>
+                <dd className="mt-1 text-gray-700 leading-relaxed">{fact.detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       {/* Mission & Vision */}
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +63,7 @@ const AboutUs = () => {
                 In today&apos;s digital world, a business&apos;s online reputation is its most valuable asset. However, most happy customers simply forget to leave a review.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Our mission is to bridge this gap. We provide smart QR standees and AI review suggestions that turn a physical visit into a finished Google review in seconds — without customers staring at a blank box.
+                Our mission is to bridge this gap. We provide smart QR standees and personalised AI review suggestions that turn a physical visit into a finished Google review in seconds — about the services the customer actually used, in their own language, without staring at a blank box.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">

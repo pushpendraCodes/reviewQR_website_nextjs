@@ -19,15 +19,24 @@ const PLAN_RANK: Record<Plan, number> = {
 interface PlanGateProps {
     requiredPlan: Plan;
     featureName: string;
+    benefits?: string[];
     children: React.ReactNode;
 }
+
+const DEFAULT_BENEFITS = [
+    "Advanced scan analytics & charts",
+    "Live Google rating monitoring",
+    "Geographic & device breakdown",
+    "Rating trends over time",
+    "Export data to CSV",
+];
 
 /**
  * Wraps a page that requires a minimum plan.
  * If user has access → renders children normally.
  * If not → renders children blurred behind a glassmorphic upgrade overlay.
  */
-const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children }) => {
+const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, benefits = DEFAULT_BENEFITS, children }) => {
     const navigate = useRouter();
     const [hydrated, setHydrated] = useState(false);
     useEffect(() => setHydrated(true), []);
@@ -91,13 +100,7 @@ const PlanGate: React.FC<PlanGateProps> = ({ requiredPlan, featureName, children
                             What you&apos;ll get
                         </p>
                         <ul className="space-y-2">
-                            {[
-                                "Advanced scan analytics & charts",
-                                "Live Google rating monitoring",
-                                "Geographic & device breakdown",
-                                "Rating trends over time",
-                                "Export data to CSV",
-                            ].map((item) => (
+                            {benefits.map((item) => (
                                 <li key={item} className="flex items-center gap-2 text-sm text-gray-600">
                                     <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71] shrink-0" />
                                     {item}

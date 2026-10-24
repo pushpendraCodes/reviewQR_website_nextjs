@@ -123,10 +123,31 @@ export interface AnalyticsResponse {
   };
 }
 
+export type ReviewTone = 'friendly' | 'professional' | 'enthusiastic';
+
+export interface ReviewProfile {
+  category: string;
+  description: string;
+  services: { name: string; detail: string }[];
+  highlights: string[];
+  staff: string[];
+  tone: ReviewTone;
+}
+
+export interface ReviewProfileResponse {
+  success: boolean;
+  qr: { _id: string; businessName: string; placeAddress: string; shortCode: string };
+  profile: ReviewProfile;
+  updatedAt: string | null;
+  allowed: boolean;
+  limits: { services: number; highlights: number; staff: number };
+  defaultLiked: string[];
+}
+
 export const qrApi = createApi({
   reducerPath: "qrApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["QRCode"],
+  tagTypes: ["QRCode", "ReviewProfile"],
   endpoints: (builder) => ({
     generateQR: builder.mutation<GenerateQRResponse, GenerateQRRequest>({
       query: (body) => ({
@@ -181,6 +202,24 @@ export const qrApi = createApi({
     getQRAnalytics: builder.query<AnalyticsResponse, string>({
       query: (id) => `/qr/${id}/analytics`,
     }),
+    getReviewProfile: builder.query<ReviewProfileResponse, string>({
+      query: (id) => `/qr/${id}/review-profile`,
+      providesTags: (_r, _e, id) => [{ type: "ReviewProfile", id }],
+    }),
+    updateReviewProfile: builder.mutation<ReviewProfileResponse & { message: string }, { id: string; profile: ReviewProfile }>({
+      query: ({ id, profile }) => ({
+        url: `/qr/${id}/review-profile`,
+        method: "PUT",
+        body: profile,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [{ type: "ReviewProfile", id }],
+    }),
+    autofillReviewProfile: builder.mutation<{ success: boolean; profile: ReviewProfile }, string>({
+      query: (id) => ({
+        url: `/qr/${id}/review-profile/autofill`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -193,4 +232,7 @@ export const {
   useDeleteQRCodeMutation,
   useLazyDownloadQRCodeQuery,
   useGetQRAnalyticsQuery,
+  useGetReviewProfileQuery,
+  useUpdateReviewProfileMutation,
+  useAutofillReviewProfileMutation,
 } = qrApi;

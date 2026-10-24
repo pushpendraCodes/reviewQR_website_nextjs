@@ -19,7 +19,8 @@ const UpsellBanner = () => {
           </h3>
           <p className="text-sm text-gray-600">
             Upgrade to Starter for a branded landing page with AI review suggestions —
-            customers tap to copy, paste on Google, and post in seconds.
+            customers tap to copy, paste on Google, and post in seconds. On Pro, the reviews
+            mention the services and staff your customers pick.
           </p>
         </div>
         <Link

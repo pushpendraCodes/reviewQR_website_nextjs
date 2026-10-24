@@ -46,7 +46,7 @@ const FaqSection = () => {
               <span className="text-primary">We&apos;ve got answers.</span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-8 max-w-sm mx-auto lg:mx-0">
-              Everything about Google Review QR codes, pricing, and getting more 5-star reviews for your business.
+              Everything about review QR codes, &ldquo;leave us a review&rdquo; standees, pricing, and getting more 5-star Google reviews.
             </p>
             <Link
               href="/how-it-works"

@@ -3,7 +3,7 @@
 import React, { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link, Nfc, Users } from "lucide-react";
+import { QrCode, Plus, Search, Download, Pencil, Trash2, Loader2, Link, Nfc, Users, Sparkles } from "lucide-react";
 import TapScanSetup from '@/components/TapScanSetup';
 import toast from 'react-hot-toast';
 import { useListQRCodesQuery, useDeleteQRCodeMutation, useUpdateQRCodeMutation } from '@/store/api/qrApi';
@@ -228,6 +228,13 @@ const StandeesPageInner: React.FC = () => {
                                                     title="Tap + Scan (NFC)"
                                                 >
                                                     <Nfc size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={() => navigate.push(`/dashboard/ai-profile/${qr.id}`)}
+                                                    className="p-1.5 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-colors"
+                                                    title="AI review profile (services & questions)"
+                                                >
+                                                    <Sparkles size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleEditOrDownload(qr.id)}

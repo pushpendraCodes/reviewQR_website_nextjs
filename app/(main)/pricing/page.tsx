@@ -113,6 +113,7 @@ const INR_PLANS = [
       'Standee templates (Luxury, Bold, Festive)',
       'Social proof badge',
       'Multi-language standee',
+      'Personalised AI reviews (services, staff, Hindi/Hinglish/Marathi)',
       'Analytics & Google rating tracking',
       'White label',
       'Team logins',
@@ -129,13 +130,13 @@ const INR_PLANS = [
     annualPrice: proInr.annualPrice,
     currencySymbol: proInr.currencySymbol,
     annualSavingsPercent: proInr.savingsPercent,
-    description: 'Full customisation for growing businesses',
+    description: 'Personalised AI reviews + full customisation for growing businesses',
     qrLimit: '10',
     features: [
       '10 QR codes',
       'No watermark',
       'Branded Landing Page for customers',
-      'AI review suggestions ✨',
+      'Personalised AI reviews: customers pick services & staff ✨',
       'Custom logo in QR centre',
       'Custom QR color & dot shape',
       'All standee templates (Minimal, Luxury, Bold, Festive)',
@@ -536,6 +537,7 @@ const PricingPage = () => {
         rows: [
           { feature: 'Branded landing page', free: false, starter: true, pro: true, agency: true },
           { feature: 'AI review suggestions', free: false, starter: true, pro: true, agency: true },
+          { feature: 'Personalised AI reviews (services, highlights, staff, Hindi/Hinglish/Marathi)', free: false, starter: false, pro: true, agency: true },
           { feature: 'One-tap copy to clipboard', free: false, starter: true, pro: true, agency: true },
         ],
       },
@@ -619,7 +621,7 @@ const PricingPage = () => {
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
             Start free. Upgrade for AI review suggestions, branded landing pages, print-ready standees and Google rating
-            tracking. Agencies get team logins, client dashboards and client billing with payment collection.
+            tracking. Pro adds personalised AI reviews that mention the services your customers actually used. Agencies get team logins, client dashboards and client billing with payment collection.
           </p>
 
           {/* Currency switcher */}

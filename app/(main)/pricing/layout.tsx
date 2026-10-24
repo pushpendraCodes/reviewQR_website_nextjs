@@ -1,5 +1,10 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
 import { buildPageMetadata } from '@/lib/seo/metadata';
+import { breadcrumbSchema, pricingSchema } from '@/lib/seo/schema';
+import { getLivePlans } from '@/lib/seo/livePricing';
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'Pricing — Google Review QR Code Plans',
@@ -16,6 +21,20 @@ export const metadata: Metadata = buildPageMetadata({
   ],
 });
 
-export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return children;
+export default async function PricingLayout({ children }: { children: React.ReactNode }) {
+  const plans = await getLivePlans();
+  return (
+    <>
+      <JsonLd
+        data={[
+          pricingSchema(plans),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Pricing', path: '/pricing' },
+          ]),
+        ]}
+      />
+      {children}
+    </>
+  );
 }
