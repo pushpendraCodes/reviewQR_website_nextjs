@@ -34,7 +34,7 @@ ReviewQR is also known as GetReviewQR, Review QR and getreviewqr.com. It works f
 - The QR code links to the business's Google review form via its Google Place ID.
 - Free plan: try it free for 15 days. Paid plans keep QR codes working.
 - Paid plans show customers AI review suggestions after they scan. Customers copy one, edit it, and post it on Google themselves; they can always write their own.
-- Pro and Agency: personalised AI reviews. The owner adds services, highlights and staff names per QR code; customers tap what they used and liked, and the AI writes reviews about that visit in English, Hindi, Hinglish or Marathi. The AI only uses details the owner entered.
+- Pro and Agency: personalised AI reviews. The owner adds services, highlights and staff names per QR code; customers tap what they used and liked, and the AI writes reviews about that visit in the owner's chosen languages (21 supported: English, Hindi, Hinglish, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Mandarin Chinese, Spanish, French, Arabic, Portuguese, Russian, German, Japanese, Indonesian). The AI only uses details the owner entered.
 - Printable standees (PNG, SVG, PDF) with templates, colours, logo and multi-language text; NFC "tap + scan" support.
 - Pro: scan analytics and live Google rating and review tracking.
 - Agency: unlimited QR codes, team logins, client logins and dashboards, client billing and payment collection, white-label standees.

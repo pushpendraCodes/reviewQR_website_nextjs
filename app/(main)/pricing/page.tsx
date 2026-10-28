@@ -113,7 +113,7 @@ const INR_PLANS = [
       'Standee templates (Luxury, Bold, Festive)',
       'Social proof badge',
       'Multi-language standee',
-      'Personalised AI reviews (services, staff, Hindi/Hinglish/Marathi)',
+      'Personalised AI reviews (services, staff, 21 languages)',
       'Analytics & Google rating tracking',
       'White label',
       'Team logins',
@@ -137,6 +137,7 @@ const INR_PLANS = [
       'No watermark',
       'Branded Landing Page for customers',
       'Personalised AI reviews: customers pick services & staff ✨',
+      'AI reviews in 21 languages (हिंदी, मराठी, தமிழ், 中文, Français…)',
       'Custom logo in QR centre',
       'Custom QR color & dot shape',
       'All standee templates (Minimal, Luxury, Bold, Festive)',
@@ -520,7 +521,7 @@ const PricingPage = () => {
           { feature: 'Templates', free: 'Default only', starter: 'Minimal only', pro: 'All 4', agency: 'All 4' },
           { feature: 'Custom background', free: false, starter: false, pro: true, agency: true },
           { feature: 'Social proof badge', free: false, starter: false, pro: true, agency: true },
-          { feature: 'Language support', free: 'English only', starter: 'English only', pro: '5 languages', agency: '5 languages' },
+          { feature: 'Standee languages', free: 'English only', starter: 'English only', pro: '5 languages', agency: '5 languages' },
           { feature: 'White label footer', free: false, starter: false, pro: false, agency: true },
         ],
       },
@@ -537,7 +538,8 @@ const PricingPage = () => {
         rows: [
           { feature: 'Branded landing page', free: false, starter: true, pro: true, agency: true },
           { feature: 'AI review suggestions', free: false, starter: true, pro: true, agency: true },
-          { feature: 'Personalised AI reviews (services, highlights, staff, Hindi/Hinglish/Marathi)', free: false, starter: false, pro: true, agency: true },
+          { feature: 'Personalised AI reviews (services, highlights, staff)', free: false, starter: false, pro: true, agency: true },
+          { feature: 'AI review languages', free: false, starter: 'English', pro: '21 languages', agency: '21 languages' },
           { feature: 'One-tap copy to clipboard', free: false, starter: true, pro: true, agency: true },
         ],
       },
@@ -621,7 +623,7 @@ const PricingPage = () => {
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
             Start free. Upgrade for AI review suggestions, branded landing pages, print-ready standees and Google rating
-            tracking. Pro adds personalised AI reviews that mention the services your customers actually used. Agencies get team logins, client dashboards and client billing with payment collection.
+            tracking. Pro adds personalised AI reviews that mention the services your customers actually used, in 21 languages. Agencies get team logins, client dashboards and client billing with payment collection.
           </p>
 
           {/* Currency switcher */}

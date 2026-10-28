@@ -331,7 +331,7 @@ const HomePageClient = () => {
                 {[
                   'AI writes 3 natural review options for your business',
                   'Personalised: mentions the services, highlights and staff you add (Pro & Agency)',
-                  'English, हिंदी, Hinglish and मराठी',
+                  '21 languages: हिंदी, मराठी, தமிழ், 中文, Français and more',
                   'One tap to copy, then paste on Google Reviews',
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-3 text-white/90">

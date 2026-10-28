@@ -24,7 +24,7 @@ export const FAQ_DATA = [
   },
   {
     question: "Can the AI reviews mention my services?",
-    answer: "Yes, on Pro and Agency. Add your services, highlights and staff names to each QR's AI review profile (or auto-fill it from Google). Customers tap which service they used, what they liked and who helped them, and the AI writes reviews about that visit in English, Hindi, Hinglish or Marathi. It only uses the details you add, never invents anything, and customers can always skip or write their own."
+    answer: "Yes, on Pro and Agency. Add your services, highlights and staff names to each QR's AI review profile (or auto-fill it from Google). Customers tap which service they used, what they liked and who helped them, and the AI writes reviews about that visit in the languages you choose: 21 options, including English, Hindi, Marathi, Tamil, Mandarin and French. It only uses the details you add, never invents anything, and customers can always skip or write their own."
   },
   {
     question: "Is ReviewQR really free?",

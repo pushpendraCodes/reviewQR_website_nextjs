@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, ExternalLink, Loader2, Plus, Save, Sparkles, Wand2, X } from "lucide-react";
+import { ArrowLeft, Check, ExternalLink, Loader2, Plus, Save, Sparkles, Wand2, X } from "lucide-react";
 import toast from "react-hot-toast";
 import PlanGate from '@/components/dashboard/PlanGate';
 import {
@@ -14,6 +14,17 @@ import {
     type ReviewProfileResponse,
     type ReviewTone,
 } from '@/store/api/qrApi';
+import {
+    ALL_REVIEW_LANGUAGES as ALL_LANGUAGES,
+    DEFAULT_REVIEW_LANGUAGES,
+    REVIEW_LANGUAGE_LIST as LANGUAGES,
+    type ReviewLanguage,
+} from '@/lib/reviewLanguages';
+
+const LANGUAGE_GROUPS = [
+    { id: "india", title: "Indian languages" },
+    { id: "world", title: "International languages" },
+] as const;
 
 const TONES: { id: ReviewTone; label: string; hint: string }[] = [
     { id: "friendly", label: "Friendly", hint: "Warm and casual" },
@@ -97,6 +108,19 @@ function ProfileEditor({ id, data }: { id: string; data: ReviewProfileResponse }
     const update = (patch: Partial<ReviewProfile>) => {
         setProfile((p) => ({ ...p, ...patch }));
         setDirty(true);
+    };
+
+    const languages = profile.languages?.length ? profile.languages : DEFAULT_REVIEW_LANGUAGES;
+    const toggleLanguage = (lang: ReviewLanguage) => {
+        if (languages.includes(lang)) {
+            if (languages.length === 1) {
+                toast.error("Keep at least one language.");
+                return;
+            }
+            update({ languages: languages.filter((l) => l !== lang) });
+        } else {
+            update({ languages: ALL_LANGUAGES.filter((l) => l === lang || languages.includes(l)) });
+        }
     };
 
     const setService = (index: number, patch: Partial<ReviewProfile["services"][number]>) =>
@@ -211,6 +235,44 @@ function ProfileEditor({ id, data }: { id: string; data: ReviewProfileResponse }
                                     ))}
                                 </div>
                             </div>
+                            <div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <p className="text-xs font-medium text-gray-500">Review languages <span className="text-gray-400">({languages.length} selected)</span></p>
+                                    <button
+                                        type="button"
+                                        onClick={() => update({ languages: [...DEFAULT_REVIEW_LANGUAGES] })}
+                                        className="text-[11px] font-medium text-[#1A6B45] hover:text-[#145536]"
+                                    >
+                                        Reset to default
+                                    </button>
+                                </div>
+                                <p className="text-[11px] text-gray-400 mb-2">Only these appear on this QR&apos;s review page. The first selected one (in this order) is the default; with just one, the language switch is hidden.</p>
+                                {LANGUAGE_GROUPS.map((g) => (
+                                    <div key={g.id} className="mt-3">
+                                        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">{g.title}</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                            {LANGUAGES.filter((l) => l.group === g.id).map((l) => {
+                                                const on = languages.includes(l.id);
+                                                return (
+                                                    <button
+                                                        key={l.id}
+                                                        type="button"
+                                                        onClick={() => toggleLanguage(l.id)}
+                                                        aria-pressed={on}
+                                                        className={`p-2.5 rounded-xl border text-left transition-colors ${on ? "border-[#1A6B45] bg-[#E8F5EE]" : "border-gray-200 hover:bg-gray-50"}`}
+                                                    >
+                                                        <p className="text-sm font-medium text-gray-800 flex items-center gap-1 truncate">
+                                                            {on && <Check size={13} className="text-[#1A6B45] shrink-0" />}
+                                                            {l.label}
+                                                        </p>
+                                                        <p className="text-[11px] text-gray-400 truncate">{l.name}</p>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </Section>
 
@@ -284,6 +346,14 @@ function ProfileEditor({ id, data }: { id: string; data: ReviewProfileResponse }
                             <p className="text-xs text-gray-400 mt-2">Add at least one service or highlight to turn on the questions.</p>
                         )}
 
+                        {isLive && (
+                            <div className="mt-4">
+                                <p className="text-xs font-semibold text-gray-700">Language</p>
+                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                    {LANGUAGES.filter((l) => languages.includes(l.id)).map((l) => <span key={l.id} className="px-2.5 py-1 rounded-full bg-gray-50 border border-gray-100 text-xs text-gray-600">{l.label}</span>)}
+                                </div>
+                            </div>
+                        )}
                         {serviceNames.length > 0 && (
                             <div className="mt-4">
                                 <p className="text-xs font-semibold text-gray-700">Which service did you use?</p>
@@ -360,7 +430,7 @@ const AiProfilePage: React.FC = () => {
                 "Add your services, highlights and staff",
                 "Customers tap what they used and liked",
                 "Reviews that mention real services, not generic praise",
-                "English, Hindi, Hinglish and Marathi suggestions",
+                "Suggestions in 21 languages, from Hindi and Tamil to Mandarin and French",
                 "Auto-fill your profile from Google",
             ]}
         >

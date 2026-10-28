@@ -14,7 +14,7 @@ export const PLAN_SUMMARIES: Record<PaidPlanKey | 'free', { name: string; summar
   pro: {
     name: 'Pro',
     summary:
-      '10 QR codes, personalised AI reviews (services, staff, English/Hindi/Hinglish/Marathi), custom logo and colours, analytics and Google rating tracking',
+      '10 QR codes, personalised AI reviews (services, staff, 21 languages), custom logo and colours, analytics and Google rating tracking',
   },
   agency: {
     name: 'Agency',

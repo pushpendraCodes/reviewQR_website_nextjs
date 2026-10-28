@@ -431,7 +431,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>ReviewQR's <a href="/how-it-works">AI review suggestions</a> generate context-aware prompts on your branded landing page after a customer scans your QR code. The customer stays in control; Google gets authentic, detailed feedback with natural keywords that support local SEO (service type, location, staff names).</p>
 
-      <p>On Pro and Agency, you can add your services, highlights and staff to each QR. Customers tap which service they used and what they liked, and the suggestions describe that visit — in English, Hindi, Hinglish or Marathi — instead of generic praise that could fit any business.</p>
+      <p>On Pro and Agency, you can add your services, highlights and staff to each QR. Customers tap which service they used and what they liked, and the suggestions describe that visit — in any of 21 languages, from Hindi, Marathi and Tamil to Mandarin and French — instead of generic praise that could fit any business.</p>
 
       <h3>Step 5: Automate Review Monitoring &amp; Responses</h3>
       <p>Collecting reviews is half the job. Responding quickly signals active management to both customers and Google. Set a simple rule:</p>
@@ -534,7 +534,7 @@ export const blogPosts: BlogPost[] = [
       <p>See our full guide on the <a href="/blog/best-places-to-put-google-review-qr-code">best places to put a review QR code</a> and <a href="/blog/how-to-print-google-review-qr-code-standee">how to print a review standee</a>.</p>
 
       <h3>Make Writing the Review Easy, Too</h3>
-      <p>Scanning is only half the job; many customers stop at the empty review box. On paid plans, ReviewQR shows AI review suggestions after the scan. On Pro and Agency, customers first tap which service they used and what they liked, and get reviews about their actual visit in English, Hindi, Hinglish or Marathi. They copy one, edit it if they like, and post it on Google. They can always skip and write their own.</p>
+      <p>Scanning is only half the job; many customers stop at the empty review box. On paid plans, ReviewQR shows AI review suggestions after the scan. On Pro and Agency, customers first tap which service they used and what they liked, and get reviews about their actual visit in the language they pick (21 options, including Hindi, Marathi, Tamil, Mandarin and French). They copy one, edit it if they like, and post it on Google. They can always skip and write their own.</p>
 
       <h3>Common Mistakes to Avoid</h3>
       <ul>

@@ -10,7 +10,7 @@ const AT_A_GLANCE = [
   { term: 'Who it is for', detail: 'Restaurants, salons, clinics, shops, hotels, service businesses and marketing agencies, anywhere on Google Maps.' },
   { term: 'Setup time', detail: 'About 60 seconds. No app needed for you or your customers.' },
   { term: 'Price', detail: 'Free for 15 days. Paid Starter, Pro and Agency plans in INR and USD.' },
-  { term: 'AI reviews', detail: 'Paid plans suggest reviews after a scan. Pro and Agency personalise them to the services and staff a customer picks, in English, Hindi, Hinglish or Marathi.' },
+  { term: 'AI reviews', detail: 'Paid plans suggest reviews after a scan. Pro and Agency personalise them to the services and staff a customer picks, in 21 languages including English, Hindi, Marathi, Tamil, Mandarin and French.' },
   { term: 'For agencies', detail: 'Team logins, client dashboards, client billing and white-label standees.' },
   { term: 'Made by', detail: 'One9Tech, Rewa, Madhya Pradesh, India.' },
 ];

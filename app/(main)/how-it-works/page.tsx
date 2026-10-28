@@ -89,7 +89,7 @@ const HowItWorksPage = () => {
                 {[
                   { icon: QrCode, text: 'Customer scans your standee QR' },
                   { icon: MousePointerClick, text: 'They tap which service they used, what they liked and who helped (Pro & Agency)' },
-                  { icon: Sparkles, text: 'AI writes 3 reviews in English, हिंदी, Hinglish or मराठी' },
+                  { icon: Sparkles, text: 'AI writes 3 reviews in 21 languages: हिंदी, मराठी, தமிழ், 中文, Français and more' },
                   { icon: Copy, text: 'They copy, open Google, and paste' },
                 ].map((step, i) => (
                   <li key={step.text} className="flex items-center gap-3">

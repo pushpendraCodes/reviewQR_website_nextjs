@@ -13,6 +13,7 @@ import {
     RefreshCw,
     ArrowLeft,
     Loader2,
+    Languages,
 } from "lucide-react";
 import {
     useGetLandingDataQuery,
@@ -20,17 +21,13 @@ import {
     type ReviewAnswers,
     type ReviewLanguage,
 } from '@/store/api/landingApi';
+import { DEFAULT_REVIEW_LANGUAGES, REVIEW_LANGUAGE_LIST } from '@/lib/reviewLanguages';
 import toast, { Toaster } from "react-hot-toast";
 
 const MAX_SERVICES = 3;
 const MAX_LIKED = 4;
 
-const LANGUAGES: { id: ReviewLanguage; label: string }[] = [
-    { id: "en", label: "English" },
-    { id: "hi", label: "हिंदी" },
-    { id: "hinglish", label: "Hinglish" },
-    { id: "mr", label: "मराठी" },
-];
+const SEGMENTED_MAX = 4;
 
 const toggle = (list: string[], value: string, max: number) =>
     list.includes(value)
@@ -80,6 +77,9 @@ const ReviewLandingPage: React.FC = () => {
 
     const questions = landingData?.questions || null;
     const showQuestions = Boolean(questions) && !aiData && !isAiLoading;
+    const allowedIds = questions?.languages?.length ? questions.languages : DEFAULT_REVIEW_LANGUAGES;
+    const allowedLanguages = REVIEW_LANGUAGE_LIST.filter((l) => allowedIds.includes(l.id));
+    const activeLanguage = allowedLanguages.some((l) => l.id === language) ? language : allowedLanguages[0]?.id ?? "en";
 
     useEffect(() => {
         if (autoStarted.current || !shortCode || !landingData?.aiEnabled || landingData.questions) return;
@@ -97,8 +97,8 @@ const ReviewLandingPage: React.FC = () => {
             .catch(() => toast.error("Couldn't load suggestions. You can still write your own review."));
     };
 
-    const handleWrite = () => runGenerate({ services, liked, staff, language });
-    const handleSkip = () => runGenerate({ services: [], liked: [], staff: "", language });
+    const handleWrite = () => runGenerate({ services, liked, staff, language: activeLanguage });
+    const handleSkip = () => runGenerate({ services: [], liked: [], staff: "", language: activeLanguage });
     const handleRegenerate = () => runGenerate(lastAnswers);
     const handleChangeAnswers = () => {
         setSelectedReview(null);
@@ -210,18 +210,36 @@ const ReviewLandingPage: React.FC = () => {
 
                     {showQuestions && questions ? (
                         <div className="space-y-6">
-                            <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
-                                {LANGUAGES.map((lang) => (
-                                    <button
-                                        key={lang.id}
-                                        type="button"
-                                        onClick={() => setLanguage(lang.id)}
-                                        className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${language === lang.id ? "bg-white text-[#1A6B45] shadow-sm" : "text-gray-500"}`}
+                            {allowedLanguages.length > SEGMENTED_MAX ? (
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                                    <Languages size={16} className="text-[#1A6B45] shrink-0" />
+                                    <span className="shrink-0">Review language</span>
+                                    <select
+                                        value={activeLanguage}
+                                        onChange={(e) => setLanguage(e.target.value as ReviewLanguage)}
+                                        className="flex-1 min-w-0 px-3 py-2 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#1A6B45]"
                                     >
-                                        {lang.label}
-                                    </button>
-                                ))}
-                            </div>
+                                        {allowedLanguages.map((lang) => (
+                                            <option key={lang.id} value={lang.id}>
+                                                {lang.label === lang.name ? lang.label : `${lang.label} (${lang.name})`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            ) : allowedLanguages.length > 1 && (
+                                <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
+                                    {allowedLanguages.map((lang) => (
+                                        <button
+                                            key={lang.id}
+                                            type="button"
+                                            onClick={() => setLanguage(lang.id)}
+                                            className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${activeLanguage === lang.id ? "bg-white text-[#1A6B45] shadow-sm" : "text-gray-500"}`}
+                                        >
+                                            {lang.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
                             {questions.services.length > 0 && (
                                 <QuestionBlock title="Which service did you use?" hint={`Pick up to ${MAX_SERVICES}`}>
@@ -294,7 +312,7 @@ const ReviewLandingPage: React.FC = () => {
                                         : "border-gray-50 bg-gray-50 hover:border-gray-200 hover:bg-white"
                                         }`}
                                 >
-                                    <p className="text-gray-700 text-sm leading-relaxed pr-8 font-medium">
+                                    <p dir="auto" className="text-gray-700 text-sm leading-relaxed pr-8 font-medium text-start">
                                         &ldquo;{text}&rdquo;
                                     </p>
                                     <div className={`absolute top-4 right-4 ${selectedReview === text ? "text-[#1A6B45]" : "text-gray-300 group-hover:text-gray-400"}`}>

@@ -32,7 +32,7 @@ const HowItWorksSteps = ({ detailed = false }: HowItWorksStepsProps) => {
       title: 'AI Helps Them Review Faster',
       description: 'Customers scan, pick an AI-written review, copy, and paste on Google in seconds.',
       detail:
-        'On Starter and above, scanners land on your branded page with AI review suggestions. They tap to copy ready-made text, open Google Reviews, and paste — no blank-box writer’s block. On Pro and Agency, customers first tap the service they used and what they liked, so each review mentions their real visit — in English, हिंदी, Hinglish or मराठी.',
+        'On Starter and above, scanners land on your branded page with AI review suggestions. They tap to copy ready-made text, open Google Reviews, and paste — no blank-box writer’s block. On Pro and Agency, customers first tap the service they used and what they liked, so each review mentions their real visit — in any of 21 languages, from हिंदी and தமிழ் to 中文 and Français.',
       color: 'bg-emerald-50 text-emerald-700',
     },
   ];

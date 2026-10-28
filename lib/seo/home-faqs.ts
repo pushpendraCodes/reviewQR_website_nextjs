@@ -27,7 +27,7 @@ export const HOME_FAQS = [
   {
     question: 'Can the AI reviews mention my services?',
     answer:
-      'Yes, on Pro and Agency. Add your services, highlights and staff names to each QR (or auto-fill them from Google). Customers tap which service they used, what they liked and who helped them, and the AI writes reviews about that visit in English, Hindi, Hinglish or Marathi. It only uses details you add, and customers can always skip or write their own.',
+      'Yes, on Pro and Agency. Add your services, highlights and staff names to each QR (or auto-fill them from Google). Customers tap which service they used, what they liked and who helped them, and the AI writes reviews about that visit in the languages you choose: 21 options, including English, Hindi, Marathi, Tamil, Mandarin and French. It only uses details you add, and customers can always skip or write their own.',
   },
   {
     question: 'Is the QR code generator really free?',
@@ -46,7 +46,7 @@ export const HOME_FAQS = [
   {
     question: 'गूगल रिव्यू QR कोड कैसे बनाएं?',
     answer:
-      'ReviewQR पर अपने बिज़नेस का नाम सर्च करें, अपनी Google लिस्टिंग चुनें और QR कोड या स्टैंडी डाउनलोड करें। ग्राहक QR स्कैन करते ही सीधे आपके Google रिव्यू पेज पर पहुँच जाते हैं। पहले 15 दिन फ्री हैं, और पेड प्लान में हिंदी, Hinglish और मराठी में AI रिव्यू सुझाव भी मिलते हैं।',
+      'ReviewQR पर अपने बिज़नेस का नाम सर्च करें, अपनी Google लिस्टिंग चुनें और QR कोड या स्टैंडी डाउनलोड करें। ग्राहक QR स्कैन करते ही सीधे आपके Google रिव्यू पेज पर पहुँच जाते हैं। पहले 15 दिन फ्री हैं, और पेड प्लान में हिंदी, मराठी, तमिल समेत 21 भाषाओं में AI रिव्यू सुझाव भी मिलते हैं।',
   },
   {
     question: 'Will this help my local SEO ranking?',

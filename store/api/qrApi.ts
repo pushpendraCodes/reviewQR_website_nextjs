@@ -3,6 +3,7 @@
 // src/store/qrApi.ts
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "../baseQueryWithReauth";
+import type { ReviewLanguage } from "./landingApi";
 
 export interface QRCode {
   id: string;
@@ -132,6 +133,7 @@ export interface ReviewProfile {
   highlights: string[];
   staff: string[];
   tone: ReviewTone;
+  languages: ReviewLanguage[];
 }
 
 export interface ReviewProfileResponse {

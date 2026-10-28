@@ -1,6 +1,7 @@
 'use client';
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { ReviewLanguage } from "@/lib/reviewLanguages";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
@@ -20,9 +21,10 @@ export interface ReviewQuestions {
   services: string[];
   liked: string[];
   staff: string[];
+  languages?: ReviewLanguage[];
 }
 
-export type ReviewLanguage = "en" | "hi" | "hinglish" | "mr";
+export type { ReviewLanguage };
 
 export interface ReviewAnswers {
   services: string[];
