@@ -47,7 +47,7 @@ const ShapeIcon = ({ shape, size = 24 }: { shape: QRDotShape; size?: number }) =
 };
 
 // ── Standee templates ────────────────────────────────────────────────
-const TEMPLATES: { value: StandeeTemplate; label: string; bg: string; accent: string; google?: boolean; isNew?: boolean }[] = [
+export const STANDEE_TEMPLATE_OPTIONS: { value: StandeeTemplate; label: string; bg: string; accent: string; google?: boolean; isNew?: boolean }[] = [
   { value: 'minimal', label: 'Minimal', bg: '#ffffff', accent: '#1D9E75' },
   { value: 'luxury', label: 'Luxury', bg: '#0d0d1a', accent: '#d4af37' },
   { value: 'bold', label: 'Bold', bg: '#1e40af', accent: '#ffffff' },
@@ -253,7 +253,7 @@ const QRCustomizer = ({
                 <SubHead label="Standee Template" />
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {TEMPLATES.map(({ value, label, bg, accent, google, isNew }) => (
+                {STANDEE_TEMPLATE_OPTIONS.map(({ value, label, bg, accent, google, isNew }) => (
                   <button
                     key={value}
                     onClick={() => pickTemplate(value)}

@@ -197,6 +197,8 @@ interface StandeePreviewProps {
   display?: Partial<StandeeDisplay> | null;
   /** Phone printed on the standee; falls back to the business phone from Google. */
   phone?: string;
+  /** Small gallery copy: no page id and no shadow, so several can render beside the real preview. */
+  thumbnail?: boolean;
 }
 
 function getContrastTextColors(hex: string) {
@@ -268,6 +270,7 @@ const StandeePreview = ({
   language = 'en',
   display,
   phone,
+  thumbnail = false,
 }: StandeePreviewProps) => {
 
   const isPaid = plan === 'starter' || plan === 'pro' || plan === 'agency';
@@ -606,8 +609,8 @@ const StandeePreview = ({
   return (
     <div className="flex justify-center">
       <div
-        id="standee-preview"
-        className="relative w-full max-w-[320px] overflow-hidden shadow-xl"
+        id={thumbnail ? undefined : 'standee-preview'}
+        className={`relative w-full max-w-[320px] overflow-hidden ${thumbnail ? '' : 'shadow-xl'}`}
         style={{ backgroundColor: cardBg, borderRadius: tmpl.borderRadius, border: tmpl.borderStyle, minHeight: '420px' }}
       >
         {isProPlus && tmpl.decorBar && (

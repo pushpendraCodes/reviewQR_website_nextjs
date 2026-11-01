@@ -14,7 +14,8 @@ import { useAppSelector } from '@/store/hooks';
 import BusinessResultCard from '@/components/BusinessResultCard';
 import QRErrorOverlay from '@/components/QRErrorOverlay';
 import UpsellBanner from '@/components/UpsellBanner';
-import QRCustomizer, { QRCustomizerTeaser } from '@/components/Qrcustomizer';
+import QRCustomizer from '@/components/Qrcustomizer';
+import StandeeDesignGallery from '@/components/StandeeDesignGallery';
 import StandeeTeaser from '@/components/Standeeteaser';
 import StandeePreview, { DEFAULT_STANDEE_DISPLAY, resolveStandeeDisplay, type StandeeDisplay } from '@/components/StandeePreview';
 import StandeeDisplayOptions from '@/components/StandeeDisplayOptions';
@@ -549,7 +550,7 @@ const GeneratePageContent = () => {
                 )}
 
                 {/* Free/Starter: customizer teaser */}
-                {!hasAccess('pro') && <QRCustomizerTeaser requiredPlan="pro" />}
+                {!hasAccess('pro') && <StandeeDesignGallery business={selectedBusiness} />}
 
                 {/* QR error overlay */}
                 {qrError && !isGenerating && (
