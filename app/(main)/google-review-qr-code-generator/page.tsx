@@ -16,7 +16,8 @@ import QRErrorOverlay from '@/components/QRErrorOverlay';
 import UpsellBanner from '@/components/UpsellBanner';
 import QRCustomizer, { QRCustomizerTeaser } from '@/components/Qrcustomizer';
 import StandeeTeaser from '@/components/Standeeteaser';
-import StandeePreview from '@/components/StandeePreview';
+import StandeePreview, { DEFAULT_STANDEE_DISPLAY, resolveStandeeDisplay, type StandeeDisplay } from '@/components/StandeePreview';
+import StandeeDisplayOptions from '@/components/StandeeDisplayOptions';
 import TapScanSetup from '@/components/TapScanSetup';
 import { useBusinessSearch } from '@/hooks/useBusinessSearch';
 import { useQRGenerator } from '@/hooks/useQRGenerator';
@@ -95,6 +96,9 @@ const GeneratePageContent = () => {
   const [_standeeBgColor, setStandeeBgColor] = useState('');
   const [_socialProof, setSocialProof] = useState('');
   const [_language, setLanguage] = useState<StandeeLanguage>('en');
+  const [_display, setDisplay] = useState<StandeeDisplay>(DEFAULT_STANDEE_DISPLAY);
+  const [_phone, setPhone] = useState<string | null>(null);
+  const standeePhone = _phone ?? selectedBusiness?.phone ?? '';
 
   const [initialized, setInitialized] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -121,6 +125,8 @@ const GeneratePageContent = () => {
             if (pending.customizer.standeeBgColor !== undefined) setStandeeBgColor(pending.customizer.standeeBgColor);
             if (pending.customizer.socialProof !== undefined) setSocialProof(pending.customizer.socialProof);
             if (pending.customizer.language !== undefined) setLanguage(pending.customizer.language);
+            if (pending.customizer.display !== undefined) setDisplay(resolveStandeeDisplay(pending.customizer.display));
+            if (typeof pending.customizer.phone === 'string') setPhone(pending.customizer.phone);
           }
         }
       } catch (e) {
@@ -159,6 +165,8 @@ const GeneratePageContent = () => {
         setSocialProof(qr.standeeConfig.socialProof || '');
         setLanguage(qr.standeeConfig.language);
         setWhiteLabel(qr.standeeConfig.whiteLabel);
+        setDisplay(resolveStandeeDisplay(qr.standeeConfig.display));
+        setPhone(qr.standeeConfig.phone || null);
       }
       setInitialized(true);
     }
@@ -213,6 +221,8 @@ const GeneratePageContent = () => {
           standeeBgColor: _standeeBgColor,
           socialProof: _socialProof,
           language: _language,
+          display: _display,
+          phone: _phone,
         }
       };
       sessionStorage.setItem('pending_qr_design', JSON.stringify(design));
@@ -246,6 +256,8 @@ const GeneratePageContent = () => {
         socialProof: _socialProof,
         language: _language,
         whiteLabel: _whiteLabel,
+        display: _display,
+        phone: standeePhone,
       }).unwrap();
 
       if (!result.success) {
@@ -510,10 +522,21 @@ const GeneratePageContent = () => {
                   </div>
                 )}
 
+                {hasAccess('starter') && (
+                  <StandeeDisplayOptions
+                    display={_display}
+                    onDisplayChange={setDisplay}
+                    phone={standeePhone}
+                    onPhoneChange={setPhone}
+                    canUseLogo={hasAccess('pro')}
+                  />
+                )}
+
                 {/* Pro/Agency: full customizer */}
                 {hasAccess('pro') && (
                   <QRCustomizer
                     plan={plan}
+                    template={_template}
                     onLogoChange={setLogo}
                     onColorChange={setQrColor}
                     onWhiteLabelChange={(enabled, clientName) => setWhiteLabel({ enabled, clientName })}
@@ -653,6 +676,8 @@ const GeneratePageContent = () => {
                         standeeBgColor={_standeeBgColor}
                         socialProof={_socialProof}
                         language={_language}
+                        display={_display}
+                        phone={standeePhone}
                       />
                     </div>
                   )}

@@ -4,6 +4,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "../baseQueryWithReauth";
 import type { ReviewLanguage } from "./landingApi";
+import type { StandeeDisplay, StandeeTemplate } from "@/components/StandeePreview";
 
 export interface QRCode {
   id: string;
@@ -33,10 +34,12 @@ export interface QRCode {
     logoUrl?: string;
   };
   standeeConfig: {
-    template: 'minimal' | 'luxury' | 'bold' | 'festive';
+    template: StandeeTemplate;
     bgColor?: string;
     socialProof?: string;
     language: 'en' | 'hi' | 'mr' | 'ta' | 'te';
+    phone?: string;
+    display?: Partial<StandeeDisplay>;
     whiteLabel: { enabled: boolean; clientName: string };
   };
   agencyBilling?: {
@@ -70,11 +73,13 @@ export interface GenerateQRRequest {
   logoData?: string | null; // base64 data-URI
 
   // Standee config (plan-gated on backend)
-  template?: 'minimal' | 'luxury' | 'bold' | 'festive';
+  template?: StandeeTemplate;
   bgColor?: string;
   socialProof?: string;
   language?: 'en' | 'hi' | 'mr' | 'ta' | 'te';
   whiteLabel?: { enabled: boolean; clientName: string };
+  display?: StandeeDisplay;
+  phone?: string;
 }
 
 export interface GenerateQRResponse {

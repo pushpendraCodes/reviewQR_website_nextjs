@@ -3,7 +3,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { clearClientToken, getClientToken } from "@/lib/clientSession";
-import type { QRDotShape, StandeeLanguage, StandeeTemplate } from "@/components/StandeePreview";
+import type { QRDotShape, StandeeDisplay, StandeeLanguage, StandeeTemplate } from "@/components/StandeePreview";
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: `${process.env.NEXT_PUBLIC_API_BASE_URL}/client-portal`,
@@ -79,6 +79,8 @@ export interface ClientQrSummary {
     bgColor: string;
     socialProof: string;
     language: StandeeLanguage;
+    phone?: string;
+    display?: Partial<StandeeDisplay>;
     whiteLabel: { enabled: boolean; clientName: string };
   };
   latestReviews: ClientReview[];

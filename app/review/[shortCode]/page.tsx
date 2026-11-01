@@ -26,6 +26,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 const MAX_SERVICES = 3;
 const MAX_LIKED = 4;
+const MAX_STAFF = 3;
 
 const SEGMENTED_MAX = 4;
 
@@ -70,7 +71,7 @@ const ReviewLandingPage: React.FC = () => {
     const [selectedReview, setSelectedReview] = useState<string | null>(null);
     const [services, setServices] = useState<string[]>([]);
     const [liked, setLiked] = useState<string[]>([]);
-    const [staff, setStaff] = useState("");
+    const [staff, setStaff] = useState<string[]>([]);
     const [language, setLanguage] = useState<ReviewLanguage>("en");
     const [lastAnswers, setLastAnswers] = useState<ReviewAnswers | undefined>(undefined);
     const autoStarted = useRef(false);
@@ -98,7 +99,7 @@ const ReviewLandingPage: React.FC = () => {
     };
 
     const handleWrite = () => runGenerate({ services, liked, staff, language: activeLanguage });
-    const handleSkip = () => runGenerate({ services: [], liked: [], staff: "", language: activeLanguage });
+    const handleSkip = () => runGenerate({ services: [], liked: [], staff: [], language: activeLanguage });
     const handleRegenerate = () => runGenerate(lastAnswers);
     const handleChangeAnswers = () => {
         setSelectedReview(null);
@@ -150,7 +151,7 @@ const ReviewLandingPage: React.FC = () => {
     }
 
     const reviews = aiData?.reviews || [];
-    const hasAnswers = services.length > 0 || liked.length > 0 || Boolean(staff);
+    const hasAnswers = services.length > 0 || liked.length > 0 || staff.length > 0;
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center py-8 px-4 sm:px-6">
@@ -262,9 +263,9 @@ const ReviewLandingPage: React.FC = () => {
                             )}
 
                             {questions.staff.length > 0 && (
-                                <QuestionBlock title="Who helped you?" hint="Optional">
+                                <QuestionBlock title="Who helped you?" hint={`Optional · pick up to ${MAX_STAFF}`}>
                                     {questions.staff.map((name) => (
-                                        <Chip key={name} active={staff === name} onClick={() => setStaff((s) => (s === name ? "" : name))}>
+                                        <Chip key={name} active={staff.includes(name)} onClick={() => setStaff((s) => toggle(s, name, MAX_STAFF))}>
                                             {name}
                                         </Chip>
                                     ))}

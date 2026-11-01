@@ -29,7 +29,7 @@ export type { ReviewLanguage };
 export interface ReviewAnswers {
   services: string[];
   liked: string[];
-  staff: string;
+  staff: string[];
   language: ReviewLanguage;
 }
 

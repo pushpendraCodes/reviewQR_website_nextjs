@@ -20,6 +20,8 @@ interface QRCustomizerProps {
   onBgColorChange?: (color: string) => void;
   onSocialProofChange?: (text: string) => void;
   onLanguageChange?: (lang: StandeeLanguage) => void;
+  /** Current template, so the picker matches a saved QR being edited. */
+  template?: StandeeTemplate;
 }
 
 // ── QR dot shape options ─────────────────────────────────────────────
@@ -45,12 +47,18 @@ const ShapeIcon = ({ shape, size = 24 }: { shape: QRDotShape; size?: number }) =
 };
 
 // ── Standee templates ────────────────────────────────────────────────
-const TEMPLATES: { value: StandeeTemplate; label: string; bg: string; accent: string }[] = [
+const TEMPLATES: { value: StandeeTemplate; label: string; bg: string; accent: string; google?: boolean; isNew?: boolean }[] = [
   { value: 'minimal', label: 'Minimal', bg: '#ffffff', accent: '#1D9E75' },
   { value: 'luxury', label: 'Luxury', bg: '#0d0d1a', accent: '#d4af37' },
   { value: 'bold', label: 'Bold', bg: '#1e40af', accent: '#ffffff' },
   { value: 'festive', label: 'Festive', bg: '#fffbf0', accent: '#f97316' },
+  { value: 'classic', label: 'Classic', bg: '#ffffff', accent: '#111827', google: true, isNew: true },
+  { value: 'midnight', label: 'Midnight', bg: '#0b0b0f', accent: '#ffffff', google: true, isNew: true },
+  { value: 'dual', label: 'Tap & Scan', bg: '#ffffff', accent: '#111827', google: true, isNew: true },
+  { value: 'spotlight', label: 'Spotlight', bg: '#111111', accent: '#ffffff', google: true, isNew: true },
 ];
+
+const GOOGLE_BAR = ['#4285F4', '#EA4335', '#FBBC05', '#34A853'];
 
 // ── Languages ────────────────────────────────────────────────────────
 const LANGUAGES: { value: StandeeLanguage; label: string; native: string }[] = [
@@ -72,6 +80,7 @@ const QRCustomizer = ({
   onLogoChange, onColorChange, onWhiteLabelChange,
   onQRShapeChange, onTemplateChange, onBgColorChange,
   onSocialProofChange, onLanguageChange,
+  template,
 }: QRCustomizerProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -110,6 +119,7 @@ const QRCustomizer = ({
   const pickColor = (c: string) => { setActiveColor(c); onColorChange(c); };
   const pickShape = (s: QRDotShape) => { setActiveShape(s); onQRShapeChange?.(s); };
   const pickTemplate = (t: StandeeTemplate) => { setActiveTemplate(t); onTemplateChange?.(t); };
+  const currentTemplate = template ?? activeTemplate;
   const pickLang = (l: StandeeLanguage) => { setActiveLang(l); onLanguageChange?.(l); };
 
   const handleWhiteLabel = (enabled: boolean) => {
@@ -243,23 +253,39 @@ const QRCustomizer = ({
                 <SubHead label="Standee Template" />
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {TEMPLATES.map(({ value, label, bg, accent }) => (
+                {TEMPLATES.map(({ value, label, bg, accent, google, isNew }) => (
                   <button
                     key={value}
                     onClick={() => pickTemplate(value)}
-                    className={`flex flex-col items-center gap-2 p-2 rounded-xl border transition-all ${activeTemplate === value
+                    className={`flex flex-col items-center gap-2 p-2 rounded-xl border transition-all ${currentTemplate === value
                         ? 'border-primary ring-1 ring-primary'
                         : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
                     {/* Mini standee swatch */}
                     <div
-                      className="w-full h-10 rounded-lg flex items-center justify-center gap-0.5"
-                      style={{ backgroundColor: bg, border: `1px solid ${accent}30` }}
+                      className="relative w-full h-10 rounded-lg flex items-center justify-center gap-0.5 overflow-hidden"
+                      style={{ backgroundColor: bg, border: `1px solid ${google ? '#e5e7eb' : `${accent}30`}` }}
                     >
-                      <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: accent, opacity: 0.8 }} />
+                      {google ? (
+                        <>
+                          <span className="text-[9px] font-bold leading-none">
+                            {['G', 'o', 'o', 'g', 'l', 'e'].map((l, i) => (
+                              <span key={i} style={{ color: ['#4285F4', '#EA4335', '#FBBC05', '#4285F4', '#34A853', '#EA4335'][i] }}>{l}</span>
+                            ))}
+                          </span>
+                          <div className="absolute bottom-0 inset-x-0 flex h-1">
+                            {GOOGLE_BAR.map((c) => <div key={c} className="flex-1" style={{ background: c }} />)}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: accent, opacity: 0.8 }} />
+                      )}
                     </div>
-                    <span className="text-[10px] font-semibold text-gray-600">{label}</span>
+                    <span className="text-[10px] font-semibold text-gray-600 leading-tight text-center">
+                      {label}
+                      {isNew && <span className="ml-1 text-[8px] font-bold text-violet-600 uppercase">New</span>}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -344,7 +370,7 @@ const QRCustomizer = ({
                     onClick={() => handleWhiteLabel(!whiteLabelOn)}
                     className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${whiteLabelOn ? 'bg-rose-500' : 'bg-gray-200'}`}
                   >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${whiteLabelOn ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${whiteLabelOn ? 'translate-x-5' : 'translate-x-0'}`} />
                   </button>
                 </div>
                 <p className="text-xs text-gray-600 mb-3">
@@ -392,7 +418,7 @@ export const QRCustomizerTeaser = ({ requiredPlan }: { requiredPlan: 'pro' | 'ag
           <span className="text-violet-600 capitalize">{requiredPlan}</span> plan
         </p>
         <p className="text-xs text-gray-500 mt-0.5">
-          Dot shapes, standee themes, social proof badges, Hindi/Marathi support and more
+          8 standee designs incl. Google-style Tap &amp; Scan, dot shapes, social proof badges, Hindi/Marathi and more
         </p>
       </div>
       <Link href="/pricing" className="flex-shrink-0 px-4 py-2 bg-violet-600 text-white text-xs font-bold rounded-xl hover:bg-violet-700 transition-all active:scale-95">

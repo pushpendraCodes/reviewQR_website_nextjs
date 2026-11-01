@@ -323,7 +323,7 @@ function ProfileEditor({ id, data }: { id: string; data: ReviewProfileResponse }
                         />
                     </Section>
 
-                    <Section title="Staff (optional)" hint="First names only. Customers can pick who helped them, and the review can thank them by name.">
+                    <Section title="Staff (optional)" hint="First names only. Customers can pick up to 3 people who helped them, and the reviews thank them by name.">
                         <TagInput
                             values={profile.staff}
                             onChange={(staff) => update({ staff })}

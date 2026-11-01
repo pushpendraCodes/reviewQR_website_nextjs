@@ -110,7 +110,7 @@ const INR_PLANS = [
     lockedFeatures: [
       'Custom logo & QR colors',
       'Dot shape customisation',
-      'Standee templates (Luxury, Bold, Festive)',
+      '7 more standee designs incl. Google-style Tap & Scan',
       'Social proof badge',
       'Multi-language standee',
       'Personalised AI reviews (services, staff, 21 languages)',
@@ -140,7 +140,7 @@ const INR_PLANS = [
       'AI reviews in 21 languages (हिंदी, मराठी, தமிழ், 中文, Français…)',
       'Custom logo in QR centre',
       'Custom QR color & dot shape',
-      'All standee templates (Minimal, Luxury, Bold, Festive)',
+      'All 8 standee designs, incl. Google-style Tap & Scan (NFC)',
       'Custom standee background color',
       'Social proof badge ("500+ happy customers")',
       'Multi-language standee (EN, हिन्दी, मराठी, தமிழ், తెలుగు)',
@@ -518,7 +518,8 @@ const PricingPage = () => {
         rows: [
           { feature: 'Watermark', free: 'Always', starter: 'None', pro: 'None', agency: 'None' },
           { feature: 'Business info', free: false, starter: true, pro: true, agency: true },
-          { feature: 'Templates', free: 'Default only', starter: 'Minimal only', pro: 'All 4', agency: 'All 4' },
+          { feature: 'Templates', free: 'Default only', starter: 'Minimal only', pro: 'All 8', agency: 'All 8' },
+          { feature: 'Show/hide rating, address, phone & NFC badge', free: false, starter: true, pro: true, agency: true },
           { feature: 'Custom background', free: false, starter: false, pro: true, agency: true },
           { feature: 'Social proof badge', free: false, starter: false, pro: true, agency: true },
           { feature: 'Standee languages', free: 'English only', starter: 'English only', pro: '5 languages', agency: '5 languages' },

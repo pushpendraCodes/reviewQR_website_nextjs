@@ -100,6 +100,8 @@ const DownloadDialog: React.FC<{ qr: ClientQrSummary; onClose: () => void }> = (
                                 socialProof={qr.standeeConfig.socialProof}
                                 language={qr.standeeConfig.language}
                                 whiteLabel={qr.standeeConfig.whiteLabel}
+                                display={qr.standeeConfig.display}
+                                phone={qr.standeeConfig.phone}
                             />
                         </div>
                     </div>
